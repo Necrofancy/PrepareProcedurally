@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <PawnColumnDef>
+    <defName>PawnCanBePrepared</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.PawnCanBePrepared</workerClass>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
+    <defName>LockForSelection</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.LockForSelection</workerClass>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
+    <defName>IntendedRole</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.IdeologicalRole</workerClass>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
+    <defName>StoryChild</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Childhood</workerClass>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
+    <defName>StoryAdult</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Adulthood</workerClass>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
+    <defName>SelectXeno</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.XenotypeSelection</workerClass>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
+    <defName>WorkPotential</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.WorkPotential</workerClass>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
+    <defName>Traits</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Traits</workerClass>
+  </PawnColumnDef>
+</Defs>

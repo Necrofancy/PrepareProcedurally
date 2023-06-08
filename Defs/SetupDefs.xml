@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <Necrofancy.PrepareProcedurally.Defs.BySetup>
+        <defName>Basic</defName>
+        <minPassion>6.0</minPassion>
+        <baseRequirements>
+            <li>SkillRequirement_Violent_Melee</li>
+            <li>SkillRequirement_Violent_Shooting</li>
+            <li>SkillRequirement_Shooting_Major</li>
+            <li>SkillRequirement_Melee_Major</li>
+            <li>SkillRequirement_Construction_Minor</li>
+            <li>SkillRequirement_Cooking_Minor</li>
+            <li>SkillRequirement_Cooking_Minimal</li>
+            <li>SkillRequirement_Plants_Minor</li>
+            <li>SkillRequirement_Animals_Minor</li>
+            <li>SkillRequirement_Crafting_Minor</li>
+            <li>SkillRequirement_Art_Minor</li>
+            <li>SkillRequirement_Medicine_Major</li>
+            <li>SkillRequirement_Medicine_Minimal</li>
+            <li>SkillRequirement_Social_Minor</li>
+            <li>SkillRequirement_Research_Minor</li>
+        </baseRequirements>
+        <byBiomeTerrain>
+            <li>
+                <key>Flat</key>
+                <value>ReqSet_Mining_Small</value>
+            </li>
+            <li>
+                <key>SmallHills</key>
+                <value>ReqSet_Mining_Medium</value>
+            </li>
+            <li>
+                <key>LargeHills</key>
+                <value>ReqSet_Mining_Large</value>
+            </li>
+            <li>
+                <key>Mountainous</key>
+                <value>ReqSet_Mining_Large</value>
+            </li>
+        </byBiomeTerrain>
+    </Necrofancy.PrepareProcedurally.Defs.BySetup>
+
+    <Necrofancy.PrepareProcedurally.Defs.BySetup>
+        <defName>Advantage</defName>
+        <minPassion>6.5</minPassion>
+        <baseRequirements>
+            <li>SkillRequirement_Shooting_Major</li>
+            <li>SkillRequirement_Melee_Major</li>
+            <li>SkillRequirement_Construction_Major</li>
+            <li>SkillRequirement_Construction_Minimal</li>
+            <li>SkillRequirement_Cooking_Major</li>
+            <li>SkillRequirement_Cooking_Minimal</li>
+            <li>SkillRequirement_Plants_Major</li>
+            <li>SkillRequirement_Plants_Minimal</li>
+            <li>SkillRequirement_Animals_Major</li>
+            <li>SkillRequirement_Crafting_Major</li>
+            <li>SkillRequirement_Art_Major</li>
+            <li>SkillRequirement_Medicine_Major</li>
+            <li>SkillRequirement_Medicine_Minimal</li>
+            <li>SkillRequirement_Research_Major</li>
+        </baseRequirements>
+        <byBiomeTerrain>
+            <li>
+                <key>Flat</key>
+                <value>ReqSet_Mining_Medium</value>
+            </li>
+            <li>
+                <key>SmallHills</key>
+                <value>ReqSet_Mining_Medium</value>
+            </li>
+            <li>
+                <key>LargeHills</key>
+                <value>ReqSet_Mining_Large</value>
+            </li>
+            <li>
+                <key>Mountainous</key>
+                <value>ReqSet_Mining_Large</value>
+            </li>
+        </byBiomeTerrain>
+    </Necrofancy.PrepareProcedurally.Defs.BySetup>
+
+
+</Defs>

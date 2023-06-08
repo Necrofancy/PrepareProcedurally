@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Violent_Melee</defName>
+        <skill>Melee</skill>
+        <level>4</level>
+        <allPawns>true</allPawns>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Violent_Shooting</defName>
+        <skill>Shooting</skill>
+        <level>4</level>
+        <allPawns>true</allPawns>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Melee_Minimal</defName>
+        <skill>Melee</skill>
+        <level>4</level>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Shooting_Minimal</defName>
+        <skill>Shooting</skill>
+        <level>4</level>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Construction_Minimal</defName>
+        <skill>Construction</skill>
+        <level>4</level>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Mining_Minimal</defName>
+        <skill>Mining</skill>
+        <level>4</level>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Cooking_Minimal</defName>
+        <skill>Cooking</skill>
+        <level>4</level>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Plants_Minimal</defName>
+        <skill>Plants</skill>
+        <level>4</level>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Animals_Minimal</defName>
+        <skill>Animals</skill>
+        <level>4</level>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Medicine_Minimal</defName>
+        <skill>Medicine</skill>
+        <level>4</level>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Intellectual_Minimal</defName>
+        <skill>Intellectual</skill>
+        <level>4</level>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+</Defs>

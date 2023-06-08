@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<LanguageData>
+
+	<!-- Initial Page UI -->
+	<SkillPassionPageTitle>Determine Backstories and Traits</SkillPassionPageTitle>
+	<SkillPassionSkillSelectWidgetLabel>Select By Skills:</SkillPassionSkillSelectWidgetLabel>
+	<SkillPassionElaborateDescription>The {0} will take a lot of work to keep up. You will want to make sure you have a good balance of workers for each crucial role.
+
+A {1}'s passions in life will be determined by their backstories and their individual traits. Such things will be accounted for to try to match the given settings.</SkillPassionElaborateDescription>
+	<SkillPassionUsable>Useable:</SkillPassionUsable>
+	<!-- Scale these up or down according to the how long your language is -->
+	<!-- For English, this is scaled so that "Construction" is one line for the former and there is a comfy even margin for the row length. -->
+	<SkillPassionSkillTextLength>85</SkillPassionSkillTextLength>
+	<SkillPassionSkillSelectWidgetOverallLength>490</SkillPassionSkillSelectWidgetOverallLength>
+
+	<LockedPawnButtonDescription>This pawn is locked in and will not be randomized or changed in any way by the procedural editor. Click to unlock.</LockedPawnButtonDescription>
+	<UnlockedPawnButtonDescription>This pawn is not locked in and will be randomized as needed by the procedural editor to fit other requests. Click to lock.</UnlockedPawnButtonDescription>
+	<ClickToCustomizeGeneration>Click to customize this pawn slot a bit more.</ClickToCustomizeGeneration>
+</LanguageData>

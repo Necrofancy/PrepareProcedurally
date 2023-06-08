@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+  <PawnTableDef>
+    <defName>PrepareProcedurallyResults</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Editor.MaplessPawnTable</workerClass>
+    <columns>
+      <li>PawnCanBePrepared</li>
+      <!-- <li>LockForSelection</li> 
+      <li MayRequire="Ludeon.RimWorld.Ideology">IntendedRole</li> -->
+      <li>LockForSelection</li>
+      <li MayRequire="Ludeon.RimWorld.Biotech">SelectXeno</li>
+      <li>StoryChild</li>
+      <li>StoryAdult</li>
+      <li>Age</li>
+
+      <!-- <li>WorkPotential</li> -->
+      <li>Traits</li>
+      <li>RemainingSpace</li>
+    </columns>
+  </PawnTableDef>
+
+</Defs>

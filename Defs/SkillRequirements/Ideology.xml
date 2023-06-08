@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Plants_All</defName>
+        <skill>Plants</skill>
+        <level>5</level>
+        <passion>Minor</passion>
+        <allPawns>true</allPawns>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Mining_All</defName>
+        <skill>Mining</skill>
+        <level>5</level>
+        <passion>Minor</passion>
+        <allPawns>true</allPawns>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Shooting_All</defName>
+        <skill>Shooting</skill>
+        <level>5</level>
+        <passion>Minor</passion>
+        <allPawns>true</allPawns>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Melee_Raider</defName>
+        <skill>Melee</skill>
+        <level>9</level>
+        <passion>Major</passion>
+        <populationCurve>
+            <points>
+                <li>1, 0</li>
+                <li>3, 1</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+</Defs>

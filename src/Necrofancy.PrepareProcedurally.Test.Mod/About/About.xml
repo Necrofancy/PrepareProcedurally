@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ModMetaData>
+	<name>Prepare Procedurally Test</name>
+	<author>Necrofancy</author>
+	<url>TODO LOL</url>
+	<packageId>Necrofancy.PrepareProcedurally.Test.Mod</packageId>
+	<supportedVersions>
+		<li>1.4</li>
+	</supportedVersions>
+	<description>Rimworld mod to quickly generate a colony with some rules.</description>
+	<modDependencies>
+		<li>
+			<packageId>Necrofancy.PrepareProcedurally</packageId>
+		</li>
+	</modDependencies>
+	<loadAfter>
+		<li>Necrofancy.PrepareProcedurally</li>
+	</loadAfter>
+</ModMetaData>

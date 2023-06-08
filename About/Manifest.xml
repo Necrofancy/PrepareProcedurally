@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
+<Manifest>
+	<identifier>Necrofancy.PrepareProcedurally</identifier>
+	<version>1.0.0.0</version>
+	<dependencies>
+		<li>Harmony</li>
+	</dependencies>
+	<loadAfter>
+		<li>Harmony</li>
+	</loadAfter>
+	<showCrossPromotions>true</showCrossPromotions>
+	<manifestUri>https://github.com/Lakuna/RimWorld-Mod-Template/About/Manifest.xml</manifestUri>
+	<downloadUri>https://github.com/Lakuna/RimWorld-Mod-Template/releases/latest</downloadUri>
+</Manifest>

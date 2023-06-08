@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+    <Necrofancy.PrepareProcedurally.Defs.RequirementSetDef>
+        <defName>ReqSet_Mining_Small</defName>
+        <requirements>
+            <li>SkillRequirement_Mining_Minimal</li>
+        </requirements>
+    </Necrofancy.PrepareProcedurally.Defs.RequirementSetDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.RequirementSetDef>
+        <defName>ReqSet_Mining_Medium</defName>
+        <requirements>
+            <li>SkillRequirement_Mining_Minor</li>
+            <li>SkillRequirement_Mining_Minimal</li>
+        </requirements>
+    </Necrofancy.PrepareProcedurally.Defs.RequirementSetDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.RequirementSetDef>
+        <defName>ReqSet_Mining_Large</defName>
+        <requirements>
+            <li>SkillRequirement_Mining_Major</li>
+            <li>SkillRequirement_Mining_Minimal</li>
+        </requirements>
+    </Necrofancy.PrepareProcedurally.Defs.RequirementSetDef>
+
+</Defs>
