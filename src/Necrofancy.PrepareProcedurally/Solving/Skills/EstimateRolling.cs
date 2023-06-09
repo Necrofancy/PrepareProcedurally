@@ -114,12 +114,17 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
             float story = 0;
             float backstoryMultiplier = BackstoryMultiplier.AssumingPercentRoll(roll);
             
+            // if we wanted to "positively" roll on a bad backstory, we want the _inverse_.
+            float backstoryNegativeMultiplier = BackstoryMultiplier.AssumingPercentRoll(1 - roll);
+            
             void AddBackstory(BackstoryDef backstory)
             {
                 if (!backstory.skillGains.TryGetValue(skill, out int value)) 
                     return;
                 
-                float multiplied = backstoryMultiplier * value;
+                float multiplied = value > 0 
+                    ? backstoryMultiplier * value
+                    : backstoryNegativeMultiplier * value;
                 story += multiplied;
             }
             
