@@ -20,7 +20,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
             foreach (var skillRecord in pawn.skills.skills)
             {
                 var passionAndLevel = FinalRanges[skillRecord.def];
-                skillRecord.Level = Rand.RangeInclusive(passionAndLevel.Min, passionAndLevel.Max);
+                skillRecord.levelInt = Rand.RangeInclusive(passionAndLevel.Min, passionAndLevel.Max);
                 skillRecord.passion = passionAndLevel.Passion;
             }
         }

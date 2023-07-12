@@ -87,7 +87,24 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             else
                 pawn.Name = PawnBioAndNameGenerator.GeneratePawnName(pawn);
 
-            pawn.story.bodyType = Adulthood.BodyTypeFor(pawn.gender);
+            bool bodyTypeSetByBiotech = false;
+            if (ModsConfig.BiotechActive)
+            {
+                var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)
+                    .Select(g => g.def.bodyType.Value).Distinct().ToList();
+
+                if (bodyTypes.Any())
+                {
+                    pawn.story.bodyType = GeneUtility.ToBodyType(bodyTypes.RandomElement(), pawn);
+                    bodyTypeSetByBiotech = true;
+                }
+            }
+
+            if (!bodyTypeSetByBiotech)
+            {
+                pawn.story.bodyType = Adulthood.BodyTypeFor(pawn.gender);
+            }
+            
             pawn.Notify_DisabledWorkTypesChanged();
         }
 
