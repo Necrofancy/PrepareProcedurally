@@ -15,7 +15,8 @@ namespace Necrofancy.PrepareProcedurally.Solving
         internal static List<SkillPassionSelection> skillPassions;
         internal static List<Pawn> startingPawns;
         internal static HashSet<Pawn> LockedPawns { get; } = new HashSet<Pawn>();
-        internal static IntRange AgeRange { get; } = new IntRange(21, 30);
+        internal static IntRange AgeRange { get; set; } = new IntRange(21, 30);
+        internal static FloatRange MelaninRange { get; set; } = new FloatRange(0.75f, 0.9f);
 
         public static void Generate(BalancingSituation situation)
         {
@@ -35,7 +36,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
                     continue;
                 
                 using (NarrowBioEditor.RestrictTraits(forcedTraits, empty))
-                using (NarrowBioEditor.MelaninRange(0.75f, 0.9f))
+                using (NarrowBioEditor.MelaninRange(MelaninRange.min, MelaninRange.max))
                 using (NarrowBioEditor.FilterPawnAges(AgeRange.min, AgeRange.max))
                 {
                     pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);

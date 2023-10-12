@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
+using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
@@ -52,22 +53,23 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             
             var pawnIndex = StartingPawnUtility.PawnIndex(pawn);
             reqs = new List<(SkillDef Skill, UsabilityRequirement Usability)>();
-            if (ProcGen.LastResults?[pawnIndex] is { } existing)
+            if (ProcGen.LastResults?.Count > pawnIndex - 1
+                && ProcGen.LastResults[pawnIndex] is { } existing)
             {
                 foreach (var skill in DefDatabase<SkillDef>.AllDefsListForReading)
                 {
                     var result = existing.FinalRanges[skill];
-                    var usability = result.Passion == Passion.Major
-                        ? UsabilityRequirement.Major
-                        : result.Passion == Passion.Minor
-                            ? UsabilityRequirement.Minor
-                            : UsabilityRequirement.CanBeOff;
+                    var usability = result.Passion switch
+                    {
+                        Passion.Major => UsabilityRequirement.Major,
+                        Passion.Minor => UsabilityRequirement.Minor,
+                        _ => UsabilityRequirement.CanBeOff
+                    };
                     reqs.Add((skill, usability));
                 }
             }
             else
             {
-                Log.WarningOnce("C", "C".GetHashCode());
                 foreach (var skill in pawn.skills.skills)
                 {
                     UsabilityRequirement req = skill.PermanentlyDisabled
@@ -84,6 +86,11 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
         
         public override void DoWindowContents(Rect inRect)
         {
+            if (pawn is null || pawn.Destroyed || pawn.Discarded)
+            {
+                this.Close();
+                return;
+            }
             DrawPortraitArea(inRect);
             DrawButtons(inRect);
         }
@@ -147,7 +154,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 addBackToLocked = true;
             }
 
-            using (NarrowBioEditor.MelaninRange(0.75f, 0.9f))
+            using (NarrowBioEditor.MelaninRange(ProcGen.MelaninRange.min, ProcGen.MelaninRange.max))
             using (NarrowBioEditor.FilterPawnAges(ProcGen.AgeRange.min, ProcGen.AgeRange.max))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);

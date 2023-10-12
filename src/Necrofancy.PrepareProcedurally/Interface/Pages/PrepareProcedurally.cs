@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using System.Linq;
 using Necrofancy.PrepareProcedurally.Editor;
 using Necrofancy.PrepareProcedurally.Solving;
@@ -12,6 +13,9 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
 {
     public class PrepareProcedurally : Page
     {
+        private IntRange age = new IntRange(21, 30);
+        private IntRange melanin = new IntRange(0, PawnSkinColors.SkinColorGenesInOrder.Count-1);
+        
         public PrepareProcedurally()
         {
             this.closeOnClickedOutside = true;
@@ -33,14 +37,28 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
 
             var uiPadding = rect.ContractedBy(20, 60);
             uiPadding.SplitHorizontally(480, out var upper, out var lower);
-            if (SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.skillPassions))
+
+            if (SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.skillPassions, ref age, ref melanin))
             {
                 this.PropagateToEditor();
             }
             
-            var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, () => ProcGen.startingPawns, 400, 500);
+            var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400, 500);
             pawnTable.SetMinMaxSize(400, (int)lower.width, 500, (int)lower.height);
             pawnTable.PawnTableOnGUI(lower.min);
+            
+            ProcGen.AgeRange = this.age;
+            
+            var genes = PawnSkinColors.SkinColorGenesInOrder;
+            float min = genes[melanin.min].minMelanin;
+            float max = melanin.max >= genes.Count - 1 ? 1 : genes[melanin.max + 1].minMelanin;
+
+            ProcGen.MelaninRange = new FloatRange(min, max);
+        }
+
+        private static IEnumerable<Pawn> GetStartingPawns()
+        {
+            return Find.GameInitData.startingAndOptionalPawns.Take(Find.GameInitData.startingPawnCount);
         }
 
         public static void SetDefaultState()

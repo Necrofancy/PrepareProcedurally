@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using UnityEngine;
@@ -20,7 +21,6 @@ namespace Necrofancy.PrepareProcedurally.Interface
     public static class SkillPassionSelectionUiUtility
     {
         private const string SkillSelectWidgetLabel = "SkillPassionSkillSelectWidgetLabel";
-        private const string ElaborateDescription = "SkillPassionElaborateDescription";
         private const string UsableText = "SkillPassionUsable";
 
         private static readonly Lazy<int> SkillTitleLength = new Lazy<int>(GetSkillTitleColumnLength);
@@ -44,26 +44,27 @@ namespace Necrofancy.PrepareProcedurally.Interface
 
         private const int NumericLabelTextLength = 10;
 
-        // These are different to even belance 
+        // These are different to even balance 
         private const int GapBeforeNumeric = -3;
         private const int GapAfterNumeric = -2;
 
-        public static bool DoWindowContents(Rect rect, List<SkillPassionSelection> skillPassions)
+        public static bool DoWindowContents(Rect rect, List<SkillPassionSelection> skillPassions, ref IntRange age, ref IntRange melanin)
         {
             bool valuesChanged = false;
             float leftWidth = rect.width - OverallRowLength.Value;
             rect.SplitVertically(leftWidth, out var textRect, out var skillSelectRect);
 
-            string colonyOrTribe = "colony";
-            string colonistOrTribesperson = "colonist";
-            Widgets.TextArea(textRect,
-                ElaborateDescription.Translate().Formatted(colonyOrTribe, colonistOrTribesperson), readOnly: true);
+            var ageSlider = new Rect(textRect.x, textRect.y, textRect.width, RowHeight);
+            var melaninSlider = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight);
+
+            var max = PawnSkinColors.SkinColorGenesInOrder.Count - 1;
+
+            Widgets.IntRange(ageSlider, 1235, ref age, 15, 120, age.ToString(), minWidth:4);
+            Widgets.IntRange(melaninSlider, 12345, ref melanin, 0, max, melanin.ToString(), minWidth:1);
 
             var lineHeight = new Rect(skillSelectRect.x, skillSelectRect.y, skillSelectRect.width, Text.LineHeight);
             Widgets.Label(lineHeight, SkillSelectWidgetLabel.Translate());
-
-            TooltipHandler.TipRegion(lineHeight, () => ElaborateDescription.Translate(12), 4534123);
-
+            
             float num1 = Text.LineHeight + 4f;
             float num2 = skillSelectRect.width * 0.050000012f;
             var rect2 = new Rect(skillSelectRect.x + num2, skillSelectRect.y + num1, skillSelectRect.width * 0.9f,
