@@ -105,17 +105,17 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 switch (usability)
                 {
                     case UsabilityRequirement.Major:
-                        dict[skill] = 20;
+                        dict[skill] = 20 * ProcGen.JobVariation.RandomInRange;
                         requiredWorkTags |= skill.disablingWorkTags;
                         requiredSkills.Add(skill);
                         break;
                     case UsabilityRequirement.Minor:
-                        dict[skill] = 10;
+                        dict[skill] = 10 * ProcGen.JobVariation.RandomInRange;
                         requiredWorkTags |= skill.disablingWorkTags;
                         requiredSkills.Add(skill);
                         break;
                     case UsabilityRequirement.Usable:
-                        dict[skill] = 5;
+                        dict[skill] = 5 * ProcGen.JobVariation.RandomInRange;
                         requiredWorkTags |= skill.disablingWorkTags;
                         requiredSkills.Add(skill);
                         break;
@@ -137,6 +137,8 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
             var specifier = new SelectBackstorySpecifically(backstoryCategory);
             var bio = specifier.GetBestBio(collectSpecificPassions.Weight);
+            var traits = bio.Traits;
+            var empty = new List<TraitDef>();
 
             PawnBuilder builder = new PawnBuilder(bio);
             foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
@@ -156,6 +158,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
 
             using (NarrowBioEditor.MelaninRange(ProcGen.MelaninRange.min, ProcGen.MelaninRange.max))
             using (NarrowBioEditor.FilterPawnAges(ProcGen.AgeRange.min, ProcGen.AgeRange.max))
+            using (NarrowBioEditor.RestrictTraits(traits, empty))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                 bio.ApplyTo(pawn);

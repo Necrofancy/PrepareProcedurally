@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using RimWorld;
+using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Test.Mod
 {
@@ -11,7 +12,7 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
         public static void GenerateOutput(Situation situationWithFileName)
         {
             var situation = situationWithFileName.ToBalance;
-            var possibilities = BackstorySolver.TryToSolveWith(situation);
+            var possibilities = BackstorySolver.TryToSolveWith(situation, new IntRange(1,1));
             var passionRanges = BackstorySolver.FigureOutPassions(possibilities, situation);
             using (var writer = CreateWriter(situationWithFileName.FileName))
             {

@@ -74,7 +74,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             
             pawn.story.Adulthood = Adulthood;
             pawn.story.Childhood = Childhood;
-            
+
             if (Gender != GenderPossibility.Either)
             {
                 pawn.gender = Gender == GenderPossibility.Female

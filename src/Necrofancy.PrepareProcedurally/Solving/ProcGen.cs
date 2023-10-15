@@ -17,6 +17,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
         internal static HashSet<Pawn> LockedPawns { get; } = new HashSet<Pawn>();
         internal static IntRange AgeRange { get; set; } = new IntRange(21, 30);
         internal static FloatRange MelaninRange { get; set; } = new FloatRange(0.75f, 0.9f);
+        internal static IntRange JobVariation { get; set; } = new IntRange(8, 12);
 
         public static void Generate(BalancingSituation situation)
         {
@@ -25,7 +26,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
 
             var empty = new List<TraitDef>();
             
-            var backgrounds = BackstorySolver.TryToSolveWith(situation);
+            var backgrounds = BackstorySolver.TryToSolveWith(situation, JobVariation);
             var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
             LastResults = finalSkills;
             for (int i = 0; i < pawnCount; i++)

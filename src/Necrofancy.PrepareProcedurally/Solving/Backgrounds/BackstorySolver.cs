@@ -10,7 +10,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 {
     public static class BackstorySolver
     {
-        public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(BalancingSituation situation, IEnumerable<Pawn>? keepPawns = null)
+        public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(BalancingSituation situation, IntRange variation, IEnumerable<Pawn>? keepPawns = null)
         {
             const int age = 35;
             var specifier = new SelectBackstorySpecifically(situation.CategoryName);
@@ -29,7 +29,8 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 
                 foreach (var requirement in situation.SkillRequirements)
                 {
-                    weights[requirement] = requirement.GetWeights(currentBackgrounds);
+                    int moddedByVariation = requirement.GetWeights(currentBackgrounds) * variation.RandomInRange;
+                    weights[requirement] = moddedByVariation;
                 }
 
                 var skillWeightingSystem = new SpecificSkillWeights(weights);

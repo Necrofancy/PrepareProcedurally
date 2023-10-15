@@ -48,7 +48,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
         private const int GapBeforeNumeric = -3;
         private const int GapAfterNumeric = -2;
 
-        public static bool DoWindowContents(Rect rect, List<SkillPassionSelection> skillPassions, ref IntRange age, ref IntRange melanin)
+        public static bool DoWindowContents(Rect rect, List<SkillPassionSelection> skillPassions, ref IntRange age, ref IntRange melanin, ref IntRange variation)
         {
             bool valuesChanged = false;
             float leftWidth = rect.width - OverallRowLength.Value;
@@ -56,11 +56,13 @@ namespace Necrofancy.PrepareProcedurally.Interface
 
             var ageSlider = new Rect(textRect.x, textRect.y, textRect.width, RowHeight);
             var melaninSlider = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight);
+            var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 2, textRect.width, RowHeight);
 
             var max = PawnSkinColors.SkinColorGenesInOrder.Count - 1;
 
             Widgets.IntRange(ageSlider, 1235, ref age, 15, 120, age.ToString(), minWidth:4);
             Widgets.IntRange(melaninSlider, 12345, ref melanin, 0, max, melanin.ToString(), minWidth:1);
+            Widgets.IntRange(variationSlider, 123455, ref variation, 0, 100, variation.ToString(), minWidth:1);
 
             var lineHeight = new Rect(skillSelectRect.x, skillSelectRect.y, skillSelectRect.width, Text.LineHeight);
             Widgets.Label(lineHeight, SkillSelectWidgetLabel.Translate());

@@ -15,6 +15,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
     {
         private IntRange age = new IntRange(21, 30);
         private IntRange melanin = new IntRange(0, PawnSkinColors.SkinColorGenesInOrder.Count-1);
+        private IntRange occupationVariation = ProcGen.JobVariation;
         
         public PrepareProcedurally()
         {
@@ -38,7 +39,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             var uiPadding = rect.ContractedBy(20, 60);
             uiPadding.SplitHorizontally(480, out var upper, out var lower);
 
-            if (SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.skillPassions, ref age, ref melanin))
+            if (SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.skillPassions, ref age, ref melanin, ref occupationVariation))
             {
                 this.PropagateToEditor();
             }
@@ -54,6 +55,8 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             float max = melanin.max >= genes.Count - 1 ? 1 : genes[melanin.max + 1].minMelanin;
 
             ProcGen.MelaninRange = new FloatRange(min, max);
+
+            ProcGen.JobVariation = this.occupationVariation;
         }
 
         private static IEnumerable<Pawn> GetStartingPawns()
