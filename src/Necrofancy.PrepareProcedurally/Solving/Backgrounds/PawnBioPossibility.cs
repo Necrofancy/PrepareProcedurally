@@ -54,15 +54,18 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
         public void ApplyTo(Pawn pawn)
         {
             var possessions = Find.GameInitData.startingPossessions[pawn];
-            var possessionsToRemove = pawn.story.Adulthood.possessions;
-            foreach (var itemToRemove in possessionsToRemove)
+            if (pawn.story.Adulthood != null)
             {
-                for (int i = possessions.Count - 1; i >= 0; i--)
+                var possessionsToRemove = pawn.story.Adulthood.possessions;
+                foreach (var itemToRemove in possessionsToRemove)
                 {
-                    var item = possessions[i];
-                    if (item.ThingDef == itemToRemove.key)
+                    for (int i = possessions.Count - 1; i >= 0; i--)
                     {
-                        possessions.RemoveAt(i);
+                        var item = possessions[i];
+                        if (item.ThingDef == itemToRemove.key)
+                        {
+                            possessions.RemoveAt(i);
+                        }
                     }
                 }
             }
@@ -86,7 +89,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 pawn.Name = Name;
             else
                 pawn.Name = PawnBioAndNameGenerator.GeneratePawnName(pawn);
-
+            
             bool bodyTypeSetByBiotech = false;
             if (ModsConfig.BiotechActive)
             {

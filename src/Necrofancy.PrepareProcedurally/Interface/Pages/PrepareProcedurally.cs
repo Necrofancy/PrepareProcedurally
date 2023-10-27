@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Necrofancy.PrepareProcedurally.Editor;
+using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
@@ -74,6 +75,12 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
 
         private void PropagateToEditor()
         {
+            // close existing windows
+            while (Find.WindowStack.WindowOfType<EditSpecificPawn>() is { } editSpecificPawn)
+            {
+                editSpecificPawn.Close();
+            }
+
             string backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
             int pawnCount = Find.GameInitData.startingPawnCount;
             var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, ProcGen.skillPassions);

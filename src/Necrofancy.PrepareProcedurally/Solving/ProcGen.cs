@@ -43,20 +43,26 @@ namespace Necrofancy.PrepareProcedurally.Solving
                     pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
                 }
 
+                OnPawnChanged(pawnList[i]);
                 backstory.Background.ApplyTo(pawnList[i]);
                 finalization.ApplyTo(pawnList[i]);
-                OnPawnChanged(pawnList[i]);
             }
         }
 
         public static void OnPawnChanged(Pawn pawn)
         {
-            if (Find.WindowStack.WindowOfType<Page_ConfigureStartingPawns>() is { } page)
-                page.SelectPawn(pawn);
-            if (Find.WindowStack.WindowOfType<Interface.Pages.PrepareProcedurally>() is { } procedural)
+            foreach (var window in Find.WindowStack.Windows)
             {
-                var index = StartingPawnUtility.PawnIndex(pawn);
-                startingPawns[index] = pawn;
+                switch (window)
+                {
+                    case Page_ConfigureStartingPawns startingPage:
+                        startingPage.SelectPawn(pawn);
+                        break;
+                    case Interface.Pages.PrepareProcedurally _:
+                        var index = StartingPawnUtility.PawnIndex(pawn);
+                        startingPawns[index] = pawn;
+                        break;
+                }
             }
         }
     }

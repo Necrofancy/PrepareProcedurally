@@ -161,9 +161,9 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             using (NarrowBioEditor.RestrictTraits(traits, empty))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);
+                ProcGen.OnPawnChanged(pawn);
                 bio.ApplyTo(pawn);
                 builder.Build().ApplyTo(pawn);
-                ProcGen.OnPawnChanged(pawn);
             }
 
             if (addBackToLocked)
