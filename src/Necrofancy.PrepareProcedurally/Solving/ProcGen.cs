@@ -39,6 +39,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 using (NarrowBioEditor.RestrictTraits(forcedTraits, empty))
                 using (NarrowBioEditor.MelaninRange(MelaninRange.min, MelaninRange.max))
                 using (NarrowBioEditor.FilterPawnAges(AgeRange.min, AgeRange.max))
+                using (NarrowBioEditor.FilterRequestAge(i, ProcGen.AgeRange.min, ProcGen.AgeRange.max))
                 {
                     pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
                 }

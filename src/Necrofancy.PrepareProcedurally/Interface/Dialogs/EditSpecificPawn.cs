@@ -156,8 +156,10 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 addBackToLocked = true;
             }
 
+            int index = StartingPawnUtility.PawnIndex(pawn);
             using (NarrowBioEditor.MelaninRange(ProcGen.MelaninRange.min, ProcGen.MelaninRange.max))
             using (NarrowBioEditor.FilterPawnAges(ProcGen.AgeRange.min, ProcGen.AgeRange.max))
+            using (NarrowBioEditor.FilterRequestAge(index, ProcGen.AgeRange.min, ProcGen.AgeRange.max))
             using (NarrowBioEditor.RestrictTraits(traits, empty))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);

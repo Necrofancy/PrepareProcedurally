@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using RimWorld;
 using Verse;
@@ -20,7 +21,6 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
         
         public string CategoryName { get; set; }
         
-
         public static TemporaryEdit<IntRange> FilterPawnAges(int min, int max)
         {
             var pawnDef = Faction.OfPlayer.def.basicMemberKind;
@@ -36,8 +36,38 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
 
             return new TemporaryEdit<IntRange>(oldRange, newRange, SetAgeRange);
         }
-        
-        
+
+        public static TemporaryEdit<PawnGenerationRequest> FilterRequestAge(int pawnIndex, int min, int max)
+        {
+            Type type = typeof(StartingPawnUtility);
+            FieldInfo[] fields = type.GetFields(BindingFlags.NonPublic | BindingFlags.Static);
+            foreach (var field in fields)
+            {
+                if (field.Name.Equals("StartingAndOptionalPawnGenerationRequests"))
+                {
+                    var requests = field.GetValue(null) as List<PawnGenerationRequest>;
+                    
+                    var oldRequest = requests[pawnIndex];
+                    var newRequest = requests[pawnIndex];
+                    
+                    // you need to remove EXCLUDES 
+                    newRequest.ExcludeBiologicalAgeRange = null;
+                    newRequest.BiologicalAgeRange = new FloatRange(min, max);
+                    void SetAgeRange(PawnGenerationRequest request)
+                    {
+                        requests[pawnIndex] = request;
+                    }
+
+                    return new TemporaryEdit<PawnGenerationRequest>(oldRequest, newRequest, SetAgeRange);
+                }
+            }
+
+            void DoNothing(PawnGenerationRequest request)
+            {
+                //does nothing
+            }
+            return new TemporaryEdit<PawnGenerationRequest>(default, default, DoNothing);
+        }
 
         public static IDisposable MelaninRange(float min, float max)
         {
