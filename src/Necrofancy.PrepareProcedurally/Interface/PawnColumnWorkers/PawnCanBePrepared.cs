@@ -29,7 +29,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             if (Mouse.IsOver(fullRect))
                 GUI.DrawTexture(fullRect, TexUI.HighlightTex);
             
-            string str = pawn.LabelNoCount.CapitalizeFirst();
+            string str = pawn.LabelShort.CapitalizeFirst();
             if (iconRect.width != (double) labelCacheForWidth)
             {
                 labelCacheForWidth = iconRect.width;

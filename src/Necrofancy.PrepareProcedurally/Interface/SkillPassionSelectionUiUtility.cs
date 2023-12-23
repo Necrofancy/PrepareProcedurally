@@ -64,6 +64,8 @@ namespace Necrofancy.PrepareProcedurally.Interface
             rect.SplitVertically(leftWidth, out var textRect, out var skillSelectRect);
             
             textRect.y += RowHeight;
+            skillSelectRect.y -= 18;
+            
             // set up biological page section
             Widgets.Label(new Rect(textRect.x, textRect.y, textRect.width, RowHeight), PawnBiology.Translate());
             var bioRect = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight * 5);

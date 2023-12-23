@@ -39,8 +39,9 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.SkillPassions);
             PropagateToEditor();
             
-            var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400, 700);
-            pawnTable.SetMinMaxSize(400, (int)lower.width, 500, (int)lower.height);
+            var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400, 800);
+            pawnTable.SetMinMaxSize(400, (int)lower.width, 700, (int)lower.height + 200);
+            lower.y -= 86;
             pawnTable.PawnTableOnGUI(lower.min);
         }
 
