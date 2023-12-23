@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>SkillRequirement_Plants_All</defName>
         <skill>Plants</skill>
         <level>5</level>
@@ -9,7 +10,8 @@
         <allPawns>true</allPawns>
     </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
 
-    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>SkillRequirement_Mining_All</defName>
         <skill>Mining</skill>
         <level>5</level>
@@ -17,7 +19,8 @@
         <allPawns>true</allPawns>
     </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
 
-    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>SkillRequirement_Shooting_All</defName>
         <skill>Shooting</skill>
         <level>5</level>
@@ -25,7 +28,8 @@
         <allPawns>true</allPawns>
     </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
 
-    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>SkillRequirement_Melee_Raider</defName>
         <skill>Melee</skill>
         <level>9</level>

@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_TreeConnection</defName>
         <relatedPrecepts>
-            <li>TreeConnection</li>
+            <li>GauranlenConnection_Strong</li>
         </relatedPrecepts>
         <skillRequirements>
             <li>SkillRequirement_Plants_All</li>
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_Tunneler</defName>
         <relatedPrecepts>
             <li>MiningYield_High</li>
         </relatedPrecepts>
         <skillRequirements>
-            <li>SkillRequirement_Mining_All</li>
+            <li>SkillRequirement_Mining_Major</li>
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_Raiders</defName>
         <relatedPrecepts>
             <li>Raiding_Respected</li>
@@ -32,7 +35,8 @@
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_Researchers</defName>
         <relatedPrecepts>
             <li>Research_VeryFast</li>
@@ -43,18 +47,19 @@
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_ShootingSpecialist</defName>
         <relatedPrecepts>
             <li>IdeoRole_ShootingSpecialist</li>
         </relatedPrecepts>
         <skillRequirements>
             <li>SkillRequirement_Shooting_Major</li>
-            <li>SkillRequirement_Shooting_All</li>
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_MeleeSpecialist</defName>
         <relatedPrecepts>
             <li>IdeoRole_MeleeSpecialist</li>
@@ -64,7 +69,8 @@
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_ProductionSpecialist</defName>
         <relatedPrecepts>
             <li>IdeoRole_ProductionSpecialist</li>
@@ -76,7 +82,8 @@
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_MiningSpecialist</defName>
         <relatedPrecepts>
             <li>IdeoRole_MiningSpecialist</li>
@@ -86,7 +93,8 @@
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_PlantSpecialist</defName>
         <relatedPrecepts>
             <li>IdeoRole_PlantSpecialist</li>
@@ -99,7 +107,8 @@
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_AnimalsSpecialist</defName>
         <relatedPrecepts>
             <li>IdeoRole_AnimalsSpecialist</li>
@@ -111,7 +120,8 @@
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_MedicalSpecialist</defName>
         <relatedPrecepts>
             <li>IdeoRole_MedicalSpecialist</li>
@@ -121,7 +131,8 @@
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
 
-    <Necrofancy.PrepareProcedurally.Defs.ByPrecept>
+    <Necrofancy.PrepareProcedurally.Defs.ByPrecept
+        MayRequire="Ludeon.RimWorld.Ideology">
         <defName>Skill_Requirements_For_ResearchSpecialist</defName>
         <relatedPrecepts>
             <li>IdeoRole_ResearchSpecialist</li>
@@ -130,6 +141,5 @@
             <li>SkillRequirement_Research_Major</li>
         </skillRequirements>
     </Necrofancy.PrepareProcedurally.Defs.ByPrecept>
-
 
 </Defs>
