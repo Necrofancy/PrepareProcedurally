@@ -6,9 +6,8 @@
     <workerClass>Necrofancy.PrepareProcedurally.Editor.MaplessPawnTable</workerClass>
     <columns>
       <li>PawnCanBePrepared</li>
-      <!-- <li>LockForSelection</li> 
-      <li MayRequire="Ludeon.RimWorld.Ideology">IntendedRole</li> -->
       <li>LockForSelection</li>
+      <li MayRequire="Ludeon.RimWorld.Ideology">FavoriteColor</li>
       <li MayRequire="Ludeon.RimWorld.Biotech">SelectXeno</li>
       <li>StoryChild</li>
       <li>StoryAdult</li>

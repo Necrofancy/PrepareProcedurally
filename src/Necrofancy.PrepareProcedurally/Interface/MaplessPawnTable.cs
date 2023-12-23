@@ -138,7 +138,7 @@ namespace Necrofancy.PrepareProcedurally.Editor
         int num3 = index1 != columns.Count - 1 ? (int) this.cachedColumnWidths[index1] : (int) ((double) num1 - (double) x);
         for (int index2 = 0; index2 < this.cachedPawns.Count; ++index2)
         {
-          GUI.color = MaplessPawnTable.BorderColor;
+          GUI.color = BorderColor;
           Widgets.DrawLineHorizontal((float) x, (float) y, (float) num3);
           GUI.color = Color.white;
           Rect rect = new Rect((float) x, (float) y, (float) num3, (float) (int) this.cachedRowHeights[index2]);
@@ -160,7 +160,7 @@ namespace Necrofancy.PrepareProcedurally.Editor
             columns[index1].Worker.DoCell(rect, cachedPawn, this);
             if (pawnColumnDef.groupable & flag)
             {
-              GUI.color = MaplessPawnTable.BorderColor;
+              GUI.color = BorderColor;
               Widgets.DrawLineVertical(rect.xMin, rect.yMin, rect.height);
               Widgets.DrawLineVertical(rect.xMax, rect.yMin, rect.height);
               GUI.color = Color.white;

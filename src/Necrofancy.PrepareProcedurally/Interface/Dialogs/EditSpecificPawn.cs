@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
@@ -88,7 +86,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
         {
             if (pawn is null || pawn.Destroyed || pawn.Discarded)
             {
-                this.Close();
+                Close();
                 return;
             }
             DrawPortraitArea(inRect);
@@ -199,7 +197,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                     if (ModsConfig.BiotechActive 
                         && StartingPawnUtilityState.GetGenerationRequestsList() is { } pawnGenerationRequests)
                     {
-                        var index = StartingPawnUtility.PawnIndex(this.pawn);
+                        var index = StartingPawnUtility.PawnIndex(pawn);
                         var request = pawnGenerationRequests[index];
                         foreach (var gene in request.ForcedXenotype.genes)
                         {
@@ -256,7 +254,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
         private float GetPassionPoints()
         {
             var sum = 0.0f;
-            foreach (var item in this.reqs)
+            foreach (var item in reqs)
             {
                 switch (item.Usability)
                 {
@@ -288,21 +286,21 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             Rot4 south = Rot4.South;
             Vector3 cameraOffset = new Vector3();
             bool renderClothes = this.renderClothes;
-            int num1 = this.renderHeadgear ? 1 : 0;
+            int num1 = renderHeadgear ? 1 : 0;
             int num2 = renderClothes ? 1 : 0;
             Color? overrideHairColor = new Color?();
             PawnHealthState? healthStateOverride = new PawnHealthState?();
-            RenderTexture image = PortraitsCache.Get(this.pawn, pawnPortraitSize, south, cameraOffset,
+            RenderTexture image = PortraitsCache.Get(pawn, pawnPortraitSize, south, cameraOffset,
                 renderHeadgear: (num1 != 0), renderClothes: (num2 != 0), overrideHairColor: overrideHairColor,
                 stylingStation: true, healthStateOverride: healthStateOverride);
             GUI.DrawTexture(pawnPortraitRect, image);
 
 
             Rect rect1 = new Rect(rect.x, rect.y, 500, rect.height);
-            CharacterCardUtility.DrawCharacterCard(rect1, this.pawn, this.Randomize, rect);
-            int hasRelationships = SocialCardUtility.AnyRelations(this.pawn) ? 1 : 0;
-            List<ThingDefCount> startingPossession = Find.GameInitData.startingPossessions[this.pawn];
-            bool hasPossesions = startingPossession.Any<ThingDefCount>();
+            CharacterCardUtility.DrawCharacterCard(rect1, pawn, Randomize, rect);
+            int hasRelationships = SocialCardUtility.AnyRelations(pawn) ? 1 : 0;
+            List<ThingDefCount> startingPossession = Find.GameInitData.startingPossessions[pawn];
+            bool hasPossesions = startingPossession.Any();
             int subTables = 1;
             if (hasRelationships != 0)
                 ++subTables;
@@ -315,19 +313,19 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             rect2.yMin += 100f;
             rect2.xMin = rect1.xMax + 5f;
             rect2.height = height;
-            if (!HealthCardUtility.AnyHediffsDisplayed(this.pawn, true))
+            if (!HealthCardUtility.AnyHediffsDisplayed(pawn, true))
                 GUI.color = Color.gray;
             Widgets.Label(rect2, "Health".Translate().AsTipTitle());
             GUI.color = Color.white;
             rect2.yMin += 35f;
-            HealthCardUtility.DrawHediffListing(rect2, this.pawn, true);
+            HealthCardUtility.DrawHediffListing(rect2, pawn, true);
             float y2 = rect2.yMax + 4f;
             if (hasRelationships != 0)
             {
                 Rect rect3 = new Rect(rect2.x, y2, rect2.width, height);
                 Widgets.Label(rect3, "Relations".Translate().AsTipTitle());
                 rect3.yMin += 35f;
-                SocialCardUtility.DrawRelationsAndOpinions(rect3, this.pawn);
+                SocialCardUtility.DrawRelationsAndOpinions(rect3, pawn);
                 y2 = rect3.yMax + 4f;
             }
 
@@ -336,31 +334,31 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             Rect rect4 = new Rect(rect2.x, y2, rect2.width, height);
             Widgets.Label(rect4, "Possessions".Translate().AsTipTitle());
             rect4.yMin += 35f;
-            this.DrawPossessions(rect4, this.pawn, startingPossession);
+            DrawPossessions(rect4, pawn, startingPossession);
         }
 
         private void DrawPossessions(Rect rect, Pawn selPawn, List<ThingDefCount> possessions)
         {
             GUI.BeginGroup(rect);
             Rect outRect = new Rect(0.0f, 0.0f, rect.width, rect.height);
-            Rect viewRect = new Rect(0.0f, 0.0f, rect.width - 16f, this.listScrollViewHeight);
+            Rect viewRect = new Rect(0.0f, 0.0f, rect.width - 16f, listScrollViewHeight);
             Rect rect1 = rect;
             if (viewRect.height > (double) outRect.height)
                 rect1.width -= 16f;
-            Widgets.BeginScrollView(outRect, ref this.listScrollPosition, viewRect);
+            Widgets.BeginScrollView(outRect, ref listScrollPosition, viewRect);
             float y = 0.0f;
-            Vector2 listScrollPosition1 = this.listScrollPosition;
-            Vector2 listScrollPosition2 = this.listScrollPosition;
+            Vector2 listScrollPosition1 = listScrollPosition;
+            Vector2 listScrollPosition2 = listScrollPosition;
             double height = outRect.height;
             if (Find.GameInitData.startingPossessions.ContainsKey(selPawn))
             {
                 for (int index = 0; index < possessions.Count; ++index)
                 {
                     ThingDefCount possession = possessions[index];
-                    Rect rect2 = new Rect(0.0f, y, Verse.Text.LineHeight, Verse.Text.LineHeight);
+                    Rect rect2 = new Rect(0.0f, y, Text.LineHeight, Text.LineHeight);
                     Widgets.DefIcon(rect2, possession.ThingDef);
                     Rect rect3 = new Rect(rect2.xMax + 17f, y,
-                        (float) (rect.width - (double) rect2.width - 17.0 - 24.0), Verse.Text.LineHeight);
+                        (float) (rect.width - (double) rect2.width - 17.0 - 24.0), Text.LineHeight);
                     Widgets.Label(rect3, possession.LabelCap);
                     if (Mouse.IsOver(rect3))
                     {
@@ -377,7 +375,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             }
 
             if (Event.current.type == EventType.Layout)
-                this.listScrollViewHeight = y;
+                listScrollViewHeight = y;
             Widgets.EndScrollView();
             GUI.EndGroup();
         }

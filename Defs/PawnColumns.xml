@@ -17,6 +17,11 @@
   </PawnColumnDef>
 
   <PawnColumnDef>
+    <defName>FavoriteColor</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.FavoriteColor</workerClass>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
     <defName>StoryChild</defName>
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Childhood</workerClass>
   </PawnColumnDef>

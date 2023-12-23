@@ -16,7 +16,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
     {
         public PrepareProcedurally()
         {
-            this.closeOnClickedOutside = true;
+            closeOnClickedOutside = true;
             
             int pawnCount = Find.GameInitData.startingPawnCount;
             ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
@@ -26,7 +26,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
 
         public override void DoWindowContents(Rect rect)
         {
-            this.DrawPageTitle(rect);
+            DrawPageTitle(rect);
 
             if (ProcGen.SkillPassions is null)
             {
@@ -37,7 +37,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             uiPadding.SplitHorizontally(480, out var upper, out var lower);
 
             SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.SkillPassions);
-            this.PropagateToEditor();
+            PropagateToEditor();
             
             var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400, 700);
             pawnTable.SetMinMaxSize(400, (int)lower.width, 500, (int)lower.height);
