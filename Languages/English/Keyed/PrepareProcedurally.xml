@@ -4,14 +4,13 @@
 
 	<!-- Initial Page UI -->
 	<SkillPassionPageTitle>Determine Backstories and Traits</SkillPassionPageTitle>
-	<SkillPassionSkillSelectWidgetLabel>Select By Skills:</SkillPassionSkillSelectWidgetLabel>
-	<SkillPassionElaborateDescription>The {0} will take a lot of work to keep up. You will want to make sure you have a good balance of workers for each crucial role.
-
-A {1}'s passions in life will be determined by their backstories and their individual traits. Such things will be accounted for to try to match the given settings.</SkillPassionElaborateDescription>
+	<SkillPassionSkillSelectWidgetLabel>Group Passions For Each Skill</SkillPassionSkillSelectWidgetLabel>
+	<SkillPassionPawnBiology>Biological Settings</SkillPassionPawnBiology>
 	<SkillPassionUsable>Useable:</SkillPassionUsable>
 
 	<SkillPassionAgeRangeLabel>Adults Will Have an Age Between {0} Years</SkillPassionAgeRangeLabel>
 	<SkillPassionMelaninRangeLabel>Melanin Range</SkillPassionMelaninRangeLabel>
+	<SkillPassionSkillControls>Backstory and Passion Settings</SkillPassionSkillControls>
 	<SkillPassionSkillVariationLevel>Vary Skill Weights By 100%-{0} For Backstory Variety</SkillPassionSkillVariationLevel>
 	<SkillPassionPassionMaxLabel>Max "Passion Points" in Generating Pawns {0}</SkillPassionPassionMaxLabel>
 	<SkillPassionGroupwideLabel>The groupwide skill requirements make up {0} of possible passion points.</SkillPassionGroupwideLabel>

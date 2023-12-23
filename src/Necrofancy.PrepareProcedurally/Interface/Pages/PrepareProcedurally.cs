@@ -33,13 +33,13 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
                 SetDefaultState();
             }
 
-            var uiPadding = rect.ContractedBy(20, 60);
+            var uiPadding = rect.GetInnerRect();
             uiPadding.SplitHorizontally(480, out var upper, out var lower);
 
             SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.SkillPassions);
             this.PropagateToEditor();
             
-            var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400, 500);
+            var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400, 700);
             pawnTable.SetMinMaxSize(400, (int)lower.width, 500, (int)lower.height);
             pawnTable.PawnTableOnGUI(lower.min);
         }

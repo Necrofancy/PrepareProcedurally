@@ -23,8 +23,10 @@ namespace Necrofancy.PrepareProcedurally.Interface
         private const string SkillSelectWidgetLabel = "SkillPassionSkillSelectWidgetLabel";
         private const string UsableText = "SkillPassionUsable";
 
+        private const string PawnBiology = "SkillPassionPawnBiology";
         private const string AgeRangeText = "SkillPassionAgeRangeLabel";
         private const string MelaninRangeText = "SkillPassionMelaninRangeLabel";
+        private const string PassionText = "SkillPassionSkillControls";
         private const string SkillVariationText = "SkillPassionSkillVariationLevel";
         private const string PassionMaxText = "SkillPassionPassionMaxLabel";
         private const string PassionGroupText = "SkillPassionGroupwideLabel";
@@ -60,35 +62,72 @@ namespace Necrofancy.PrepareProcedurally.Interface
         {
             float leftWidth = rect.width - OverallRowLength.Value;
             rect.SplitVertically(leftWidth, out var textRect, out var skillSelectRect);
-
-            var ageSlider = new Rect(textRect.x, textRect.y, textRect.width, RowHeight);
-            var melaninSlider = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight);
-            var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 2, textRect.width, RowHeight);
-            var passionSlider = new Rect(textRect.x, textRect.y + RowHeight * 3, textRect.width, RowHeight);
-            var textExplainer = new Rect(textRect.x, textRect.y + RowHeight * 4, textRect.width, RowHeight * 2);
-
+            
+            textRect.y += RowHeight;
+            // set up biological page section
+            Widgets.Label(new Rect(textRect.x, textRect.y, textRect.width, RowHeight), PawnBiology.Translate());
+            var bioRect = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight * 5);
+            Widgets.DrawMenuSection(bioRect);
+            var bioInnerRect = bioRect.GetInnerRect();
+            
+            // age slider
+            var ageSlider = new Rect(bioInnerRect.x, bioInnerRect.y, bioInnerRect.width, RowHeight);
             var ageRange = ProcGen.AgeRange;
             Widgets.IntRange(ageSlider, 1235, ref ageRange, 15, 120, AgeRangeText, minWidth:4);
             ProcGen.AgeRange = ageRange;
             
+            // melanin slider
+            var melaninSlider = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 1.5f, bioInnerRect.width, RowHeight);
             var genes = PawnSkinColors.SkinColorGenesInOrder;
             var maxMelanin = genes.Count - 1;
-            
             Widgets.IntRange(melaninSlider, 12345, ref melaninRange, 0, maxMelanin, MelaninRangeText, minWidth:1);
             float minSelectedMelanin = genes[melaninRange.min].minMelanin;
             float maxSelectedMelanin = melaninRange.max >= maxMelanin ? 1 : genes[melaninRange.max + 1].minMelanin;
-            
             ProcGen.MelaninRange = new FloatRange(minSelectedMelanin, maxSelectedMelanin);
 
-            ProcGen.SkillWeightVariation = Widgets.HorizontalSlider_NewTemp(variationSlider, ProcGen.SkillWeightVariation, 1f, 5.0f, true, SkillVariationText.Translate(ProcGen.SkillWeightVariation.ToString("P0")), "Unvarying", "1-5x variation", 0.1f);
-            
-            ProcGen.MaxPassionPoints = Widgets.HorizontalSlider_NewTemp(passionSlider, ProcGen.MaxPassionPoints, 0, 9.0f, true, PassionMaxText.Translate(ProcGen.MaxPassionPoints.ToString("N1")), "0", "9", 0.5f);
+            var minSkinColor = genes[melaninRange.min].IconColor;
+            var maxSkinColor = genes[melaninRange.max].IconColor;
 
+            var midPoint = bioInnerRect.x + bioInnerRect.width / 2;
+            const int size = 20;
+            var rectLeft = new Rect(midPoint - size, bioInnerRect.y + RowHeight * 3f, size, size);
+            var rectMid = new Rect(midPoint, bioInnerRect.y + RowHeight * 3f, size, size);
+            var rectRight = new Rect(midPoint + size, bioInnerRect.y + RowHeight * 3f, size, size);
+            
+            Widgets.DrawRectFast(rectLeft, minSkinColor);
+            Widgets.DrawRectFast(rectRight, maxSkinColor);
+            GUI.color = minSkinColor;
+            Widgets.DrawBox(rectLeft);
+            GUI.color = maxSkinColor;
+            Widgets.DrawBox(rectRight);
+            GUI.color = new Color(0.6f, 0.6f, 0.6f);
+            Text.Anchor = TextAnchor.UpperCenter;
+            Widgets.Label(rectMid, "-");
+            Text.Anchor = TextAnchor.UpperLeft;
+            
+            GUI.color = Color.white;
+            
+            // label for text
+            var skillLabels = new Rect(textRect.x, textRect.y + RowHeight * 10, textRect.width, RowHeight);
+            Widgets.Label(skillLabels, PassionText.Translate());
+            
+            // skill weight variation
+            var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 11, textRect.width, RowHeight);
+            ProcGen.SkillWeightVariation = Widgets.HorizontalSlider_NewTemp(variationSlider, ProcGen.SkillWeightVariation, 1f, 5.0f, true, SkillVariationText.Translate(ProcGen.SkillWeightVariation.ToString("P0")), "Unvarying", "1-5x variation", 0.1f);
+
+            // max passion slider and explainer
+            var passionSlider = new Rect(textRect.x, textRect.y + RowHeight * 13, textRect.width, RowHeight);
+            ProcGen.MaxPassionPoints = Widgets.HorizontalSlider_NewTemp(passionSlider, ProcGen.MaxPassionPoints, 0, 9.0f, true, PassionMaxText.Translate(ProcGen.MaxPassionPoints.ToString("N1")), "0", "9", 0.5f);
+            var textExplainer = new Rect(textRect.x, textRect.y + RowHeight * 14, textRect.width, RowHeight * 2);
             var passionPointsNeeded = skillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
             var passionPointsAvailable = ProcGen.MaxPassionPoints * Find.GameInitData.startingPawnCount;
+            Text.Font = GameFont.Tiny;
+            Text.Anchor = TextAnchor.UpperCenter;
             Widgets.Label(textExplainer, PassionGroupText.Translate($"{passionPointsNeeded:F1}/{passionPointsAvailable:F1}"));
+            Text.Font = GameFont.Small;
+            Text.Anchor = TextAnchor.UpperLeft;
             
-            var lineHeight = new Rect(skillSelectRect.x, skillSelectRect.y, skillSelectRect.width, Text.LineHeight);
+            var lineHeight = new Rect(skillSelectRect.x + 20f, skillSelectRect.y, skillSelectRect.width, Text.LineHeight);
             Widgets.Label(lineHeight, SkillSelectWidgetLabel.Translate());
             
             float num1 = Text.LineHeight + 4f;
