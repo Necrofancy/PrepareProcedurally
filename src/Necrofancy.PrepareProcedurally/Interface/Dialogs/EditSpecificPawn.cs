@@ -100,27 +100,29 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             var dict = new Dictionary<SkillDef, int>();
             var requiredSkills = new List<SkillDef>();
             var requiredWorkTags = WorkTags.None;
+
+            var variation = new IntRange(10, (int)(ProcGen.SkillWeightVariation*10));
             foreach (var (skill, usability) in reqs)
             {
                 switch (usability)
                 {
                     case UsabilityRequirement.Major:
-                        dict[skill] = 20 * ProcGen.JobVariation.RandomInRange;
+                        dict[skill] = 20 * variation.RandomInRange;
                         requiredWorkTags |= skill.disablingWorkTags;
                         requiredSkills.Add(skill);
                         break;
                     case UsabilityRequirement.Minor:
-                        dict[skill] = 10 * ProcGen.JobVariation.RandomInRange;
+                        dict[skill] = 10 * variation.RandomInRange;
                         requiredWorkTags |= skill.disablingWorkTags;
                         requiredSkills.Add(skill);
                         break;
                     case UsabilityRequirement.Usable:
-                        dict[skill] = 5 * ProcGen.JobVariation.RandomInRange;
+                        dict[skill] = 5 * variation.RandomInRange;
                         requiredWorkTags |= skill.disablingWorkTags;
                         requiredSkills.Add(skill);
                         break;
                     default:
-                        dict[skill] = 0;
+                        dict[skill] = -5 * variation.RandomInRange;
                         break;
                 }
             }
@@ -133,10 +135,12 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 }
             }
             
+            int index = StartingPawnUtility.PawnIndex(pawn);
+
             string backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
             var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
             var specifier = new SelectBackstorySpecifically(backstoryCategory);
-            var bio = specifier.GetBestBio(collectSpecificPassions.Weight);
+            var bio = specifier.GetBestBio(collectSpecificPassions.Weight, ProcGen.TraitRequirements[index]);
             var traits = bio.Traits;
             var empty = new List<TraitDef>();
 
@@ -156,7 +160,6 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 addBackToLocked = true;
             }
 
-            int index = StartingPawnUtility.PawnIndex(pawn);
             using (NarrowBioEditor.MelaninRange(ProcGen.MelaninRange.min, ProcGen.MelaninRange.max))
             using (NarrowBioEditor.FilterPawnAges(ProcGen.AgeRange.min, ProcGen.AgeRange.max))
             using (NarrowBioEditor.FilterRequestAge(index, ProcGen.AgeRange.min, ProcGen.AgeRange.max))
@@ -189,14 +192,49 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 GUI.DrawTexture(buttonRect, icon);
                 if (Widgets.ButtonInvisible(buttonRect, icon))
                 {
-                    var newReq =
-                        req == UsabilityRequirement.Major
-                            ? UsabilityRequirement.CanBeOff
-                            : req + 1;
+                    var passionPoints = GetPassionPoints();
+                    var remainingPoints = ProcGen.MaxPassionPoints - passionPoints;
+                    var canBumpUp = CanIncreaseRequirement(req, remainingPoints);
+
+                    if (ModsConfig.BiotechActive 
+                        && StartingPawnUtilityState.GetGenerationRequestsList() is { } pawnGenerationRequests)
+                    {
+                        var index = StartingPawnUtility.PawnIndex(this.pawn);
+                        var request = pawnGenerationRequests[index];
+                        foreach (var gene in request.ForcedXenotype.genes)
+                        {
+                            if (gene.passionMod?.modType == PassionMod.PassionModType.DropAll &&
+                                gene.passionMod.skill == skill)
+                            {
+                                reqs[i] = (skill, UsabilityRequirement.CanBeOff);
+                            }
+                        }
+                    }
+
+                    var newReq = canBumpUp ? req + 1 : UsabilityRequirement.CanBeOff;
                     reqs[i] = (skill, newReq);
                 }
                 
                 buttonRect.y += offsetForSkills;
+            }
+        }
+
+        private static bool CanIncreaseRequirement(UsabilityRequirement req, float remainingPoints)
+        {
+            switch (req)
+            {
+                case UsabilityRequirement.Major:
+                    return false;
+                case UsabilityRequirement.Minor:
+                    // cost of bumping up from minor to major passion
+                    return remainingPoints > 0.5f;
+                case UsabilityRequirement.Usable:
+                    // cost of bumping up from no passion to minor passion
+                    return remainingPoints > 1.0f;
+                case UsabilityRequirement.CanBeOff:
+                    return true;
+                default:
+                    return false;
             }
         }
 
@@ -213,6 +251,25 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 default:
                     return CanBeOff.Value;
             }
+        }
+
+        private float GetPassionPoints()
+        {
+            var sum = 0.0f;
+            foreach (var item in this.reqs)
+            {
+                switch (item.Usability)
+                {
+                    case UsabilityRequirement.Major:
+                        sum += 1.5f;
+                        break;
+                    case UsabilityRequirement.Minor:
+                        sum += 1.0f;
+                        break;
+                }
+            }
+
+            return sum;
         }
 
         /// <summary>

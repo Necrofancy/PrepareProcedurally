@@ -80,6 +80,7 @@
     <Compile Include="Solving\Backgrounds\PawnBioPossibility.cs" />
     <Compile Include="Solving\Backgrounds\PossibleBios.cs" />
     <Compile Include="Solving\Backgrounds\SelectBackstorySpecifically.cs" />
+    <Compile Include="Solving\Backgrounds\TraitUtilities.cs" />
     <Compile Include="Solving\BalancingSituation.cs" />
     <Compile Include="Solving\ProcGen.cs" />
     <Compile Include="Solving\SituationFactory.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Solving\Skills\PassionAndLevel.cs" />
     <Compile Include="Solving\Skills\PawnBuilder.cs" />
     <Compile Include="Solving\Skills\SkillFinalizationResult.cs" />
+    <Compile Include="Solving\StartingPawnUtilityState.cs" />
     <Compile Include="Solving\StateEdits\NarrowBioEditor.cs" />
     <Compile Include="Solving\StateEdits\TemporaryEdit.cs" />
     <Compile Include="Solving\Weighting\CollectSpecificPassions.cs" />

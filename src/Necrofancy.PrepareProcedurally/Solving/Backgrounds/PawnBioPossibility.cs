@@ -108,6 +108,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 pawn.story.bodyType = Adulthood.BodyTypeFor(pawn.gender);
             }
             
+            TraitUtilities.FixTraitOverflow(pawn);
             pawn.Notify_DisabledWorkTypesChanged();
         }
 

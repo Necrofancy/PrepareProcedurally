@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
@@ -77,6 +78,27 @@ namespace Necrofancy.PrepareProcedurally
                 : passion == Passion.Minor
                     ? "🔥"
                     : string.Empty;
+        }
+
+        public static bool IsSexualityTrait(this TraitDef trait)
+        {
+            return trait.exclusionTags.Contains("SexualOrientation");
+        }
+        
+        public static bool AllowsTrait(this IReadOnlyCollection<TraitRequirement> requirements, TraitDef traitDef)
+        {
+            foreach (var requiredTrait in requirements)
+            {
+                if (requiredTrait.def == traitDef || requiredTrait.def.ConflictsWith(traitDef))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static bool AllowsTrait(this TraitRequirement requiredTrait, TraitDef traitDef)
+        {
+            return requiredTrait.def == traitDef || requiredTrait.def.ConflictsWith(traitDef);
         }
     }
 }

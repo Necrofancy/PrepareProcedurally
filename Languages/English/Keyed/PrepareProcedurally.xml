@@ -9,12 +9,25 @@
 
 A {1}'s passions in life will be determined by their backstories and their individual traits. Such things will be accounted for to try to match the given settings.</SkillPassionElaborateDescription>
 	<SkillPassionUsable>Useable:</SkillPassionUsable>
+
+	<SkillPassionAgeRangeLabel>Adults Will Have an Age Between {0} Years</SkillPassionAgeRangeLabel>
+	<SkillPassionMelaninRangeLabel>Melanin Range</SkillPassionMelaninRangeLabel>
+	<SkillPassionSkillVariationLevel>Vary Skill Weights By 100%-{0} For Backstory Variety</SkillPassionSkillVariationLevel>
+	<SkillPassionPassionMaxLabel>Max "Passion Points" in Generating Pawns {0}</SkillPassionPassionMaxLabel>
+	<SkillPassionGroupwideLabel>The groupwide skill requirements make up {0} of possible passion points.</SkillPassionGroupwideLabel>
 	<!-- Scale these up or down according to the how long your language is -->
 	<!-- For English, this is scaled so that "Construction" is one line for the former and there is a comfy even margin for the row length. -->
 	<SkillPassionSkillTextLength>85</SkillPassionSkillTextLength>
 	<SkillPassionSkillSelectWidgetOverallLength>490</SkillPassionSkillSelectWidgetOverallLength>
 
-	<LockedPawnButtonDescription>This pawn is locked in and will not be randomized or changed in any way by the procedural editor. Click to unlock.</LockedPawnButtonDescription>
-	<UnlockedPawnButtonDescription>This pawn is not locked in and will be randomized as needed by the procedural editor to fit other requests. Click to lock.</UnlockedPawnButtonDescription>
+	<SkillPassionTraitBackstory>This trait is forced by the given backstory of the pawn. Locked pawns will not have this trait removed for trait options, and unlocked pawns may reroll a different backstory to avoid this trait if chosen traits conflict with it.</SkillPassionTraitBackstory>
+	<SkillPassionTraitPlayerChosen>This trait is being locked in on request. Click this trait to remove the lock in for this pawn slot.</SkillPassionTraitPlayerChosen>
+
+	<LockedPawnButtonDescription>This pawn is locked in and will not be randomized or changed in any way by the procedural editor.
+	
+Click to unlock.</LockedPawnButtonDescription>
+	<UnlockedPawnButtonDescription>This pawn is not locked in and will be randomized as needed by the procedural editor to fit other requests.
+	
+Click to lock.</UnlockedPawnButtonDescription>
 	<ClickToCustomizeGeneration>Click to customize this pawn slot a bit more.</ClickToCustomizeGeneration>
 </LanguageData>

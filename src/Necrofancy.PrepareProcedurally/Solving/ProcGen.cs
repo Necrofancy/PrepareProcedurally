@@ -10,14 +10,73 @@ using Verse;
 namespace Necrofancy.PrepareProcedurally.Solving
 {
     public class ProcGen
-    {
+    {        
+        private static IntRange _ageRange = new IntRange(21, 30);
+        private static float _skillWeightVariation = 1.5f;
+        private static FloatRange _melaninRange = new FloatRange(0.0f, 0.9f);
+        private static float _maxPassionPoints = 9.0f;
+        
+        internal static List<List<TraitRequirement>> TraitRequirements { get; set; }
+        internal static List<SkillPassionSelection> SkillPassions { get; set; }
+        internal static List<Pawn> StartingPawns { get; set; }
         internal static IReadOnlyList<SkillFinalizationResult?> LastResults { get; private set; }
-        internal static List<SkillPassionSelection> skillPassions;
-        internal static List<Pawn> startingPawns;
         internal static HashSet<Pawn> LockedPawns { get; } = new HashSet<Pawn>();
-        internal static IntRange AgeRange { get; set; } = new IntRange(21, 30);
-        internal static FloatRange MelaninRange { get; set; } = new FloatRange(0.75f, 0.9f);
-        internal static IntRange JobVariation { get; set; } = new IntRange(8, 12);
+
+        internal static IntRange AgeRange
+        {
+            get => _ageRange;
+            set
+            {
+                if (_ageRange != value)
+                {
+                    _ageRange = value;
+                    Dirty = true;
+                }
+            }
+        }
+
+        internal static float SkillWeightVariation
+        {
+            get => _skillWeightVariation;
+            set
+            {
+                if (_skillWeightVariation != value)
+                {
+                    _skillWeightVariation = value;
+                    Dirty = true;
+                }
+            }
+        }
+
+        internal static FloatRange MelaninRange
+        {
+            get => _melaninRange;
+            set
+            {
+                if (_melaninRange != value)
+                {
+                    _melaninRange = value;
+                    Dirty = true;
+                }
+            }
+        }
+
+        internal static float MaxPassionPoints
+        {
+            get => _maxPassionPoints;
+            set
+            {
+                if (_maxPassionPoints != value)
+                {
+                    _maxPassionPoints = value;
+                    Dirty = true;
+                }
+            }
+        }
+
+        internal static bool Dirty { get; private set; }
+
+        public static void MakeDirty() => Dirty = true;
 
         public static void Generate(BalancingSituation situation)
         {
@@ -25,8 +84,9 @@ namespace Necrofancy.PrepareProcedurally.Solving
             int pawnCount = Find.GameInitData.startingPawnCount;
 
             var empty = new List<TraitDef>();
-            
-            var backgrounds = BackstorySolver.TryToSolveWith(situation, JobVariation);
+
+            var skillWeightVariation = new IntRange(10, (int)(ProcGen.SkillWeightVariation * 10));
+            var backgrounds = BackstorySolver.TryToSolveWith(situation, skillWeightVariation);
             var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
             LastResults = finalSkills;
             for (int i = 0; i < pawnCount; i++)
@@ -48,6 +108,8 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 backstory.Background.ApplyTo(pawnList[i]);
                 finalization.ApplyTo(pawnList[i]);
             }
+
+            Dirty = false;
         }
 
         public static void OnPawnChanged(Pawn pawn)
@@ -61,7 +123,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
                         break;
                     case Interface.Pages.PrepareProcedurally _:
                         var index = StartingPawnUtility.PawnIndex(pawn);
-                        startingPawns[index] = pawn;
+                        StartingPawns[index] = pawn;
                         break;
                 }
             }

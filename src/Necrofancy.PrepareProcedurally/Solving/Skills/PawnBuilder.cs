@@ -11,7 +11,6 @@ namespace Necrofancy.PrepareProcedurally.Solving
 {
     public class PawnBuilder
     {
-        private const float MaxPassionPoints = 9f;
         private readonly BioPossibility _bioPossibility;
         private readonly Dictionary<SkillDef, IntRange> _skillRanges = new Dictionary<SkillDef, IntRange>();
         private readonly Dictionary<SkillDef, Passion> _passions = new Dictionary<SkillDef, Passion>();
@@ -79,7 +78,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 return true;
 
             float pointDiff = PointsFor(passion) - PointsFor(currentPassion);
-            if (pointDiff >= MaxPassionPoints - PassionPoints)
+            if (pointDiff >= ProcGen.MaxPassionPoints - PassionPoints)
                 return false;
 
             var skillRange = _skillRanges[def];

@@ -39,27 +39,20 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
 
         public static TemporaryEdit<PawnGenerationRequest> FilterRequestAge(int pawnIndex, int min, int max)
         {
-            Type type = typeof(StartingPawnUtility);
-            FieldInfo[] fields = type.GetFields(BindingFlags.NonPublic | BindingFlags.Static);
-            foreach (var field in fields)
+            if (StartingPawnUtilityState.GetGenerationRequestsList() is {} requests && pawnIndex < requests.Count)
             {
-                if (field.Name.Equals("StartingAndOptionalPawnGenerationRequests"))
+                var oldRequest = requests[pawnIndex];
+                var newRequest = requests[pawnIndex];
+                    
+                // you need to remove EXCLUDES 
+                newRequest.ExcludeBiologicalAgeRange = null;
+                newRequest.BiologicalAgeRange = new FloatRange(min, max);
+                void SetAgeRange(PawnGenerationRequest request)
                 {
-                    var requests = field.GetValue(null) as List<PawnGenerationRequest>;
-                    
-                    var oldRequest = requests[pawnIndex];
-                    var newRequest = requests[pawnIndex];
-                    
-                    // you need to remove EXCLUDES 
-                    newRequest.ExcludeBiologicalAgeRange = null;
-                    newRequest.BiologicalAgeRange = new FloatRange(min, max);
-                    void SetAgeRange(PawnGenerationRequest request)
-                    {
-                        requests[pawnIndex] = request;
-                    }
-
-                    return new TemporaryEdit<PawnGenerationRequest>(oldRequest, newRequest, SetAgeRange);
+                    requests[pawnIndex] = request;
                 }
+
+                return new TemporaryEdit<PawnGenerationRequest>(oldRequest, newRequest, SetAgeRange);
             }
 
             void DoNothing(PawnGenerationRequest request)

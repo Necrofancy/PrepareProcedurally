@@ -14,16 +14,12 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
 {
     public class PrepareProcedurally : Page
     {
-        private IntRange age = new IntRange(21, 30);
-        private IntRange melanin = new IntRange(0, PawnSkinColors.SkinColorGenesInOrder.Count-1);
-        private IntRange occupationVariation = ProcGen.JobVariation;
-        
         public PrepareProcedurally()
         {
             this.closeOnClickedOutside = true;
             
             int pawnCount = Find.GameInitData.startingPawnCount;
-            ProcGen.startingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
+            ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
         }
 
         public override string PageTitle => "SkillPassionPageTitle".Translate();
@@ -32,7 +28,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
         {
             this.DrawPageTitle(rect);
 
-            if (ProcGen.skillPassions is null)
+            if (ProcGen.SkillPassions is null)
             {
                 SetDefaultState();
             }
@@ -40,24 +36,12 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             var uiPadding = rect.ContractedBy(20, 60);
             uiPadding.SplitHorizontally(480, out var upper, out var lower);
 
-            if (SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.skillPassions, ref age, ref melanin, ref occupationVariation))
-            {
-                this.PropagateToEditor();
-            }
+            SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.SkillPassions);
+            this.PropagateToEditor();
             
             var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400, 500);
             pawnTable.SetMinMaxSize(400, (int)lower.width, 500, (int)lower.height);
             pawnTable.PawnTableOnGUI(lower.min);
-            
-            ProcGen.AgeRange = this.age;
-            
-            var genes = PawnSkinColors.SkinColorGenesInOrder;
-            float min = genes[melanin.min].minMelanin;
-            float max = melanin.max >= genes.Count - 1 ? 1 : genes[melanin.max + 1].minMelanin;
-
-            ProcGen.MelaninRange = new FloatRange(min, max);
-
-            ProcGen.JobVariation = this.occupationVariation;
         }
 
         private static IEnumerable<Pawn> GetStartingPawns()
@@ -67,27 +51,31 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
 
         public static void SetDefaultState()
         {
-            ProcGen.skillPassions = DefDatabase<SkillDef>.AllDefsListForReading
+            ProcGen.SkillPassions = DefDatabase<SkillDef>.AllDefsListForReading
                 .Select(SkillPassionSelection.CreateFromSkill).ToList();
             int pawnCount = Find.GameInitData.startingPawnCount;
-            ProcGen.startingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
+            ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
+            ProcGen.TraitRequirements = ProcGen.StartingPawns.Select(x => new List<TraitRequirement>()).ToList();
         }
 
         private void PropagateToEditor()
         {
-            // close existing windows
-            while (Find.WindowStack.WindowOfType<EditSpecificPawn>() is { } editSpecificPawn)
+            if (ProcGen.Dirty)
             {
-                editSpecificPawn.Close();
+                // close existing windows
+                while (Find.WindowStack.WindowOfType<EditSpecificPawn>() is { } editSpecificPawn)
+                {
+                    editSpecificPawn.Close();
+                }
+
+                string backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
+                int pawnCount = Find.GameInitData.startingPawnCount;
+                var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, ProcGen.SkillPassions);
+                
+                ProcGen.Generate(situation);
+                
+                ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
             }
-
-            string backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
-            int pawnCount = Find.GameInitData.startingPawnCount;
-            var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, ProcGen.skillPassions);
-
-            ProcGen.Generate(situation);
-            
-            ProcGen.startingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
         }
     }
 }
