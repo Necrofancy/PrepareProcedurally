@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Associations")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Necrofancy.PrepareProcedurally")]
+[assembly: AssemblyDescription("Prepare Procedurally is a mod that enables quick automation to colony and tribal starts in the game Rimworld by Ludeon Studios")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Associations")]
-[assembly: AssemblyCopyright("Copyright ©  2022")]
+[assembly: AssemblyProduct("Necrofancy.PrepareProcedurally")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
