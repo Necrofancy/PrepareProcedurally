@@ -73,7 +73,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
             // age slider
             var ageSlider = new Rect(bioInnerRect.x, bioInnerRect.y, bioInnerRect.width, RowHeight);
             var ageRange = ProcGen.AgeRange;
-            Widgets.IntRange(ageSlider, 1235, ref ageRange, 15, 120, AgeRangeText, minWidth:4);
+            Widgets.IntRange(ageSlider, 1235, ref ageRange, 20, 120, AgeRangeText, minWidth:4);
             ProcGen.AgeRange = ageRange;
             
             // melanin slider
