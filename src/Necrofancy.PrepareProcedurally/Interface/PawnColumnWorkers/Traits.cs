@@ -17,20 +17,21 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
         private const string TraitLockedByBackstoryDescription = "SkillPassionTraitBackstory";
         private const string TraitLockedByPlayerChoiceDescription = "SkillPassionTraitPlayerChosen";
         
-        private static List<TraitRequirement> traitOptions = new List<TraitRequirement>();
+        private static readonly List<Trait> TraitsToRemove = new List<Trait>();
+        private static readonly List<TraitRequirement> TraitOptions = new List<TraitRequirement>();
         
         private const int PaddingBetweenButtons = 4;
         const int AddButtonWidth = 30;
         
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {
-            traitOptions.Clear();
+            TraitOptions.Clear();
 
             var lockedPawn = ProcGen.LockedPawns.Contains(pawn);
             var needs = lockedPawn ? TraitUtilities.RequiredTraitsForLockedPawn(pawn) : TraitUtilities.RequiredTraitsForUnlockedPawn(pawn);
-            traitOptions.AddRange(TraitUtilities.GetAvailableTraits(needs));
+            TraitOptions.AddRange(TraitUtilities.GetAvailableTraits(needs));
             
-            var allowPlusButton = traitOptions.Any();
+            var allowPlusButton = TraitOptions.Any();
 
             rect = rect.ContractedBy(PaddingBetweenButtons);
 
@@ -51,7 +52,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             {
                 var options = new List<FloatMenuOption>();
                 
-                foreach (var option in traitOptions)
+                foreach (var option in TraitOptions)
                 {
                     var str = new Trait(option.def, option.degree ?? 0).LabelCap;
                     void Add()
@@ -71,6 +72,13 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
 
                 Find.WindowStack.Add(new FloatMenu(options));
             }
+
+            foreach (var trait in TraitsToRemove)
+            {
+                pawn.story.traits.RemoveTrait(trait);
+            }
+            
+            TraitsToRemove.Clear();
         }
 
         private static void AddTraitToLockedPawn(Pawn pawn, TraitRequirement option)
@@ -138,12 +146,22 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             {
                 var index = StartingPawnUtility.PawnIndex(pawn);
                 var requiredTraits = ProcGen.TraitRequirements[index];
+                bool found = false;
                 foreach (var required in requiredTraits)
                 {
                     if (trait.def == required.def && trait.Degree == required.degree)
                     {
                         requiredTraits.Remove(required);
+                        found = true;
                         break;
+                    }
+                }
+
+                if (!found)
+                {
+                    if (!TraitUtilities.IsBackstoryTraitOfPawn(trait, pawn) && trait.sourceGene is null)
+                    {
+                        TraitsToRemove.Add(trait);
                     }
                 }
             }
