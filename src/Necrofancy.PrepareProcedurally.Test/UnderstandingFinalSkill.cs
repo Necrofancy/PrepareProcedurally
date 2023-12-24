@@ -10,11 +10,11 @@ namespace Necrofancy.PrepareProcedurally.Test
     [UsesVerify]
     public class UnderstandingFinalSkill
     {
-        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly ITestOutputHelper testOutputHelper;
 
         public UnderstandingFinalSkill(ITestOutputHelper testOutputHelper)
         {
-            _testOutputHelper = testOutputHelper;
+            this.testOutputHelper = testOutputHelper;
         }
 
         private static readonly SimpleCurve LevelRandomCurve = new SimpleCurve
@@ -40,7 +40,7 @@ namespace Necrofancy.PrepareProcedurally.Test
 
             for (int i = 0; i < 16; i++)
             {
-                _testOutputHelper.WriteLine($"{i}\t{skills[i]}");
+                testOutputHelper.WriteLine($"{i}\t{skills[i]}");
             }
         }
 

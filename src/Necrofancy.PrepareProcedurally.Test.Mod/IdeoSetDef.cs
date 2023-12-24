@@ -2,6 +2,8 @@
 using RimWorld;
 using Verse;
 
+// ReSharper disable All
+
 namespace Necrofancy.PrepareProcedurally.Test.Mod
 {
     public class IdeoSetDef : Def

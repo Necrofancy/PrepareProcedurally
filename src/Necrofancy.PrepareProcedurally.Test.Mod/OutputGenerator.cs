@@ -1,8 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using RimWorld;
 using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Test.Mod
@@ -35,7 +35,7 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
                     var possibility = possibilities[i];
                     var passionRanged = passionRanges[i];
                     
-                    if (!passionRanged.Value.ValidVanillaPawn)
+                    if (passionRanged != null && !passionRanged.Value.ValidVanillaPawn)
                         writer.WriteLine($"!!!!COULD NOT FINALIZE THIS PAWN!!!!");
                     writer.WriteLine($"Childhood: {possibility.Background.Childhood.title}");
                     foreach (var skillLevel in possibility.Background.Childhood.skillGains)
@@ -57,11 +57,13 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
                     {
                         var def = keyValue.Key;
                         var fullRange = keyValue.Value;
-                        var solved = passionRanged.Value.FinalRanges[def];
-                        if (possibility.Background.DisablesWorkType(def))
-                            writer.WriteLine($"    {keyValue.Key}: --");
-                        else
-                            writer.WriteLine($"    {def}: {fullRange.min}-{fullRange.max} solved to {solved}");
+                        if (passionRanged != null)
+                        {
+                            var solved = passionRanged.Value.FinalRanges[def];
+                            writer.WriteLine(possibility.Background.DisablesWorkType(def)
+                                ? $"    {keyValue.Key}: --"
+                                : $"    {def}: {fullRange.min}-{fullRange.max} solved to {solved}");
+                        }
                     }
                     writer.WriteLine();
                 }
@@ -77,14 +79,16 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
 
         public static void ClearFiles([CallerFilePath] string filePath = null)
         {
-            string directory = Path.GetDirectoryName(filePath);
+            string directory = Path.GetDirectoryName(filePath) 
+                               ?? throw new InvalidOperationException("Could not find source folder");
             foreach (string file in Directory.EnumerateFiles(directory, "*.txt"))
                 File.Delete(file);
         }
 
         private static TextWriter CreateWriter(string scenarioName, [CallerFilePath] string filePath = null)
         {
-            string directory = Path.GetDirectoryName(filePath);
+            string directory = Path.GetDirectoryName(filePath)
+                ?? throw new InvalidOperationException("Could not find source folder");
             string receivedFilePath = Path.Combine(directory, $"{scenarioName}.txt");
 
             return new StreamWriter(receivedFilePath);

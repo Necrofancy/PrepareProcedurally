@@ -12,10 +12,12 @@ function Push-Junctions ($Source, $Destination, $VersionToApply = "1.4")
     $prepareProcedurallyLanguages = Join-Path $Destination 'Necrofancy.PrepareProcedurally\Languages'
     $prepareProcedurallyAssemblies = Join-Path $Destination "Necrofancy.PrepareProcedurally\$VersionToApply\Assemblies"
 
-    New-Item -ItemType Directory -Path $prepareProcedurallyFolder
-    New-Item -ItemType Junction -Path $prepareProcedurallyAbout -Target $aboutSrc
-    New-Item -ItemType Junction -Path $prepareProcedurallyDefs -Target $defsSrc
-    New-Item -ItemType Directory -Path $prepareProcedurallyAssemblies
+    New-Item -ItemType Directory -Path $prepareProcedurallyFolder -Force
+    New-Item -ItemType Junction -Path $prepareProcedurallyAbout -Target $aboutSrc -Force
+    New-Item -ItemType Junction -Path $prepareProcedurallyDefs -Target $defsSrc -Force
+    New-Item -ItemType Junction -Path $prepareProcedurallyLanguages -Target $languagesSrc -Force
+
+    New-Item -ItemType Directory -Path $prepareProcedurallyAssemblies -Force
 
     Remove-Item $prepareProcedurallyBinDebug -Recurse
     New-Item -ItemType Junction -Path $prepareProcedurallyBinDebug -Target $prepareProcedurallyAssemblies
@@ -29,14 +31,15 @@ function Push-Junctions ($Source, $Destination, $VersionToApply = "1.4")
     $testModBinDebug = Join-Path $Source 'src\Necrofancy.PrepareProcedurally.Test.Mod\bin\Debug'
     $testModBinRelease = Join-Path $Source 'src\Necrofancy.PrepareProcedurally.Test.Mod\bin\Release'
     $testModAssemblies = Join-Path $Destination "Necrofancy.PrepareProcedurally.Test.Mod\$VersionToApply\Assemblies"
+    $testModAbout = Join-Path $Destination 'Necrofancy.PrepareProcedurally.Test.Mod\About'
     
-    New-Item -ItemType Directory -Path $prepareProcedurallyTestModFolder
-    New-Item -ItemType Junction -Path $prepareProcedurallyAbout -Target $aboutSrc
-    New-Item -ItemType Directory -Path $testModAssemblies
+    New-Item -ItemType Directory -Path $prepareProcedurallyTestModFolder -Force
+    New-Item -ItemType Junction -Path $testModAbout -Target $testModAboutSrc -Force
+    New-Item -ItemType Directory -Path $testModAssemblies -Force
 
     Remove-Item $testModBinDebug -Recurse
-    New-Item -ItemType Junction -Path $testModBinDebug -Target $testModAssemblies
+    New-Item -ItemType Junction -Path $testModBinDebug -Target $testModAssemblies -Force
 
     Remove-Item $testModBinRelease -Recurse
-    New-Item -ItemType Junction -Path $testModBinRelease -Target $testModAssemblies
+    New-Item -ItemType Junction -Path $testModBinRelease -Target $testModAssemblies -Force
 }

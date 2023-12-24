@@ -30,7 +30,6 @@ namespace Necrofancy.PrepareProcedurally.Test
         // The game, with these arguments and the test plugin, will launch running in the background, run the scenarios, and exit asap.
         private const string Arguments = @"-popupwindow -quicktest -runscenarios -exitafterscenarios";
 
-
         [Fact]
         public void RunTest()
         {
@@ -63,7 +62,8 @@ namespace Necrofancy.PrepareProcedurally.Test
 
         private static string GetSource([CallerFilePath] string thisSourceFile = null)
         {
-            string directory = Path.GetDirectoryName(thisSourceFile);
+            string directory = Path.GetDirectoryName(thisSourceFile) 
+                               ?? throw new InvalidOperationException("Could not find source files.");
             string receivedFolder = Path.Combine(directory, PathToPluginTest);
 
             if (!Directory.Exists(receivedFolder))
