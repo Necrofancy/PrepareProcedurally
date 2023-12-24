@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Necrofancy.PrepareProcedurally.Defs;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using RimWorld;
@@ -104,5 +105,24 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
             return selectionsList;
         }
 
+        public bool StartingGroupSatisfies(IReadOnlyCollection<Pawn> pawns)
+        {
+            var majorLeft = major;
+            var minorLeft = minor;
+            var usableLeft = usable;
+
+            foreach (var pawn in pawns)
+            {
+                var skillRecord = pawn.skills.skills.First(x => x.def == Skill);
+                if (skillRecord.passion == Passion.Major && majorLeft > 0)
+                    majorLeft--;
+                else if (skillRecord.passion >= Passion.Minor)
+                    minorLeft--;
+                else if (!skillRecord.TotallyDisabled)
+                    usableLeft--;
+            }
+            
+            return majorLeft <= 0 && minorLeft <= 0 && usableLeft <= 0;
+        }
     }
 }

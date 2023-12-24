@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Necrofancy.PrepareProcedurally.Editor;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
@@ -16,8 +17,6 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
     {
         public PrepareProcedurally()
         {
-            closeOnClickedOutside = true;
-            
             var pawnCount = Find.GameInitData.startingPawnCount;
             ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
         }
@@ -46,6 +45,8 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             pawnTable.PawnTableOnGUI(lower.min);
             
             PropagateToEditor();
+
+            DoBottomButtons(rect);
         }
 
         private static IEnumerable<Pawn> GetStartingPawns()
@@ -60,6 +61,34 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             var pawnCount = Find.GameInitData.startingPawnCount;
             ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
             ProcGen.TraitRequirements = ProcGen.StartingPawns.Select(x => new List<TraitRequirement>()).ToList();
+        }
+
+        protected override void DoNext()
+        {
+            List<SkillDef> unsatisfiedRequirements = new List<SkillDef>();
+            foreach (var requirement in ProcGen.SkillPassions)
+            {
+                if (!requirement.StartingGroupSatisfies(ProcGen.StartingPawns))
+                    unsatisfiedRequirements.Add(requirement.Skill);
+            }
+            
+            if (unsatisfiedRequirements.Any())
+            {
+                StringBuilder builder = new StringBuilder();
+                foreach (var unsatisfied in unsatisfiedRequirements)
+                {
+                    builder.Append("    - ");
+                    builder.AppendLine(unsatisfied.LabelCap);
+                }
+
+                var message = "WarnUnsatisfiedSkills".Translate(builder.ToString());
+                var window = new Dialog_MessageBox(message, "Yes".Translate(), () => Close(), "No".Translate());
+                Find.WindowStack.Add(window);
+            }
+            else
+            {
+                Close();
+            }
         }
 
         private void PropagateToEditor()
