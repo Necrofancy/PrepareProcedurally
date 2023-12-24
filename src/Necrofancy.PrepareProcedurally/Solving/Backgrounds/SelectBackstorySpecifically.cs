@@ -19,6 +19,13 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
         public SelectBackstorySpecifically(string categoryName)
         {
             this.categoryName = categoryName;
+            foreach (var pawn in ProcGen.LockedPawns)
+            {
+                var story = pawn.story;
+                alreadyUsed.Add(story.Childhood);
+                if (story.Adulthood != null)
+                    alreadyUsed.Add(story.Adulthood);
+            }
         }
         
         public BioPossibility GetBestBio(WeightBackgroundAlgorithm weightingSystem, IReadOnlyList<TraitRequirement> requiredTraits)
