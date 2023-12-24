@@ -37,12 +37,15 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             uiPadding.SplitHorizontally(480, out var upper, out var lower);
 
             SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.SkillPassions);
-            PropagateToEditor();
             
             var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400, 800);
             pawnTable.SetMinMaxSize(400, (int)lower.width, 700, (int)lower.height + 200);
-            lower.y -= 86;
+            lower.y -= 8.6f * Find.GameInitData.startingPawnCount;
+            Text.Font = GameFont.Tiny;
+            Widgets.Label(lower, "ClickOnPawnToCustomizeSkills".Translate());
             pawnTable.PawnTableOnGUI(lower.min);
+            
+            PropagateToEditor();
         }
 
         private static IEnumerable<Pawn> GetStartingPawns()

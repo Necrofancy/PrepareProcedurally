@@ -14,7 +14,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
         private static IntRange _ageRange = new IntRange(21, 30);
         private static float _skillWeightVariation = 1.5f;
         private static FloatRange _melaninRange = new FloatRange(0.0f, 0.9f);
-        private static float _maxPassionPoints = 9.0f;
+        private static float _maxPassionPoints = 7.0f;
         
         internal static List<List<TraitRequirement>> TraitRequirements { get; set; }
         internal static List<SkillPassionSelection> SkillPassions { get; set; }

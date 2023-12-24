@@ -116,6 +116,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
             // skill weight variation
             var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 11, textRect.width, RowHeight);
             ProcGen.SkillWeightVariation = Widgets.HorizontalSlider_NewTemp(variationSlider, ProcGen.SkillWeightVariation, 1f, 5.0f, true, SkillVariationText.Translate(ProcGen.SkillWeightVariation.ToString("P0")), "Unvarying", "1-5x variation", 0.1f);
+            TooltipHandler.TipRegion(variationSlider, "VariationTooltip".Translate());
 
             // max passion slider and explainer
             var passionSlider = new Rect(textRect.x, textRect.y + RowHeight * 13, textRect.width, RowHeight);
@@ -123,6 +124,9 @@ namespace Necrofancy.PrepareProcedurally.Interface
             var textExplainer = new Rect(textRect.x, textRect.y + RowHeight * 14, textRect.width, RowHeight * 2);
             var passionPointsNeeded = skillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
             var passionPointsAvailable = ProcGen.MaxPassionPoints * Find.GameInitData.startingPawnCount;
+            
+            TooltipHandler.TipRegion(passionSlider, "PassionPointsDescriptionTooltip".Translate());
+            
             Text.Font = GameFont.Tiny;
             Text.Anchor = TextAnchor.UpperCenter;
             Widgets.Label(textExplainer, PassionGroupText.Translate($"{passionPointsNeeded:F1}/{passionPointsAvailable:F1}"));
