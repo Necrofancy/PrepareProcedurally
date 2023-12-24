@@ -8,7 +8,7 @@
 	<supportedVersions>
 		<li>1.4</li>
 	</supportedVersions>
-	<description>Rimworld mod to quickly generate a colony with some rules.</description>
+	<description>Colony-creation powertool to quickly and iteratively create characters to complement each other. Instead of trying to randomize pawns until a pawn matches your specified needs, Prepare Procedurally will work backwards to try to find the best backstories and conditions for you.\n\nSet up colonies and tribes quickly to cover all your immediate needs. Adjust the makeup of your team to account for your extreme ideology in seconds. Make sure your soon-to-be-favorite pawn has a stylish favorite color.</description>
 	<modDependencies>
 		<li>
 			<packageId>brrainz.harmony</packageId>
