@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Necrofancy.PrepareProcedurally.Editor;
 using RimWorld;
 
 namespace Necrofancy.PrepareProcedurally.Patches
@@ -9,6 +8,8 @@ namespace Necrofancy.PrepareProcedurally.Patches
     public class SetDefaultStateOnStartingPawnsOpen 
     {
         [HarmonyPostfix]
+        // ReSharper disable once UnusedMember.Global
+        // ReSharper disable once InconsistentNaming
         public static void PostOpen(Page_ConfigureStartingPawns __instance) 
         {
             Interface.Pages.PrepareProcedurally.SetDefaultState();

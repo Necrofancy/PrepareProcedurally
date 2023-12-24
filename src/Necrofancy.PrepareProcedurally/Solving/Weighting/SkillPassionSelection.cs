@@ -9,7 +9,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
 {
     public class SkillPassionSelection
     {
-        public int Total => this.major + this.minor + this.usable;
+        public int Total => major + minor + usable;
 
         public int major;
         public int minor;
@@ -17,7 +17,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
         
         public SkillPassionSelection(SkillDef def)
         {
-            this.Skill = def;
+            Skill = def;
         }
 
         public SkillDef Skill { get; }
@@ -28,13 +28,13 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
             const int minorPassionLevel = 5, minorPassionWeight = 110;
             const int usableLevel = 4, usableWeight = 100;
 
-            int majorLeft = this.major;
-            int minorLeft = this.minor;
-            int usableLeft = this.usable;
+            var majorLeft = major;
+            var minorLeft = minor;
+            var usableLeft = usable;
 
             foreach (var possibility in possibilities)
             {
-                var range = possibility.SkillRanges[this.Skill];
+                var range = possibility.SkillRanges[Skill];
                 if (range.TrueMax > majorPassionLevel)
                 {
                     if (majorLeft > 0)
@@ -62,7 +62,6 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
         
         public static SkillPassionSelection CreateFromSkill(SkillDef def)
         {
-            int pawnCount = Find.GameInitData.startingPawnCount;
             var situation = SituationFactory.FromPlayerData();
 
             return situation.SkillRequirements

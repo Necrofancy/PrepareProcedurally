@@ -12,7 +12,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
             Pawns = pawns;
             SkillRequirements = skillRequirements;
         }
-
+        
         public string Name { get; }
         public string CategoryName { get; }
         public int Pawns { get; }

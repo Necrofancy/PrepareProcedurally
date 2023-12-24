@@ -20,7 +20,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
 
             var width = Text.CalcSize(story.TitleCapFor(pawn.gender)).x + 8;
             
-            Color color = GUI.color;
+            var color = GUI.color;
             GUI.color = CharacterCardUtility.StackElementBackground;
             GUI.DrawTexture(rect, BaseContent.WhiteTex);
             GUI.color = color;
@@ -30,7 +30,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             GUI.color = Color.white;
             if (!Mouse.IsOver(rect)) 
                 return;
-            TipSignal tip = new TipSignal(() => story.FullDescriptionFor(pawn), (int) rect.y * 37);
+            var tip = new TipSignal(() => story.FullDescriptionFor(pawn), (int) rect.y * 37);
             TooltipHandler.TipRegion(rect, tip);
         }
 

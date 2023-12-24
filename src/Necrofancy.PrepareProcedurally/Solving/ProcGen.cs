@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
@@ -9,12 +8,12 @@ using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving
 {
-    public class ProcGen
+    public static class ProcGen
     {        
-        private static IntRange _ageRange = new IntRange(21, 30);
-        private static float _skillWeightVariation = 1.5f;
-        private static FloatRange _melaninRange = new FloatRange(0.0f, 0.9f);
-        private static float _maxPassionPoints = 7.0f;
+        private static IntRange ageRange = new IntRange(21, 30);
+        private static float skillWeightVariation = 1.5f;
+        private static FloatRange melaninRange = new FloatRange(0.0f, 0.9f);
+        private static float maxPassionPoints = 7.0f;
         
         internal static List<List<TraitRequirement>> TraitRequirements { get; set; }
         internal static List<SkillPassionSelection> SkillPassions { get; set; }
@@ -24,12 +23,12 @@ namespace Necrofancy.PrepareProcedurally.Solving
 
         internal static IntRange AgeRange
         {
-            get => _ageRange;
+            get => ageRange;
             set
             {
-                if (_ageRange != value)
+                if (ageRange != value)
                 {
-                    _ageRange = value;
+                    ageRange = value;
                     Dirty = true;
                 }
             }
@@ -37,12 +36,13 @@ namespace Necrofancy.PrepareProcedurally.Solving
 
         internal static float SkillWeightVariation
         {
-            get => _skillWeightVariation;
+            get => skillWeightVariation;
             set
             {
-                if (_skillWeightVariation != value)
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (skillWeightVariation != value)
                 {
-                    _skillWeightVariation = value;
+                    skillWeightVariation = value;
                     Dirty = true;
                 }
             }
@@ -50,12 +50,12 @@ namespace Necrofancy.PrepareProcedurally.Solving
 
         internal static FloatRange MelaninRange
         {
-            get => _melaninRange;
+            get => melaninRange;
             set
             {
-                if (_melaninRange != value)
+                if (melaninRange != value)
                 {
-                    _melaninRange = value;
+                    melaninRange = value;
                     Dirty = true;
                 }
             }
@@ -63,12 +63,13 @@ namespace Necrofancy.PrepareProcedurally.Solving
 
         internal static float MaxPassionPoints
         {
-            get => _maxPassionPoints;
+            get => maxPassionPoints;
             set
             {
-                if (_maxPassionPoints != value)
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (maxPassionPoints != value)
                 {
-                    _maxPassionPoints = value;
+                    maxPassionPoints = value;
                     Dirty = true;
                 }
             }
@@ -81,15 +82,15 @@ namespace Necrofancy.PrepareProcedurally.Solving
         public static void Generate(BalancingSituation situation)
         {
             var pawnList = Find.GameInitData.startingAndOptionalPawns;
-            int pawnCount = Find.GameInitData.startingPawnCount;
+            var pawnCount = Find.GameInitData.startingPawnCount;
 
             var empty = new List<TraitDef>();
 
-            var skillWeightVariation = new IntRange(10, (int)(ProcGen.SkillWeightVariation * 10));
-            var backgrounds = BackstorySolver.TryToSolveWith(situation, skillWeightVariation);
+            var variation = new IntRange(10, (int)(SkillWeightVariation * 10));
+            var backgrounds = BackstorySolver.TryToSolveWith(situation, variation);
             var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
             LastResults = finalSkills;
-            for (int i = 0; i < pawnCount; i++)
+            for (var i = 0; i < pawnCount; i++)
             {
                 var backstory = backgrounds[i];
                 var forcedTraits = backstory.Background.Traits;
@@ -99,7 +100,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 using (NarrowBioEditor.RestrictTraits(forcedTraits, empty))
                 using (NarrowBioEditor.MelaninRange(MelaninRange.min, MelaninRange.max))
                 using (NarrowBioEditor.FilterPawnAges(AgeRange.min, AgeRange.max))
-                using (NarrowBioEditor.FilterRequestAge(i, ProcGen.AgeRange.min, ProcGen.AgeRange.max))
+                using (NarrowBioEditor.FilterRequestAge(i, AgeRange.min, AgeRange.max))
                 {
                     pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
                 }

@@ -11,7 +11,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
         public static IDisposable ForegroundColorOf(Color color) => new TemporaryColor(color);
         public static IDisposable TextWrapOf(bool doWrap) => new TemporaryWordWrap(doWrap);
         
-        private struct TemporaryAnchor : IDisposable
+        private readonly struct TemporaryAnchor : IDisposable
         {
             private readonly TextAnchor previous;
 
@@ -24,7 +24,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
             void IDisposable.Dispose() => Text.Anchor = previous;
         }
         
-        private struct TemporaryBackgroundColor : IDisposable
+        private readonly struct TemporaryBackgroundColor : IDisposable
         {
             private readonly Color previous;
 
@@ -37,7 +37,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
             void IDisposable.Dispose() => GUI.backgroundColor = previous;
         }
     
-        private struct TemporaryColor : IDisposable
+        private readonly struct TemporaryColor : IDisposable
         {
             private readonly Color previous;
 
@@ -50,7 +50,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
             void IDisposable.Dispose() => GUI.color = previous;
         }
 
-        private struct TemporaryWordWrap : IDisposable
+        private readonly struct TemporaryWordWrap : IDisposable
         {
             private readonly bool previous;
             

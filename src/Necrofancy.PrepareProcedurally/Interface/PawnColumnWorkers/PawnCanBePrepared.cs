@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using RimWorld;
 using UnityEngine;
@@ -11,16 +12,16 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
     public class PawnCanBePrepared : PawnColumnWorker
     {
         private const string CustomizeText = "ClickToCustomizeGeneration";
-        private static Dictionary<string, string> labelCache = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> LabelCache = new Dictionary<string, string>();
         private static float labelCacheForWidth = -1f;
 
         protected virtual TextAnchor LabelAlignment => TextAnchor.MiddleLeft;
 
         public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
         {
-            Rect fullRect = new Rect(rect.x, rect.y, rect.width,
+            var fullRect = new Rect(rect.x, rect.y, rect.width,
                 Mathf.Min(rect.height, def.groupable ? rect.height : GetMinCellHeight(pawn)));
-            Rect iconRect = fullRect;
+            var iconRect = fullRect;
             iconRect.xMin += 3f;
             
             iconRect.xMin += fullRect.height;
@@ -29,15 +30,15 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             if (Mouse.IsOver(fullRect))
                 GUI.DrawTexture(fullRect, TexUI.HighlightTex);
             
-            string str = pawn.LabelShort.CapitalizeFirst();
-            if (iconRect.width != (double) labelCacheForWidth)
+            var str = pawn.LabelShort.CapitalizeFirst();
+            if (Math.Abs(iconRect.width - (double) labelCacheForWidth) > 0.01)
             {
                 labelCacheForWidth = iconRect.width;
-                labelCache.Clear();
+                LabelCache.Clear();
             }
 
             if (Text.CalcSize(str.StripTags()).x > (double) iconRect.width)
-                str = str.StripTags().Truncate(iconRect.width, labelCache);
+                str = str.StripTags().Truncate(iconRect.width, LabelCache);
             Text.Font = GameFont.Small;
             Text.Anchor = LabelAlignment;
             Text.WordWrap = false;
@@ -56,7 +57,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             {
                 if (!Mouse.IsOver(fullRect))
                     return;
-                TipSignal tooltip = pawn.GetTooltip();
+                var tooltip = pawn.GetTooltip();
                 tooltip.text = CustomizeText.Translate() + "\n\n" + tooltip.text;
                 TooltipHandler.TipRegion(fullRect, tooltip);
             }

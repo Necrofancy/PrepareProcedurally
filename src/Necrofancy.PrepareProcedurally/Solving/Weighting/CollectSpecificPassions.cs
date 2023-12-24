@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using RimWorld;
-using UnityEngine;
 using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Weighting
@@ -36,7 +34,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
                 return float.MinValue;
             }
             
-            float sum = 0.0f;
+            var sum = 0.0f;
 
             var alreadyConsideredSkills = new List<SkillDef>(3);
             foreach (var trait in possibility.Traits)
@@ -45,7 +43,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
                 {
                     foreach (var mustBePassion in trait.def.forcedPassions)
                     {
-                        if (DesiredSkills.TryGetValue(mustBePassion, out int weight))
+                        if (DesiredSkills.TryGetValue(mustBePassion, out var weight))
                         {
                             sum += weight;
                             alreadyConsideredSkills.Add(mustBePassion);
@@ -58,7 +56,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
                 {
                     foreach (var cannotBePassion in trait.def.conflictingPassions)
                     {
-                        if (DesiredSkills.TryGetValue(cannotBePassion, out int weight))
+                        if (DesiredSkills.TryGetValue(cannotBePassion, out var weight))
                         {
                             // terrible!
                             sum -= weight * 10;
@@ -68,14 +66,14 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
                 }
             }
 
-            foreach ((var skill, int weight) in DesiredSkills)
+            foreach ((var skill, var weight) in DesiredSkills)
             {
                 if (alreadyConsideredSkills.Contains(skill))
                 {
                     continue;
                 }
 
-                if (possibility.Childhood.skillGains.TryGetValue(skill, out int bonus))
+                if (possibility.Childhood.skillGains.TryGetValue(skill, out var bonus))
                 {
                     sum += weight * bonus;
                 }

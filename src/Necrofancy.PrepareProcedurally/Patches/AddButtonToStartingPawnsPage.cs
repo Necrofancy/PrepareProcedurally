@@ -10,16 +10,17 @@ namespace Necrofancy.PrepareProcedurally.Patches
     [HarmonyPatch(typeof(Page_ConfigureStartingPawns), nameof(Page_ConfigureStartingPawns.DoWindowContents))]
     public class AddButtonToStartingPawnsPage 
     {
-        private const string buttonText = "Prepare Procedurally";
-        private const int buttonY = -50;
+        private const string ButtonText = "Prepare Procedurally";
+        private const int ButtonY = -50;
 
-        private static Vector2 buttonDimensions = new Vector2(150, 38);
+        private static readonly Vector2 ButtonDimensions = new Vector2(150, 38);
 
         [HarmonyPostfix]
+        // ReSharper disable once InconsistentNaming - necessary for Harmony patch
         public static void Postfix(Rect rect, Page_ConfigureStartingPawns __instance) 
         {
-            if (Widgets.ButtonText(new Rect((rect.x + rect.width) / 2 - buttonDimensions.x / 2, rect.y + buttonY,
-                    buttonDimensions.x, buttonDimensions.y), buttonText)) {
+            if (Widgets.ButtonText(new Rect((rect.x + rect.width) / 2 - ButtonDimensions.x / 2, rect.y + ButtonY,
+                    ButtonDimensions.x, ButtonDimensions.y), ButtonText)) {
                 try
                 {
                     var gen = new Interface.Pages.PrepareProcedurally();

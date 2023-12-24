@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
@@ -7,7 +6,8 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 {
     internal static class TraitUtilities
     {
-        internal static readonly int MaxNonSexualityTraits = 3;
+        private static readonly int MaxNonSexualityTraits = 3;
+        
         internal static List<TraitRequirement> RequiredTraitsForUnlockedPawn(Pawn pawn)
         {
             var requiredTraits = new List<TraitRequirement>();
@@ -43,7 +43,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 
         internal static IEnumerable<TraitRequirement> GetAvailableTraits(List<TraitRequirement> neededTraits)
         {
-            int nonSexualityCount = neededTraits.Count(x => !x.def.IsSexualityTrait());
+            var nonSexualityCount = neededTraits.Count(x => !x.def.IsSexualityTrait());
             foreach (var possibleTrait in DefDatabase<TraitDef>.AllDefsListForReading)
             {
                 if ((possibleTrait.IsSexualityTrait() || nonSexualityCount < MaxNonSexualityTraits) 
@@ -68,7 +68,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
         internal static void FixTraitOverflow(Pawn pawn)
         {
             var neededTraits = RequiredTraitsForLockedPawn(pawn);
-            int traitSlots = 0;
+            var traitSlots = 0;
             var candidates = new List<Trait>();
             foreach (var trait in pawn.story.traits.allTraits)
             {

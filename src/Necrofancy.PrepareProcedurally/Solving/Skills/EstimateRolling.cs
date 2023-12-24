@@ -72,57 +72,57 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
 
         public static int StaticRoll(Pawn pawn, SkillDef skill, float percentRolls)
         {
-            float start = skill.usuallyDefinedInBackstories
+            var start = skill.usuallyDefinedInBackstories
                 ? StartingValue.AssumingPercentRoll(percentRolls)
                 : NonBackstoryStartingValueCurve.AssumingPercentRoll(percentRolls);
 
             float story = 0;
-            float backstoryMultiplier = BackstoryMultiplier.AssumingPercentRoll(percentRolls);
+            var backstoryMultiplier = BackstoryMultiplier.AssumingPercentRoll(percentRolls);
             
             void AddBackstory(BackstoryDef backstory)
             {
-                if (!backstory.skillGains.TryGetValue(skill, out int value)) 
+                if (!backstory.skillGains.TryGetValue(skill, out var value)) 
                     return;
                 
-                float multiplied = backstoryMultiplier * value;
+                var multiplied = backstoryMultiplier * value;
                 story += multiplied;
             }
             
             AddBackstory(pawn.story.Childhood);
             AddBackstory(pawn.story.Adulthood);
 
-            float ageMax = AgeSkillMaxFactorCurve.Evaluate(pawn.ageTracker.AgeBiologicalYears);
+            var ageMax = AgeSkillMaxFactorCurve.Evaluate(pawn.ageTracker.AgeBiologicalYears);
             var ageMultiplierRange = new FloatRange(1.0f, ageMax);
-            float ageMultiplier = ageMultiplierRange.AssumingPercentRoll(percentRolls);
+            var ageMultiplier = ageMultiplierRange.AssumingPercentRoll(percentRolls);
             
-            float curveValue = (start + story) * ageMultiplier + pawn.kindDef.extraSkillLevels;
+            var curveValue = (start + story) * ageMultiplier + pawn.kindDef.extraSkillLevels;
 
-            float fromAdjustmentCurve = LevelFinalAdjustmentCurve.Evaluate(curveValue);
+            var fromAdjustmentCurve = LevelFinalAdjustmentCurve.Evaluate(curveValue);
             var range = pawn.kindDef.skills?.SingleOrDefault(range => range.Skill == skill)?.Range ?? NoRange;
 
-            float finalValue = fromAdjustmentCurve > range.max ? range.max : fromAdjustmentCurve;
+            var finalValue = fromAdjustmentCurve > range.max ? range.max : fromAdjustmentCurve;
 
             return Mathf.Clamp(Mathf.RoundToInt(finalValue), 0, 20);
         }
 
         public static int StaticRoll(in BioPossibility bioPossibility, int age, SkillDef skill, float roll)
         {
-            float start = skill.usuallyDefinedInBackstories
+            var start = skill.usuallyDefinedInBackstories
                 ? StartingValue.AssumingPercentRoll(roll)
                 : NonBackstoryStartingValueCurve.AssumingPercentRoll(roll);
 
             float story = 0;
-            float backstoryMultiplier = BackstoryMultiplier.AssumingPercentRoll(roll);
+            var backstoryMultiplier = BackstoryMultiplier.AssumingPercentRoll(roll);
             
             // if we wanted to "positively" roll on a bad backstory, we want the _inverse_.
-            float backstoryNegativeMultiplier = BackstoryMultiplier.AssumingPercentRoll(1 - roll);
+            var backstoryNegativeMultiplier = BackstoryMultiplier.AssumingPercentRoll(1 - roll);
             
             void AddBackstory(BackstoryDef backstory)
             {
-                if (!backstory.skillGains.TryGetValue(skill, out int value)) 
+                if (!backstory.skillGains.TryGetValue(skill, out var value)) 
                     return;
                 
-                float multiplied = value > 0 
+                var multiplied = value > 0 
                     ? backstoryMultiplier * value
                     : backstoryNegativeMultiplier * value;
                 story += multiplied;
@@ -131,11 +131,11 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
             AddBackstory(bioPossibility.Childhood);
             AddBackstory(bioPossibility.Adulthood);
 
-            float ageMax = AgeSkillMaxFactorCurve.Evaluate(age);
+            var ageMax = AgeSkillMaxFactorCurve.Evaluate(age);
             var ageMultiplierRange = new FloatRange(1.0f, ageMax);
-            float ageMultiplier = ageMultiplierRange.AssumingPercentRoll(roll);
-            float curveValue = (start + story) * ageMultiplier;
-            float fromAdjustmentCurve = LevelFinalAdjustmentCurve.Evaluate(curveValue);
+            var ageMultiplier = ageMultiplierRange.AssumingPercentRoll(roll);
+            var curveValue = (start + story) * ageMultiplier;
+            var fromAdjustmentCurve = LevelFinalAdjustmentCurve.Evaluate(curveValue);
 
             return Mathf.Clamp(Mathf.RoundToInt(fromAdjustmentCurve), 0, 20);
         }
@@ -145,8 +145,8 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
             var dict = new Dictionary<SkillDef, IntRange>();
             foreach (var skill in DefDatabase<SkillDef>.AllDefs)
             {
-                int min = StaticRoll(in possibility, age, skill, 0f);
-                int max = StaticRoll(in possibility, age, skill, .98f);
+                var min = StaticRoll(in possibility, age, skill, 0f);
+                var max = StaticRoll(in possibility, age, skill, .98f);
                 dict[skill] = new IntRange(min, max);
             }
 

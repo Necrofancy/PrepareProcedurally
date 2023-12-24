@@ -9,17 +9,16 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 {
     public class SelectBackstorySpecifically
     {
-        private readonly string _categoryName;
+        private readonly string categoryName;
         
-        private readonly List<TraitRequirement> _existingTraits;
-        private readonly List<BackstoryDef> _childhood = new List<BackstoryDef>();
-        private readonly List<BackstoryDef> _adulthood = new List<BackstoryDef>();
+        private readonly List<BackstoryDef> childhoodStories = new List<BackstoryDef>();
+        private readonly List<BackstoryDef> adulthoodStories = new List<BackstoryDef>();
 
-        private readonly HashSet<BackstoryDef> _alreadyUsed = new HashSet<BackstoryDef>();
+        private readonly HashSet<BackstoryDef> alreadyUsed = new HashSet<BackstoryDef>();
 
         public SelectBackstorySpecifically(string categoryName)
         {
-            _categoryName = categoryName;
+            this.categoryName = categoryName;
         }
         
         public BioPossibility GetBestBio(WeightBackgroundAlgorithm weightingSystem, IReadOnlyList<TraitRequirement> requiredTraits)
@@ -34,22 +33,22 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             var best = bestSoFar.Bio 
                        ?? throw new InvalidOperationException("No valid pawn possibilities were found.");
 
-            _alreadyUsed.Add(best.Childhood);
-            _alreadyUsed.Add(best.Adulthood);
+            alreadyUsed.Add(best.Childhood);
+            alreadyUsed.Add(best.Adulthood);
             
             return best;
         }
 
         private IEnumerable<(BioPossibility Bio, float Ranking)> GetPawnPossibilities(WeightBackgroundAlgorithm weightingSystem, IReadOnlyList<TraitRequirement> requiredTraits)
         {
-            _childhood.Clear();
-            _adulthood.Clear();
+            childhoodStories.Clear();
+            adulthoodStories.Clear();
             
             foreach (var backstory in DefDatabase<BackstoryDef>.AllDefsListForReading)
-                if (backstory.shuffleable && backstory.spawnCategories.Contains(_categoryName))
+                if (backstory.shuffleable && backstory.spawnCategories.Contains(categoryName))
                 {
-                    var list = backstory.slot == BackstorySlot.Childhood ? _childhood : _adulthood;
-                    if (!_alreadyUsed.Contains(backstory))
+                    var list = backstory.slot == BackstorySlot.Childhood ? childhoodStories : adulthoodStories;
+                    if (!alreadyUsed.Contains(backstory))
                         list.Add(backstory);
                 }
 
@@ -60,15 +59,15 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 {
                     possibility.Traits.Add(trait);
                 }
-                if (!_alreadyUsed.Contains(bio.childhood)
+                if (!alreadyUsed.Contains(bio.childhood)
                     && !UnworkableTraitCombination(requiredTraits, bio.childhood, bio.adulthood))
                 {
                     yield return (possibility, weightingSystem(possibility));
                 }
             }
             
-            foreach (var childhood in _childhood)
-            foreach (var adulthood in _adulthood)
+            foreach (var childhood in childhoodStories)
+            foreach (var adulthood in adulthoodStories)
             {
                 if (UnworkableTraitCombination(requiredTraits, childhood, adulthood)) 
                     continue;
@@ -90,8 +89,8 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 
         private static bool UnworkableTraitCombination(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef childhood, BackstoryDef adulthood)
         {
-            int nonSexualityTraits = requiredTraits.Count(x => !x.def.IsSexualityTrait());
-            bool validTraitCombo = true;
+            var nonSexualityTraits = requiredTraits.Count(x => !x.def.IsSexualityTrait());
+            var validTraitCombo = true;
             foreach (var forcedTrait in childhood.forcedTraits ?? Enumerable.Empty<BackstoryTrait>())
             {
                 if (!requiredTraits.AllowsTrait(forcedTrait.def))
@@ -122,6 +121,6 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             return false;
         }
 
-        private bool AllowedBio(PawnBio bio) => bio.childhood.spawnCategories.Contains(_categoryName);
+        private bool AllowedBio(PawnBio bio) => bio.childhood.spawnCategories.Contains(categoryName);
     }
 }

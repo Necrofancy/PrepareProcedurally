@@ -59,7 +59,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 var possessionsToRemove = pawn.story.Adulthood.possessions;
                 foreach (var itemToRemove in possessionsToRemove)
                 {
-                    for (int i = possessions.Count - 1; i >= 0; i--)
+                    for (var i = possessions.Count - 1; i >= 0; i--)
                     {
                         var item = possessions[i];
                         if (item.ThingDef == itemToRemove.key)
@@ -85,12 +85,9 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                     : Verse.Gender.Male;
             }
 
-            if (Name != null)
-                pawn.Name = Name;
-            else
-                pawn.Name = PawnBioAndNameGenerator.GeneratePawnName(pawn);
+            pawn.Name = Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
             
-            bool bodyTypeSetByBiotech = false;
+            var bodyTypeSetByBiotech = false;
             if (ModsConfig.BiotechActive)
             {
                 var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using RimWorld;
 using Verse;
@@ -20,7 +19,7 @@ namespace Necrofancy.PrepareProcedurally.Defs
 
         public bool Satisfied(IReadOnlyList<SkillFinalizationResult> finalizations)
         {
-            int goalsLeft = Count(finalizations.Count);
+            var goalsLeft = Count(finalizations.Count);
 
             foreach (var item in finalizations)
             {

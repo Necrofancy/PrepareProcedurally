@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
+using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
@@ -26,17 +27,17 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
         private const float CardSizeY = 480;
         private const float WindowMargin = 34f;
         
-        private static Lazy<Texture2D> Minor = "UI/Icons/PassionMinor".AsTexture();
-        private static Lazy<Texture2D> Major = "UI/Icons/PassionMajor".AsTexture();
-        private static Lazy<Texture2D> Usable = "UI/Widgets/CheckOn".AsTexture();
-        private static Lazy<Texture2D> CanBeOff = "UI/Widgets/CheckPartial".AsTexture();
+        private static readonly Lazy<Texture2D> Minor = "UI/Icons/PassionMinor".AsTexture();
+        private static readonly Lazy<Texture2D> Major = "UI/Icons/PassionMajor".AsTexture();
+        private static readonly Lazy<Texture2D> Usable = "UI/Widgets/CheckOn".AsTexture();
+        private static readonly Lazy<Texture2D> CanBeOff = "UI/Widgets/CheckPartial".AsTexture();
         
         private readonly List<(SkillDef Skill, UsabilityRequirement Usability)> reqs;
         
         private Pawn pawn;
         
-        private bool renderClothes = true;
-        private bool renderHeadgear = true;
+        private readonly bool doRenderClothes = true;
+        private readonly bool renderHeadgear = true;
 
         private float listScrollViewHeight;
         private Vector2 listScrollPosition;
@@ -70,7 +71,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             {
                 foreach (var skill in pawn.skills.skills)
                 {
-                    UsabilityRequirement req = skill.PermanentlyDisabled
+                    var req = skill.PermanentlyDisabled
                         ? UsabilityRequirement.CanBeOff
                         : skill.passion == Passion.Major
                             ? UsabilityRequirement.Major
@@ -93,7 +94,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             DrawButtons(inRect);
         }
 
-        public void Randomize()
+        private void Randomize()
         {
             var dict = new Dictionary<SkillDef, int>();
             var requiredSkills = new List<SkillDef>();
@@ -133,16 +134,16 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 }
             }
             
-            int index = StartingPawnUtility.PawnIndex(pawn);
+            var index = StartingPawnUtility.PawnIndex(pawn);
 
-            string backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
+            var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
             var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
             var specifier = new SelectBackstorySpecifically(backstoryCategory);
             var bio = specifier.GetBestBio(collectSpecificPassions.Weight, ProcGen.TraitRequirements[index]);
             var traits = bio.Traits;
             var empty = new List<TraitDef>();
 
-            PawnBuilder builder = new PawnBuilder(bio);
+            var builder = new PawnBuilder(bio);
             foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
             {
                 if (usability == UsabilityRequirement.Major)
@@ -151,7 +152,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                     builder.TryLockInPassion(skill, Passion.Minor);
             }
 
-            bool addBackToLocked = false;
+            var addBackToLocked = false;
             if (ProcGen.LockedPawns.Contains(pawn))
             {
                 ProcGen.LockedPawns.Remove(pawn);
@@ -183,10 +184,10 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             
             var buttonRect = new Rect(rect.x + inwardsX, rect.y + inwardsY, buttonDimensions, buttonDimensions);
             
-            for (int i = 0; i < reqs.Count; i++)
+            for (var i = 0; i < reqs.Count; i++)
             {
-                (SkillDef skill, UsabilityRequirement req) = reqs[i];
-                Texture2D icon = GetIcon(req);
+                var (skill, req) = reqs[i];
+                var icon = GetIcon(req);
                 GUI.DrawTexture(buttonRect, icon);
                 if (Widgets.ButtonInvisible(buttonRect, icon))
                 {
@@ -279,37 +280,33 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             rect = rect.ContractedBy(WindowMargin / 2);
 
             // draw pawn portrait
-            Rect pawnPortraitRect = new Rect(rect.center.x - Page_ConfigureStartingPawns.PawnPortraitSize.x / 2f,
+            var pawnPortraitRect = new Rect(rect.center.x - Page_ConfigureStartingPawns.PawnPortraitSize.x / 2f,
                 rect.yMin - 24f, Page_ConfigureStartingPawns.PawnPortraitSize.x,
                 Page_ConfigureStartingPawns.PawnPortraitSize.y);
-            Vector2 pawnPortraitSize = Page_ConfigureStartingPawns.PawnPortraitSize;
-            Rot4 south = Rot4.South;
-            Vector3 cameraOffset = new Vector3();
-            bool renderClothes = this.renderClothes;
-            int num1 = renderHeadgear ? 1 : 0;
-            int num2 = renderClothes ? 1 : 0;
-            Color? overrideHairColor = new Color?();
-            PawnHealthState? healthStateOverride = new PawnHealthState?();
-            RenderTexture image = PortraitsCache.Get(pawn, pawnPortraitSize, south, cameraOffset,
-                renderHeadgear: (num1 != 0), renderClothes: (num2 != 0), overrideHairColor: overrideHairColor,
-                stylingStation: true, healthStateOverride: healthStateOverride);
+            var pawnPortraitSize = Page_ConfigureStartingPawns.PawnPortraitSize;
+            var south = Rot4.South;
+            var cameraOffset = new Vector3();
+            var renderClothes = this.doRenderClothes;
+            var num1 = renderHeadgear ? 1 : 0;
+            var num2 = renderClothes ? 1 : 0;
+            var image = PortraitsCache.Get(pawn, pawnPortraitSize, south, cameraOffset,
+                renderHeadgear: (num1 != 0), renderClothes: (num2 != 0), stylingStation: true);
             GUI.DrawTexture(pawnPortraitRect, image);
 
 
-            Rect rect1 = new Rect(rect.x, rect.y, 500, rect.height);
+            var rect1 = new Rect(rect.x, rect.y, 500, rect.height);
             CharacterCardUtility.DrawCharacterCard(rect1, pawn, Randomize, rect);
-            int hasRelationships = SocialCardUtility.AnyRelations(pawn) ? 1 : 0;
-            List<ThingDefCount> startingPossession = Find.GameInitData.startingPossessions[pawn];
-            bool hasPossesions = startingPossession.Any();
-            int subTables = 1;
+            var hasRelationships = SocialCardUtility.AnyRelations(pawn) ? 1 : 0;
+            var startingPossession = Find.GameInitData.startingPossessions[pawn];
+            var hasPossesions = startingPossession.Any();
+            var subTables = 1;
             if (hasRelationships != 0)
                 ++subTables;
             if (hasPossesions)
                 ++subTables;
-            float height = (float) (rect.height - 100.0 - (4.0 * subTables - 1.0)) /
-                           subTables;
-            float y1 = rect.y;
-            Rect rect2 = rect;
+            var height = (float) (rect.height - 100.0 - (4.0 * subTables - 1.0)) /
+                         subTables;
+            var rect2 = rect;
             rect2.yMin += 100f;
             rect2.xMin = rect1.xMax + 5f;
             rect2.height = height;
@@ -319,10 +316,10 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             GUI.color = Color.white;
             rect2.yMin += 35f;
             HealthCardUtility.DrawHediffListing(rect2, pawn, true);
-            float y2 = rect2.yMax + 4f;
+            var y2 = rect2.yMax + 4f;
             if (hasRelationships != 0)
             {
-                Rect rect3 = new Rect(rect2.x, y2, rect2.width, height);
+                var rect3 = new Rect(rect2.x, y2, rect2.width, height);
                 Widgets.Label(rect3, "Relations".Translate().AsTipTitle());
                 rect3.yMin += 35f;
                 SocialCardUtility.DrawRelationsAndOpinions(rect3, pawn);
@@ -331,7 +328,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
 
             if (!hasPossesions)
                 return;
-            Rect rect4 = new Rect(rect2.x, y2, rect2.width, height);
+            var rect4 = new Rect(rect2.x, y2, rect2.width, height);
             Widgets.Label(rect4, "Possessions".Translate().AsTipTitle());
             rect4.yMin += 35f;
             DrawPossessions(rect4, pawn, startingPossession);
@@ -340,24 +337,21 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
         private void DrawPossessions(Rect rect, Pawn selPawn, List<ThingDefCount> possessions)
         {
             GUI.BeginGroup(rect);
-            Rect outRect = new Rect(0.0f, 0.0f, rect.width, rect.height);
-            Rect viewRect = new Rect(0.0f, 0.0f, rect.width - 16f, listScrollViewHeight);
-            Rect rect1 = rect;
+            var outRect = new Rect(0.0f, 0.0f, rect.width, rect.height);
+            var viewRect = new Rect(0.0f, 0.0f, rect.width - 16f, listScrollViewHeight);
+            var rect1 = rect;
             if (viewRect.height > (double) outRect.height)
                 rect1.width -= 16f;
             Widgets.BeginScrollView(outRect, ref listScrollPosition, viewRect);
-            float y = 0.0f;
-            Vector2 listScrollPosition1 = listScrollPosition;
-            Vector2 listScrollPosition2 = listScrollPosition;
-            double height = outRect.height;
+            var y = 0.0f;
             if (Find.GameInitData.startingPossessions.ContainsKey(selPawn))
             {
-                for (int index = 0; index < possessions.Count; ++index)
+                for (var index = 0; index < possessions.Count; ++index)
                 {
-                    ThingDefCount possession = possessions[index];
-                    Rect rect2 = new Rect(0.0f, y, Text.LineHeight, Text.LineHeight);
+                    var possession = possessions[index];
+                    var rect2 = new Rect(0.0f, y, Text.LineHeight, Text.LineHeight);
                     Widgets.DefIcon(rect2, possession.ThingDef);
-                    Rect rect3 = new Rect(rect2.xMax + 17f, y,
+                    var rect3 = new Rect(rect2.xMax + 17f, y,
                         (float) (rect.width - (double) rect2.width - 17.0 - 24.0), Text.LineHeight);
                     Widgets.Label(rect3, possession.LabelCap);
                     if (Mouse.IsOver(rect3))

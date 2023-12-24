@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
-using Verse.Noise;
 
 namespace Necrofancy.PrepareProcedurally
 {
@@ -12,16 +11,16 @@ namespace Necrofancy.PrepareProcedurally
     /// </summary>
     public static class VerseExtensions
     {
-        public static float Integral(this SimpleCurve curve)
+        private static float Integral(this SimpleCurve curve)
         {
             float areaUnderCurve = 0;
             var current = curve.Points[0];
-            for (int i = 1; i < curve.PointsCount; i++)
+            for (var i = 1; i < curve.PointsCount; i++)
             {
                 var next = curve.Points[i];
-                float diffY = Math.Abs(next.y - current.y);
-                float min = Math.Min(current.y, next.y);
-                float diffX = next.x - current.x;
+                var diffY = Math.Abs(next.y - current.y);
+                var min = Math.Min(current.y, next.y);
+                var diffX = next.x - current.x;
 
                 areaUnderCurve += diffX * (diffY * 0.5f + min);
 
@@ -33,18 +32,18 @@ namespace Necrofancy.PrepareProcedurally
 
         public static float AssumingPercentRoll(this SimpleCurve curve, float bound)
         {
-            float area = curve.Integral();
-            float target = area * bound;
+            var area = curve.Integral();
+            var target = area * bound;
             
             var current = curve.Points[0];
-            for (int i = 1; i < curve.PointsCount; i++)
+            for (var i = 1; i < curve.PointsCount; i++)
             {
                 var next = curve.Points[i];
-                float diffY = Math.Abs(next.y - current.y);
-                float diffX = next.x - current.x;
-                float minY = Math.Min(current.y, next.y);
+                var diffY = Math.Abs(next.y - current.y);
+                var diffX = next.x - current.x;
+                var minY = Math.Min(current.y, next.y);
 
-                float currentArea = diffX * (diffY * 0.5f + minY);
+                var currentArea = diffX * (diffY * 0.5f + minY);
                 
                 if (target >= 0)
                 {
@@ -66,18 +65,19 @@ namespace Necrofancy.PrepareProcedurally
 
         public static float AssumingPercentRoll(this IntRange range, float percent)
         {
-            int diff = range.max - range.min;
-            int diffInt = (int)Math.Round(diff * percent, MidpointRounding.AwayFromZero);
+            var diff = range.max - range.min;
+            var diffInt = (int)Math.Round(diff * percent, MidpointRounding.AwayFromZero);
             return range.min + diffInt;
         }
 
         public static string AsFireEmojis(this Passion passion)
         {
-            return passion == Passion.Major
-                ? "🔥🔥"
-                : passion == Passion.Minor
-                    ? "🔥"
-                    : string.Empty;
+            return passion switch
+            {
+                Passion.Major => "🔥🔥",
+                Passion.Minor => "🔥",
+                _ => string.Empty
+            };
         }
 
         public static bool IsSexualityTrait(this TraitDef trait)
@@ -87,13 +87,7 @@ namespace Necrofancy.PrepareProcedurally
         
         public static bool AllowsTrait(this IReadOnlyCollection<TraitRequirement> requirements, TraitDef traitDef)
         {
-            foreach (var requiredTrait in requirements)
-            {
-                if (requiredTrait.def == traitDef || requiredTrait.def.ConflictsWith(traitDef))
-                    return false;
-            }
-
-            return true;
+            return requirements.All(requiredTrait => requiredTrait.def != traitDef && !requiredTrait.def.ConflictsWith(traitDef));
         }
 
         public static bool AllowsTrait(this TraitRequirement requiredTrait, TraitDef traitDef)

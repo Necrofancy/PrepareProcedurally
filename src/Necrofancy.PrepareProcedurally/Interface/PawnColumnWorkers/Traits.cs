@@ -26,18 +26,18 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
         {
             traitOptions.Clear();
 
-            bool lockedPawn = ProcGen.LockedPawns.Contains(pawn);
+            var lockedPawn = ProcGen.LockedPawns.Contains(pawn);
             var needs = lockedPawn ? TraitUtilities.RequiredTraitsForLockedPawn(pawn) : TraitUtilities.RequiredTraitsForUnlockedPawn(pawn);
             traitOptions.AddRange(TraitUtilities.GetAvailableTraits(needs));
             
-            bool allowPlusButton = traitOptions.Any();
+            var allowPlusButton = traitOptions.Any();
 
             rect = rect.ContractedBy(PaddingBetweenButtons);
 
-            float x = rect.x;
-            float y = rect.y;
+            var x = rect.x;
+            var y = rect.y;
             float width;
-            float height = rect.height;
+            var height = rect.height;
             
             foreach (var trait in pawn.story.traits.allTraits)
             {
@@ -123,7 +123,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
 
         private static void DrawTrait(Rect rect, Trait trait, Pawn pawn)
         {
-            Color color = GUI.color;
+            var color = GUI.color;
             GUI.color = CharacterCardUtility.StackElementBackground;
             GUI.DrawTexture(rect, BaseContent.WhiteTex);
             GUI.color = color;
@@ -132,12 +132,11 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             Widgets.Label(new Rect(rect.x + 5f, rect.y, rect.width - 10f, rect.height), trait.LabelCap);
             GUI.color = Color.white;
             if (!Mouse.IsOver(rect)) return;
-            Trait trLocal = trait;
-            TipSignal tip = new TipSignal(() => TraitDescriptionWithAdditionalTips(trait, pawn), (int) rect.y * 37);
+            var tip = new TipSignal(() => TraitDescriptionWithAdditionalTips(trait, pawn), (int) rect.y * 37);
             TooltipHandler.TipRegion(rect, tip);
             if (Widgets.ButtonInvisible(rect, doMouseoverSound: true))
             {
-                int index = StartingPawnUtility.PawnIndex(pawn);
+                var index = StartingPawnUtility.PawnIndex(pawn);
                 var requiredTraits = ProcGen.TraitRequirements[index];
                 foreach (var required in requiredTraits)
                 {
@@ -152,7 +151,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
 
         private static string TraitDescriptionWithAdditionalTips(Trait trait, Pawn pawn)
         {
-            StringBuilder builder = new StringBuilder(trait.TipString(pawn));
+            var builder = new StringBuilder(trait.TipString(pawn));
             
             if (TraitUtilities.IsBackstoryTraitOfPawn(trait, pawn))
             {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using JetBrains.Annotations;
 using Necrofancy.PrepareProcedurally.Solving;
 using RimWorld;
 using UnityEngine;
@@ -7,10 +7,9 @@ using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
 {
+    [UsedImplicitly]
     public class FavoriteColor : PawnColumnWorker_Icon
     {
-        private static List<Color> _allColors;
-
         /// <summary>
         /// Gets the list of available colors that would be pickable from the Styling Station in Ideology
         /// </summary>
@@ -22,7 +21,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
 
         protected override string GetIconTip(Pawn pawn)
         {
-            string orIdeoColor = string.Empty;
+            var orIdeoColor = string.Empty;
             if (pawn.Ideo != null && !pawn.Ideo.hiddenIdeoMode)
                 orIdeoColor = "OrIdeoColor".Translate(pawn.Named("PAWN"));
             return "FavoriteColorTooltip".Translate(pawn.Named("PAWN"), 0.6f.ToStringPercent().Named("PERCENTAGE"), orIdeoColor.Named("ORIDEO")).Resolve();

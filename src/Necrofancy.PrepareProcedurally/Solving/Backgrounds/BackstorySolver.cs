@@ -17,7 +17,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             var currentBackgrounds = new List<BackgroundPossibility>(situation.Pawns);
             
             var weights = new Dictionary<SkillPassionSelection, int>();
-            for (int i = currentBackgrounds.Count; i < situation.Pawns; i++)
+            for (var i = currentBackgrounds.Count; i < situation.Pawns; i++)
             {
                 // Evil static state here
                 var existingPawn = ProcGen.StartingPawns[i];
@@ -29,7 +29,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 
                 foreach (var requirement in situation.SkillRequirements)
                 {
-                    int moddedByVariation = requirement.GetWeights(currentBackgrounds) * variation.RandomInRange;
+                    var moddedByVariation = requirement.GetWeights(currentBackgrounds) * variation.RandomInRange;
                     weights[requirement] = moddedByVariation;
                 }
 
@@ -62,7 +62,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             // and one that retains order to return results later.
             var pawnsInOriginalOrder = new PawnBuilder?[bios.Count];
             var list = new List<PawnBuilder?>(bios.Count);
-            for (int i = 0; i < bios.Count; i++)
+            for (var i = 0; i < bios.Count; i++)
             {
                 var possibility = bios[i];
                 var builder = possibility.CanChange
@@ -97,10 +97,10 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 
         private static void LockInAsNeeded(SkillPassionSelection req, IReadOnlyList<PawnBuilder?> pawns)
         {
-            int goal = req.Total;
-            for (int i = 0; i < pawns.Count; i++)
+            var goal = req.Total;
+            foreach (var pawnBuilder in pawns)
             {
-                if (pawns[i]?.LockIn(req, goal) == true)
+                if (pawnBuilder?.LockIn(req, goal) == true)
                 {
                     goal--;
                     if (goal == 0)
@@ -111,11 +111,11 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 
         private readonly struct SkillMaxDescending : IComparer<PawnBuilder>
         {
-            private readonly SkillDef _def;
+            private readonly SkillDef def;
 
             public SkillMaxDescending(SkillDef def)
             {
-                _def = def;
+                this.def = def;
             }
 
             public int Compare(PawnBuilder x, PawnBuilder y)
@@ -124,10 +124,10 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 if (ReferenceEquals(null, y)) return -1;
                 if (ReferenceEquals(null, x)) return 1;
 
-                int byPassion = x.PassionPoints.CompareTo(y.PassionPoints);
-                int bySkillMax = y.MaxOf(_def).CompareTo(x.MaxOf(_def));
+                var byPassion = x.PassionPoints.CompareTo(y.PassionPoints);
+                var bySkillMax = y.MaxOf(def).CompareTo(x.MaxOf(def));
 
-                return _def.usuallyDefinedInBackstories
+                return def.usuallyDefinedInBackstories
                     ? bySkillMax != 0 ? bySkillMax : byPassion
                     : byPassion != 0
                         ? byPassion

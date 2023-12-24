@@ -3,7 +3,6 @@
 
     <Necrofancy.PrepareProcedurally.Defs.BySetup>
         <defName>Basic</defName>
-        <minPassion>6.0</minPassion>
         <baseRequirements>
             <li>SkillRequirement_Violent_Melee</li>
             <li>SkillRequirement_Violent_Shooting</li>
@@ -43,7 +42,6 @@
 
     <Necrofancy.PrepareProcedurally.Defs.BySetup>
         <defName>Advantage</defName>
-        <minPassion>6.5</minPassion>
         <baseRequirements>
             <li>SkillRequirement_Shooting_Major</li>
             <li>SkillRequirement_Melee_Major</li>

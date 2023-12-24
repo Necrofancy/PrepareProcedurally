@@ -5,19 +5,19 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
     /// <summary>
     /// Make a temporary edit of some state
     /// </summary>
-    public struct TemporaryEdit<T> : IDisposable
+    public readonly struct TemporaryEdit<T> : IDisposable
     {
-        private readonly T _oldValue;
-        private readonly Action<T> _setter;
+        private readonly T oldValue;
+        private readonly Action<T> setter;
 
         public TemporaryEdit(T oldValue, T newValue, Action<T> setter)
         {
-            _oldValue = oldValue;
-            _setter = setter;
+            this.oldValue = oldValue;
+            this.setter = setter;
 
-            _setter(newValue);
+            this.setter(newValue);
         }
 
-        public void Dispose() => _setter(_oldValue);
+        public void Dispose() => setter(oldValue);
     }
 }

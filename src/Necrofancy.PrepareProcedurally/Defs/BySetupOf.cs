@@ -1,5 +1,7 @@
 ﻿using RimWorld;
 
+// ReSharper disable All
+
 namespace Necrofancy.PrepareProcedurally.Defs
 {
     [DefOf]

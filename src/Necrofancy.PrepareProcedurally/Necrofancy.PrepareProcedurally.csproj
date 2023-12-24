@@ -85,7 +85,6 @@
     <Compile Include="Solving\BalancingSituation.cs" />
     <Compile Include="Solving\ProcGen.cs" />
     <Compile Include="Solving\SituationFactory.cs" />
-    <Compile Include="Solving\SkillRollRequirement.cs" />
     <Compile Include="Interface\Dialogs\EditSpecificPawn.cs" />
     <Compile Include="Interface\Pages\PrepareProcedurally.cs" />
     <Compile Include="Interface\PawnColumnWorkers\Adulthood.cs" />

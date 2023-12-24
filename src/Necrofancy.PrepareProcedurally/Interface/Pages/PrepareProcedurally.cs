@@ -18,7 +18,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
         {
             closeOnClickedOutside = true;
             
-            int pawnCount = Find.GameInitData.startingPawnCount;
+            var pawnCount = Find.GameInitData.startingPawnCount;
             ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
         }
 
@@ -57,7 +57,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
         {
             ProcGen.SkillPassions = DefDatabase<SkillDef>.AllDefsListForReading
                 .Select(SkillPassionSelection.CreateFromSkill).ToList();
-            int pawnCount = Find.GameInitData.startingPawnCount;
+            var pawnCount = Find.GameInitData.startingPawnCount;
             ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
             ProcGen.TraitRequirements = ProcGen.StartingPawns.Select(x => new List<TraitRequirement>()).ToList();
         }
@@ -72,8 +72,8 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
                     editSpecificPawn.Close();
                 }
 
-                string backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
-                int pawnCount = Find.GameInitData.startingPawnCount;
+                var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
+                var pawnCount = Find.GameInitData.startingPawnCount;
                 var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, ProcGen.SkillPassions);
                 
                 ProcGen.Generate(situation);

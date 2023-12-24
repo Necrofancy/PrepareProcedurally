@@ -17,18 +17,18 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
             Requirements = requirements;
         }
 
-        public IReadOnlyDictionary<SkillPassionSelection, int> Requirements { get; }
+        private IReadOnlyDictionary<SkillPassionSelection, int> Requirements { get; }
 
         public float Weight(BioPossibility possibility)
         {
             var disables = possibility.Childhood.workDisables | possibility.Adulthood.workDisables;
             var workDisables = possibility.Childhood.DisabledWorkTypes.Concat(possibility.Adulthood.DisabledWorkTypes).Distinct().ToList();
             float weightProgressCount = 0;
-            foreach ((var requirement, int weight) in Requirements)
+            foreach (var (requirement, weight) in Requirements)
             {
                 var skill = requirement.Skill;
-                int added = 0;
-                if (possibility.Childhood.skillGains.TryGetValue(skill, out int change))
+                var added = 0;
+                if (possibility.Childhood.skillGains.TryGetValue(skill, out var change))
                     added += change;
                 if (possibility.Adulthood.skillGains.TryGetValue(skill, out change))
                     added += change;
@@ -43,7 +43,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting
                     continue;
                 }
 
-                float weightMultiplier = Math.Min(added, 1.0f) * weight; 
+                var weightMultiplier = Math.Min(added, 1.0f) * weight; 
                 
                 weightProgressCount += weightMultiplier;
             }

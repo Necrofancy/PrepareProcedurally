@@ -15,8 +15,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
     /// UI Utilities to have a drop down of skills and work potential.
     /// </summary>
     /// <remarks>
-    /// Code was harvested from <see cref="Page_CreateWorldParams"/> and the faction selection, and then
-    /// repurposed towards supporting skills for passions in a skill.
+    /// This is based on the Page_CreateWorldParams and repurposed towards supporting skills for passions in a skill.
     /// </remarks>
     public static class SkillPassionSelectionUiUtility
     {
@@ -40,7 +39,6 @@ namespace Necrofancy.PrepareProcedurally.Interface
 
         private static Vector2 scrollPosition;
         private static float listingHeight;
-        private static float warningHeight;
 
         private const float RowHeight = 24f;
         private const float AddButtonHeight = 28f;
@@ -60,7 +58,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
 
         public static void DoWindowContents(Rect rect, List<SkillPassionSelection> skillPassions)
         {
-            float leftWidth = rect.width - OverallRowLength.Value;
+            var leftWidth = rect.width - OverallRowLength.Value;
             rect.SplitVertically(leftWidth, out var textRect, out var skillSelectRect);
             
             textRect.y += RowHeight;
@@ -83,8 +81,8 @@ namespace Necrofancy.PrepareProcedurally.Interface
             var genes = PawnSkinColors.SkinColorGenesInOrder;
             var maxMelanin = genes.Count - 1;
             Widgets.IntRange(melaninSlider, 12345, ref melaninRange, 0, maxMelanin, MelaninRangeText, minWidth:1);
-            float minSelectedMelanin = genes[melaninRange.min].minMelanin;
-            float maxSelectedMelanin = melaninRange.max >= maxMelanin ? 1 : genes[melaninRange.max + 1].minMelanin;
+            var minSelectedMelanin = genes[melaninRange.min].minMelanin;
+            var maxSelectedMelanin = melaninRange.max >= maxMelanin ? 1 : genes[melaninRange.max + 1].minMelanin;
             ProcGen.MelaninRange = new FloatRange(minSelectedMelanin, maxSelectedMelanin);
 
             var minSkinColor = genes[melaninRange.min].IconColor;
@@ -136,10 +134,10 @@ namespace Necrofancy.PrepareProcedurally.Interface
             var lineHeight = new Rect(skillSelectRect.x + 20f, skillSelectRect.y, skillSelectRect.width, Text.LineHeight);
             Widgets.Label(lineHeight, SkillSelectWidgetLabel.Translate());
             
-            float num1 = Text.LineHeight + 4f;
-            float num2 = skillSelectRect.width * 0.050000012f;
+            var num1 = Text.LineHeight + 4f;
+            var num2 = skillSelectRect.width * 0.050000012f;
             var rect2 = new Rect(skillSelectRect.x + num2, skillSelectRect.y + num1, skillSelectRect.width * 0.9f,
-                (float) (skillSelectRect.height - (double) num1 - Text.LineHeight - 28.0) - warningHeight);
+                (float) (skillSelectRect.height - (double) num1 - Text.LineHeight - 28.0));
             var outRect = rect2.ContractedBy(4f);
             var rect3 = new Rect(outRect.x, outRect.y, outRect.width, listingHeight);
             Widgets.BeginScrollView(outRect, ref scrollPosition, rect3);
@@ -147,7 +145,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
 
             var listingStandard = new Listing_Standard {ColumnWidth = rect3.width};
             listingStandard.Begin(rect3);
-            for (int index = 0; index < skillPassions.Count; ++index)
+            for (var index = 0; index < skillPassions.Count; ++index)
             {
                 listingStandard.Gap(4f);
                 if (DoRow(listingStandard.GetRect(RowHeight), skillPassions[index], skillPassions, index))
@@ -171,7 +169,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
 
             foreach (var skillDef in DefDatabase<SkillDef>.AllDefsListForReading.Where(NotInExistingList))
             {
-                string str = skillDef.skillLabel;
+                var str = skillDef.skillLabel;
 
                 void Add()
                 {
@@ -179,7 +177,6 @@ namespace Necrofancy.PrepareProcedurally.Interface
                     skillPassions.SortByDescending(x => x.Skill.listOrder);
                 }
 
-                Func<Rect, bool> defs = (r => Widgets.InfoCardButton(r.x, r.y + 3f, skillDef));
                 options.Add(new FloatMenuOption(str, Add));
             }
 
@@ -201,9 +198,9 @@ namespace Necrofancy.PrepareProcedurally.Interface
             List<SkillPassionSelection> factions,
             int index)
         {
-            int pawnCount = Find.GameInitData.startingPawnCount;
-            int pawnsRemaining = pawnCount - selection.major - selection.minor - selection.usable;
-            bool flag = false;
+            var pawnCount = Find.GameInitData.startingPawnCount;
+            var pawnsRemaining = pawnCount - selection.major - selection.minor - selection.usable;
+            var flag = false;
             var rect1 = new Rect(rect.x, rect.y - 4f, rect.width, rect.height + 8f);
             if (index % 2 == 1)
                 Widgets.DrawLightHighlight(rect1);
@@ -246,7 +243,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
                 }
 
                 // draw minor passions selection section if we can give a minor passion role.
-                bool canAddOrRemovePassions = pawnCount > selection.major;
+                var canAddOrRemovePassions = pawnCount > selection.major;
                 if (!canAddOrRemovePassions)
                 {
                     GUI.color = new Color(0.4f, 0.4f, 0.4f, 0.5f);
@@ -276,7 +273,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
                 }
 
                 // draw minimal non-passion selection section if more pawns can be assigned.
-                bool canInteractWithMinimalBar = pawnCount > selection.major + selection.minor;
+                var canInteractWithMinimalBar = pawnCount > selection.major + selection.minor;
                 if (!canInteractWithMinimalBar)
                 {
                     GUI.color = new Color(0.4f, 0.4f, 0.4f, 0.5f);

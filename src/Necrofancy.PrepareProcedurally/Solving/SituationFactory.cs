@@ -11,27 +11,27 @@ namespace Necrofancy.PrepareProcedurally.Solving
     {
         public static BalancingSituation FromPlayerData()
         {
-            int pawnCount = Find.GameInitData.startingPawnCount;
-            string backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
+            var pawnCount = Find.GameInitData.startingPawnCount;
+            var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
 
             var requirements = new List<SkillRequirementDef>();
-            var ideo = Faction.OfPlayer.ideos.PrimaryIdeo;
-            int tile = Find.GameInitData.startingTile;
+            var ideoligion = Faction.OfPlayer.ideos.PrimaryIdeo;
+            var tile = Find.GameInitData.startingTile;
             var terrain = Find.World.grid[tile];
 
-            bool Relevant(SkillRequirementDef def) => def.Count(pawnCount) > 0;
-            
             requirements.AddRange(BySetupOf.Basic.GetRequirements(terrain.biome, terrain.hilliness).Where(Relevant));
             
-            foreach (var ideoDef in DefDatabase<ByPrecept>.AllDefsListForReading)
+            foreach (var preceptLink in DefDatabase<ByPrecept>.AllDefsListForReading)
             {
-                if (ideoDef.relatedPrecepts?.Any(ideo.HasPrecept) == true)
-                    requirements.AddRange(ideoDef.skillRequirements.Where(Relevant));
+                if (preceptLink.relatedPrecepts?.Any(ideoligion.HasPrecept) == true)
+                    requirements.AddRange(preceptLink.skillRequirements.Where(Relevant));
             }
 
             var selections = SkillPassionSelection.FromReqs(requirements, pawnCount);
 
             return new BalancingSituation(string.Empty, backstoryCategory, pawnCount, selections);
+
+            bool Relevant(SkillRequirementDef def) => def.Count(pawnCount) > 0;
         }
     }
 }
