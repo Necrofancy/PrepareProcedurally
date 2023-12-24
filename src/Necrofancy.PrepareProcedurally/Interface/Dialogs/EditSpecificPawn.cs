@@ -48,7 +48,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
         {
             ProcGen.LockedPawns.Add(pawn);
             this.pawn = pawn;
-            closeOnClickedOutside = true;
+            doCloseX = true;
             
             var pawnIndex = StartingPawnUtility.PawnIndex(pawn);
             reqs = new List<(SkillDef Skill, UsabilityRequirement Usability)>();

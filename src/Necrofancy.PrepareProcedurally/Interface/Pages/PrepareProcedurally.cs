@@ -82,25 +82,41 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
                 }
 
                 var message = "WarnUnsatisfiedSkills".Translate(builder.ToString());
-                var window = new Dialog_MessageBox(message, "Yes".Translate(), () => Close(), "No".Translate());
+                var window = new Dialog_MessageBox(message, "Yes".Translate(), FullyClose, "No".Translate());
                 Find.WindowStack.Add(window);
             }
             else
             {
-                Close();
+                FullyClose();
             }
+        }
+
+        public override bool OnCloseRequest()
+        {
+            CloseSubdialogs();
+            return base.OnCloseRequest();
+        }
+
+        private static void CloseSubdialogs()
+        {
+            while (Find.WindowStack.WindowOfType<EditSpecificPawn>() is { } editSpecificPawn)
+            {
+                editSpecificPawn.Close(doCloseSound: false);
+            }
+        }
+
+        private void FullyClose()
+        {
+            CloseSubdialogs();
+            Close();
         }
 
         private void PropagateToEditor()
         {
             if (ProcGen.Dirty)
             {
-                // close existing windows
-                while (Find.WindowStack.WindowOfType<EditSpecificPawn>() is { } editSpecificPawn)
-                {
-                    editSpecificPawn.Close();
-                }
-
+                CloseSubdialogs();
+                
                 var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
                 var pawnCount = Find.GameInitData.startingPawnCount;
                 var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, ProcGen.SkillPassions);
