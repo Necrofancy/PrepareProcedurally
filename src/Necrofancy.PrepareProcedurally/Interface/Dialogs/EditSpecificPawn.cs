@@ -159,15 +159,15 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 addBackToLocked = true;
             }
 
-            using (NarrowBioEditor.MelaninRange(ProcGen.MelaninRange))
-            using (NarrowBioEditor.ReplaceAgeGenerationCurve(ProcGen.AgeRange))
-            using (NarrowBioEditor.ForceTraits(traits))
-            using (NarrowBioEditor.BanTraits(empty))
+            using (TemporarilyChange.PlayerFactionMelaninRange(ProcGen.MelaninRange))
+            using (TemporarilyChange.RaceAgeGenerationCurve(ProcGen.AgeRange))
+            using (TemporarilyChange.ScenarioBannedTraits(empty))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                 ProcGen.OnPawnChanged(pawn);
                 bio.ApplyTo(pawn);
                 builder.Build().ApplyTo(pawn);
+                TraitUtilities.AddForcedTraits(pawn, traits);
             }
 
             if (addBackToLocked)

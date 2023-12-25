@@ -97,12 +97,12 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 if (!(finalSkills[i] is { } finalization))
                     continue;
                 
-                using (NarrowBioEditor.ForceTraits(forcedTraits))
-                using (NarrowBioEditor.BanTraits(empty))
-                using (NarrowBioEditor.MelaninRange(MelaninRange))
-                using (NarrowBioEditor.ReplaceAgeGenerationCurve(AgeRange))
+                using (TemporarilyChange.ScenarioBannedTraits(empty))
+                using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
+                using (TemporarilyChange.RaceAgeGenerationCurve(AgeRange))
                 {
                     pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
+                    TraitUtilities.AddForcedTraits(pawnList[i], forcedTraits);
                 }
 
                 OnPawnChanged(pawnList[i]);
@@ -127,6 +127,17 @@ namespace Necrofancy.PrepareProcedurally.Solving
                         StartingPawns[index] = pawn;
                         break;
                 }
+            }
+        }
+
+        public static void CleanUpOnError()
+        {
+            LockedPawns.Clear();
+            var startingPawns = Find.GameInitData.startingAndOptionalPawns;
+            for (var i = 0; i < startingPawns.Count; i++)
+            {
+                startingPawns[i] = StartingPawnUtility.RandomizeInPlace(startingPawns[i]);
+                OnPawnChanged(startingPawns[i]);
             }
         }
     }

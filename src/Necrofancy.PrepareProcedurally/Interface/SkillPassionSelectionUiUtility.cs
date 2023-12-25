@@ -76,8 +76,16 @@ namespace Necrofancy.PrepareProcedurally.Interface
             
             // Age minimum is to force an adulthood backstory.
 
-            var maxAge = (int)Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve.Last().x;
-            Widgets.IntRange(ageSlider, 1235, ref ageRange, 20, maxAge, AgeRangeText, minWidth:4);
+            var memberKind = Faction.OfPlayer.def.basicMemberKind;
+            var maxAge = (int)memberKind.race.race.ageGenerationCurve.Last().x;
+            
+            var adulthoodAge = 20;
+            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRaceThingDef(memberKind.race))
+            {
+                adulthoodAge = HumanoidAlienRaceCompatibility.GetAgeForAdulthoodBackstories(memberKind);
+            }
+            
+            Widgets.IntRange(ageSlider, 1235, ref ageRange, adulthoodAge, maxAge, AgeRangeText, minWidth:4);
             ProcGen.AgeRange = ageRange;
             
             // melanin slider

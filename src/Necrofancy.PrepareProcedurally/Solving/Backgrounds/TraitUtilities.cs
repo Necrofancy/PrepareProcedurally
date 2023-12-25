@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Verse;
 
@@ -12,6 +14,11 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
         {
             var requiredTraits = new List<TraitRequirement>();
 
+            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn))
+            {
+                requiredTraits.AddRange(HumanoidAlienRaceCompatibility.GetTraitRequirements(pawn));
+            }
+
             var index = StartingPawnUtility.PawnIndex(pawn);
             if (index < ProcGen.TraitRequirements.Count && ProcGen.TraitRequirements[index] is { } traits)
             {
@@ -24,6 +31,12 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
         internal static List<TraitRequirement> RequiredTraitsForLockedPawn(Pawn pawn)
         {
             var requiredTraits = new List<TraitRequirement>();
+            
+            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn))
+            {
+                requiredTraits.AddRange(HumanoidAlienRaceCompatibility.GetTraitRequirements(pawn));
+            }
+            
             foreach (var trait in pawn.story.traits.allTraits)
             {
                 if (IsBackstoryTraitOfPawn(trait, pawn))
@@ -61,6 +74,37 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             }
         }
 
+        internal static void AddForcedTraits(Pawn pawn, List<TraitRequirement> traits)
+        {
+            traits = HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn)
+                ? traits.Concat(HumanoidAlienRaceCompatibility.GetTraitRequirements(pawn)).ToList()
+                : traits;
+            
+            foreach (var trait in traits)
+            {
+                if (pawn.story?.traits == null 
+                    || pawn.story.traits.HasTrait(trait.def) 
+                    && pawn.story.traits.DegreeOfTrait(trait.def) == trait.degree)
+                {
+                    return;
+                }
+                if (pawn.story.traits.HasTrait(trait.def))
+                {
+                    pawn.story.traits.allTraits.RemoveAll(tr => tr.def == trait.def);
+                }
+                else
+                {
+                    var source = pawn.story.traits.allTraits.Where(tr => !tr.ScenForced && !IsBackstoryTraitOfPawn(tr, pawn));
+                    var conflictingTrait = source.FirstOrDefault(tr => trait.def.ConflictsWith(tr.def));
+                    pawn.story.traits.allTraits.Remove(conflictingTrait);
+                }
+                
+                pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree ?? 0));
+            }
+            
+            FixTraitOverflow(pawn);
+        }
+
         /// <summary>
         /// If too many traits are forced, then pawn generation will randomly include a fourth or fifth trait.
         /// Kill those.
@@ -72,7 +116,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             var candidates = new List<Trait>();
             foreach (var trait in pawn.story.traits.allTraits)
             {
-                if (trait.sourceGene != null || trait.def.IsSexualityTrait())
+                if (trait.sourceGene != null || trait.def.IsSexualityTrait() || trait.ScenForced)
                 {
                     continue;
                 }
@@ -87,7 +131,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 candidates.Add(trait);
             }
 
-            while (traitSlots > MaxNonSexualityTraits)
+            while (traitSlots > MaxAllowedTraits(pawn))
             {
                 var traitToRemove = candidates.RandomElement();
                 pawn.story.traits.RemoveTrait(traitToRemove);
@@ -95,11 +139,31 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 traitSlots--;
             }
         }
+
+        internal static int MaxAllowedTraits(Pawn pawn)
+        {
+            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn))
+            {
+                return MaxNonSexualityTraits + HumanoidAlienRaceCompatibility.GetMaxTraits(pawn);
+            }
+
+            return MaxNonSexualityTraits;
+        }
         
         internal static bool IsBackstoryTraitOfPawn(Trait trait, Pawn pawn)
         {
-            return pawn.story.Adulthood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true
-                   || pawn.story.Childhood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
+            bool isChildHoodBackstory = pawn.story.Adulthood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
+            bool isAdulthoodBackstory = pawn.story.Childhood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
+            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn))
+            {
+                var requiredRaceTraits = HumanoidAlienRaceCompatibility.GetTraitRequirements(pawn);
+                bool isRequiredRaceTrait = requiredRaceTraits.Any(x => x.def == trait.def);
+                return isRequiredRaceTrait || isChildHoodBackstory || isAdulthoodBackstory;
+            }
+            else
+            {
+                return isChildHoodBackstory || isAdulthoodBackstory;
+            }
         }
 
         private static bool BackstoryMatch(Trait traitInstance, BackstoryTrait backstoryTrait)

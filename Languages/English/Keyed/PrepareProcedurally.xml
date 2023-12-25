@@ -28,6 +28,7 @@
 	<PassionPointsDescriptionTooltip>When characters are generated, they are given a range of points between 0-9, based on a normal distribution centered at five points. Outliers on the far ends (i.e. exactly 0 or 9) are exceedingly unlikely.\n\n    - Minor passions take 1 point\n    - Major passions take 1.5 points\n\nCertain traits can force or prevent passions, but otherwise a set amount of major and minor passions are given based on the skill level for the pawn generated.</PassionPointsDescriptionTooltip>
 
 	<WarnUnsatisfiedSkills>Pawn generation was not able to satisfy the following requirements with the given passions per pawn:\n\n{0}\nThis can be fixed by lowering some skill/passion requirements or increasing the passions each pawn can have.\n\nDo you wish to continue anyways?</WarnUnsatisfiedSkills>
+	<PrepareProcedurallyErrorMessage>Prepare Procedurally has had an error trying to randomize pawns.\n\n{0}\n\nTo prevent catastrophic error state, all starting characters have been rerolled.</PrepareProcedurallyErrorMessage>
 	<LockedPawnButtonDescription>This pawn is locked in and will not be randomized or changed in any way by the procedural editor.\n\nClick to unlock.</LockedPawnButtonDescription>
 	<UnlockedPawnButtonDescription>This pawn is not locked in and will be randomized as needed by the procedural editor to fit other requests.\n\nClick to lock.</UnlockedPawnButtonDescription>
 	<ClickToCustomizeGeneration>Click to customize this pawn slot a bit more.</ClickToCustomizeGeneration>

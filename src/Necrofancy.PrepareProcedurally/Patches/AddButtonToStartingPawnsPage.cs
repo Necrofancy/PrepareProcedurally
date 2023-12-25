@@ -25,7 +25,8 @@ namespace Necrofancy.PrepareProcedurally.Patches
                 {
                     var gen = new Interface.Pages.PrepareProcedurally();
                     Find.WindowStack.Add(gen);
-                } catch (Exception e) 
+                } 
+                catch (Exception e) 
                 {
                     Log.Error(e.ToString());
                 }

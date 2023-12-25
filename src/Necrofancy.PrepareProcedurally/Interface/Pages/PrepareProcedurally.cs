@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,28 +26,42 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
 
         public override void DoWindowContents(Rect rect)
         {
-            DrawPageTitle(rect);
-
-            if (ProcGen.SkillPassions is null)
+            try
             {
-                SetDefaultState();
+                DrawPageTitle(rect);
+
+                if (ProcGen.SkillPassions is null)
+                {
+                    SetDefaultState();
+                }
+
+                var uiPadding = rect.GetInnerRect();
+                uiPadding.SplitHorizontally(480, out var upper, out var lower);
+
+                SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.SkillPassions);
+
+                var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400,
+                    800);
+                pawnTable.SetMinMaxSize(400, (int)lower.width, 700, (int)lower.height + 200);
+                lower.y -= 8.6f * Find.GameInitData.startingPawnCount;
+                Text.Font = GameFont.Tiny;
+                Widgets.Label(lower, "ClickOnPawnToCustomizeSkills".Translate());
+                pawnTable.PawnTableOnGUI(lower.min);
+
+                PropagateToEditor();
+
+                DoBottomButtons(rect);
             }
+            catch (Exception e)
+            {
+                Log.Error($"Exception In Workflow of Prepare Procedurally - Closing Window\n{e}");
 
-            var uiPadding = rect.GetInnerRect();
-            uiPadding.SplitHorizontally(480, out var upper, out var lower);
-
-            SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.SkillPassions);
-            
-            var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400, 800);
-            pawnTable.SetMinMaxSize(400, (int)lower.width, 700, (int)lower.height + 200);
-            lower.y -= 8.6f * Find.GameInitData.startingPawnCount;
-            Text.Font = GameFont.Tiny;
-            Widgets.Label(lower, "ClickOnPawnToCustomizeSkills".Translate());
-            pawnTable.PawnTableOnGUI(lower.min);
-            
-            PropagateToEditor();
-
-            DoBottomButtons(rect);
+                ProcGen.CleanUpOnError();
+                this.FullyClose();
+                string errorMessage = "PrepareProcedurallyErrorMessage".Translate(e.Message);
+                var window = new Dialog_MessageBox(errorMessage);
+                Find.WindowStack.Add(window);
+            }
         }
 
         private static IEnumerable<Pawn> GetStartingPawns()

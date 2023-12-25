@@ -70,6 +70,7 @@
     <Compile Include="Defs\BySetup.cs" />
     <Compile Include="Defs\BySetupOf.cs" />
     <Compile Include="Defs\SkillRequirementDef.cs" />
+    <Compile Include="HumanoidAlienRaceCompatibility.cs" />
     <Compile Include="Interface\LazyTexture.cs" />
     <Compile Include="Interface\MaplessPawnTable.cs" />
     <Compile Include="Interface\PawnColumnWorkers\FavoriteColor.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Solving\Skills\SkillFinalizationResult.cs" />
     <Compile Include="Solving\StartingPawnUtilityState.cs" />
     <Compile Include="Solving\StateEdits\NarrowBioEditor.cs" />
+    <Compile Include="Solving\StateEdits\TemporarilyChange.cs" />
     <Compile Include="Solving\StateEdits\TemporaryEdit.cs" />
     <Compile Include="Solving\Weighting\CollectSpecificPassions.cs" />
     <Compile Include="Solving\Weighting\SkillPassionSelection.cs" />
