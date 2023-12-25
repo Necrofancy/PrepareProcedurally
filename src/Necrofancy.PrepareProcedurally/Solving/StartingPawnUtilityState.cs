@@ -6,7 +6,9 @@ namespace Necrofancy.PrepareProcedurally.Solving
 {
     internal static class StartingPawnUtilityState
     {
-        public static List<PawnGenerationRequest> GetGenerationRequestsList()
+        private static readonly List<PawnGenerationRequest> RequestsCached;
+
+        static StartingPawnUtilityState()
         {
             var type = typeof(StartingPawnUtility);
             var fields = type.GetFields(BindingFlags.NonPublic | BindingFlags.Static);
@@ -14,10 +16,12 @@ namespace Necrofancy.PrepareProcedurally.Solving
             {
                 if (field.Name.Equals("StartingAndOptionalPawnGenerationRequests")
                     && field.GetValue(null) is List<PawnGenerationRequest> requests)
-                    return requests;
+                {
+                    RequestsCached = requests;
+                }
             }
-
-            return null;
         }
+
+        public static List<PawnGenerationRequest> Requests => RequestsCached;
     }
 }

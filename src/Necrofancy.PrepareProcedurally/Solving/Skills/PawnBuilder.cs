@@ -187,8 +187,8 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
         {
             foreach (var skill in DefDatabase<SkillDef>.AllDefs)
             {
-                var min = EstimateHighRolling.StaticRoll(in bioPossibility, 35, skill, 0f);
-                var max = EstimateHighRolling.StaticRoll(in bioPossibility, 35, skill, .98f);
+                var min = EstimateRolling.StaticRoll(in bioPossibility, 35, skill, 0f);
+                var max = EstimateRolling.StaticRoll(in bioPossibility, 35, skill, .98f);
                 skillRanges[skill] = new IntRange(min, max);
                 passions[skill] = Passion.None;
             }

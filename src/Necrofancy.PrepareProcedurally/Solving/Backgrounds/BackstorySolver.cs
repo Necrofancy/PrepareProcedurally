@@ -35,7 +35,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 
                 var skillWeightingSystem = new SpecificSkillWeights(weights);
                 var bio = specifier.GetBestBio(skillWeightingSystem.Weight, ProcGen.TraitRequirements[i]);
-                var skillRanges = EstimateHighRolling.PossibleSkillRangesOf(age, bio);
+                var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
                 currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, true));
             }
 

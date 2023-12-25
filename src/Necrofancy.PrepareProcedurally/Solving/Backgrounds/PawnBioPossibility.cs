@@ -88,23 +88,27 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             pawn.Name = Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
             
             var bodyTypeSetByBiotech = false;
-            if (ModsConfig.BiotechActive)
+            var har = IsHumanoidAlienRacePawn(pawn);
+            if (!har)
             {
-                var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)
-                    .Select(g => g.def.bodyType.Value).Distinct().ToList();
-
-                if (bodyTypes.Any())
+                if (ModsConfig.BiotechActive)
                 {
-                    pawn.story.bodyType = GeneUtility.ToBodyType(bodyTypes.RandomElement(), pawn);
-                    bodyTypeSetByBiotech = true;
+                    var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)
+                        .Select(g => g.def.bodyType.Value).Distinct().ToList();
+
+                    if (bodyTypes.Any())
+                    {
+                        pawn.story.bodyType = GeneUtility.ToBodyType(bodyTypes.RandomElement(), pawn);
+                        bodyTypeSetByBiotech = true;
+                    }
+                }
+
+                if (!bodyTypeSetByBiotech)
+                {
+                    pawn.story.bodyType = Adulthood.BodyTypeFor(pawn.gender);
                 }
             }
 
-            if (!bodyTypeSetByBiotech)
-            {
-                pawn.story.bodyType = Adulthood.BodyTypeFor(pawn.gender);
-            }
-            
             TraitUtilities.FixTraitOverflow(pawn);
             pawn.Notify_DisabledWorkTypesChanged();
         }
@@ -140,6 +144,11 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             }
 
             return false;
+        }
+
+        private bool IsHumanoidAlienRacePawn(Pawn pawn)
+        {
+            return !pawn.def.defName.Equals("human");
         }
         
         private void AddIfAny(BackstoryDef story)

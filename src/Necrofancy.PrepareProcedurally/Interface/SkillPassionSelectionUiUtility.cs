@@ -75,8 +75,9 @@ namespace Necrofancy.PrepareProcedurally.Interface
             var ageRange = ProcGen.AgeRange;
             
             // Age minimum is to force an adulthood backstory.
-            // Age maximum is because pawn generation will give up after trying to create a certain age for too long.
-            Widgets.IntRange(ageSlider, 1235, ref ageRange, 20, 75, AgeRangeText, minWidth:4);
+
+            var maxAge = (int)Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve.Last().x;
+            Widgets.IntRange(ageSlider, 1235, ref ageRange, 20, maxAge, AgeRangeText, minWidth:4);
             ProcGen.AgeRange = ageRange;
             
             // melanin slider

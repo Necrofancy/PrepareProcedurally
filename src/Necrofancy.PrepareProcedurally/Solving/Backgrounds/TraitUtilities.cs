@@ -87,11 +87,12 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 candidates.Add(trait);
             }
 
-            while (traitSlots > MaxNonSexualityTraits && candidates.Any())
+            while (traitSlots > MaxNonSexualityTraits)
             {
                 var traitToRemove = candidates.RandomElement();
                 pawn.story.traits.RemoveTrait(traitToRemove);
                 candidates.Remove(traitToRemove);
+                traitSlots--;
             }
         }
         

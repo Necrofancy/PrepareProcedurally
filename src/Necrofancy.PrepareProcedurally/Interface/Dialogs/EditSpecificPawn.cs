@@ -159,10 +159,10 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 addBackToLocked = true;
             }
 
-            using (NarrowBioEditor.MelaninRange(ProcGen.MelaninRange.min, ProcGen.MelaninRange.max))
-            using (NarrowBioEditor.FilterPawnAges(ProcGen.AgeRange.min, ProcGen.AgeRange.max))
-            using (NarrowBioEditor.FilterRequestAge(index, ProcGen.AgeRange.min, ProcGen.AgeRange.max))
-            using (NarrowBioEditor.RestrictTraits(traits, empty))
+            using (NarrowBioEditor.MelaninRange(ProcGen.MelaninRange))
+            using (NarrowBioEditor.ReplaceAgeGenerationCurve(ProcGen.AgeRange))
+            using (NarrowBioEditor.ForceTraits(traits))
+            using (NarrowBioEditor.BanTraits(empty))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                 ProcGen.OnPawnChanged(pawn);
@@ -196,7 +196,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                     var canBumpUp = CanIncreaseRequirement(req, remainingPoints);
 
                     if (ModsConfig.BiotechActive 
-                        && StartingPawnUtilityState.GetGenerationRequestsList() is { } pawnGenerationRequests)
+                        && StartingPawnUtilityState.Requests is { } pawnGenerationRequests)
                     {
                         var index = StartingPawnUtility.PawnIndex(pawn);
                         var request = pawnGenerationRequests[index];

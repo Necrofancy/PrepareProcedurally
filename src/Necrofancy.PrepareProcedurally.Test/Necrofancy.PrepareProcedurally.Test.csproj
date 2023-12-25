@@ -153,6 +153,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="CurveTests.cs" />
         <Compile Include="IntegrationTests.cs" />
         <Compile Include="UnderstandingFinalSkill.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />

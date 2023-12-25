@@ -17,10 +17,6 @@
 			<downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
 		</li>
 	</modDependencies>
-	<!--Soon ™ -->
-	<incompatibleWith>
-	  <li>erdelf.HumanoidAlienRaces</li>
-	</incompatibleWith>
 	<loadAfter>
 		<li>brrainz.harmony</li>
 	</loadAfter>

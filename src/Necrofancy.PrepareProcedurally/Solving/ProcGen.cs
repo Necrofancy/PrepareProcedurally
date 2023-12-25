@@ -97,10 +97,10 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 if (!(finalSkills[i] is { } finalization))
                     continue;
                 
-                using (NarrowBioEditor.RestrictTraits(forcedTraits, empty))
-                using (NarrowBioEditor.MelaninRange(MelaninRange.min, MelaninRange.max))
-                using (NarrowBioEditor.FilterPawnAges(AgeRange.min, AgeRange.max))
-                using (NarrowBioEditor.FilterRequestAge(i, AgeRange.min, AgeRange.max))
+                using (NarrowBioEditor.ForceTraits(forcedTraits))
+                using (NarrowBioEditor.BanTraits(empty))
+                using (NarrowBioEditor.MelaninRange(MelaninRange))
+                using (NarrowBioEditor.ReplaceAgeGenerationCurve(AgeRange))
                 {
                     pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
                 }

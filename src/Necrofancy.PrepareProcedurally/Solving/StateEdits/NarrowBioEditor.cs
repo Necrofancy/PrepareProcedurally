@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Necrofancy.PrepareProcedurally.Solving.Skills;
 using RimWorld;
 using Verse;
 
@@ -10,97 +12,50 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
     /// </summary>
     public static class NarrowBioEditor
     {
-        public static TemporaryEdit<IntRange> FilterPawnAges(int min, int max)
+        public static TemporaryEdit<SimpleCurve> ReplaceAgeGenerationCurve(IntRange ageRange)
         {
-            var pawnDef = Faction.OfPlayer.def.basicMemberKind;
+            SimpleCurve generationCurve = Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve;
+            var temporaryCurve = EstimateRolling.SubSampleCurve(generationCurve, ageRange);
 
-            var oldRange = new IntRange(pawnDef.minGenerationAge, pawnDef.maxGenerationAge);
-            var newRange = new IntRange(min, max);
-
-            void SetAgeRange(IntRange range)
+            void SetCurve(SimpleCurve curve)
             {
-                pawnDef.minGenerationAge = range.min;
-                pawnDef.maxGenerationAge = range.max;
-            }
-
-            return new TemporaryEdit<IntRange>(oldRange, newRange, SetAgeRange);
-        }
-
-        public static TemporaryEdit<PawnGenerationRequest> FilterRequestAge(int pawnIndex, int min, int max)
-        {
-            if (StartingPawnUtilityState.GetGenerationRequestsList() is {} requests && pawnIndex < requests.Count)
-            {
-                var oldRequest = requests[pawnIndex];
-                var newRequest = requests[pawnIndex];
-                    
-                // you need to remove EXCLUDES 
-                newRequest.ExcludeBiologicalAgeRange = null;
-                newRequest.BiologicalAgeRange = new FloatRange(min, max);
-                void SetAgeRange(PawnGenerationRequest request)
-                {
-                    requests[pawnIndex] = request;
-                }
-
-                return new TemporaryEdit<PawnGenerationRequest>(oldRequest, newRequest, SetAgeRange);
-            }
-
-            void DoNothing(PawnGenerationRequest request)
-            {
-                //does nothing
-            }
-            return new TemporaryEdit<PawnGenerationRequest>(default, default, DoNothing);
-        }
-
-        public static IDisposable MelaninRange(float min, float max)
-        {
-            return new NarrowMelaninRange(min, max);
-        }
-
-        public static IDisposable RestrictTraits(List<TraitRequirement> required, List<TraitDef> banned)
-        {
-            return new NarrowTraits(required, banned);
-        }
-
-        private readonly struct NarrowTraits : IDisposable
-        {
-            public NarrowTraits(List<TraitRequirement> forcedTraits, List<TraitDef> disallowedTraits)
-            {
-                var pawnDef = Faction.OfPlayer.def.basicMemberKind;
-                PreviouslyForcedTraits = pawnDef.forcedTraits;
-                PreviouslyDisallowedTraits = pawnDef.disallowedTraits;
-
-                pawnDef.forcedTraits = forcedTraits;
-                pawnDef.disallowedTraits = disallowedTraits;
+                Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve = curve;
             }
             
-            private List<TraitDef> PreviouslyDisallowedTraits { get; }
-            private List<TraitRequirement> PreviouslyForcedTraits { get; }
+            return new TemporaryEdit<SimpleCurve>(generationCurve, temporaryCurve, SetCurve);
+        }
 
-            public void Dispose()
-            {
-                var pawnDef = Faction.OfPlayer.def.basicMemberKind;
-                pawnDef.forcedTraits = PreviouslyForcedTraits;
-                pawnDef.disallowedTraits = PreviouslyDisallowedTraits;
-            }
-        }
-        
-        private readonly struct NarrowMelaninRange : IDisposable
+        public static TemporaryEdit<FloatRange> MelaninRange(FloatRange temporaryRange)
         {
-            public NarrowMelaninRange(float min, float max)
-            {
-                var faction = Faction.OfPlayer;
-                OldRange = faction.def.melaninRange;
-                
-                faction.def.melaninRange = new FloatRange(min, max);
-            }
-            
-            private FloatRange OldRange { get; }
-            
-            public void Dispose()
-            {
-                var faction = Faction.OfPlayer;
-                faction.def.melaninRange = OldRange;
-            }
+            var factionDef = Faction.OfPlayer.def;
+            var currentRange = factionDef.melaninRange;
+
+            void SetMelaninRange(FloatRange range) => factionDef.melaninRange = range;
+
+            return new TemporaryEdit<FloatRange>(currentRange, temporaryRange, SetMelaninRange);
         }
+
+        public static TemporaryEdit<List<TraitRequirement>> ForceTraits(List<TraitRequirement> required)
+        {
+            var memberKind = Faction.OfPlayer.def.basicMemberKind;
+            var currentList = memberKind.forcedTraits;
+            var newList = currentList != null ? currentList.Concat(required).ToList() : required;
+
+            void SetForcedTraits(List<TraitRequirement> traits) => memberKind.forcedTraits = traits;
+
+            return new TemporaryEdit<List<TraitRequirement>>(currentList, newList, SetForcedTraits);
+        }
+
+        public static TemporaryEdit<List<TraitDef>> BanTraits(List<TraitDef> banned)
+        {
+            var memberKind = Faction.OfPlayer.def.basicMemberKind;
+            var currentList = memberKind.disallowedTraits;
+            var newList = currentList != null ? currentList.Concat(banned).ToList() : banned;  
+            
+            void SetDisallowedTraits(List<TraitDef> traits) => memberKind.disallowedTraits = traits;
+
+            return new TemporaryEdit<List<TraitDef>>(currentList, newList, SetDisallowedTraits);
+        }
+
     }
 }

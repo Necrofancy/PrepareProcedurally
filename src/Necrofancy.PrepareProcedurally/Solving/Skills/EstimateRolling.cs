@@ -16,7 +16,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
     /// <para>Minor: ~80% of the max value.</para>
     /// <para>None: ~50% of the max value.</para>
     /// </summary>
-    public static class EstimateHighRolling
+    public static class EstimateRolling
     {
         private static readonly IntRange NoRange = new IntRange(0, 20);
         
@@ -69,6 +69,35 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
             new CurvePoint(20f, 16f),
             new CurvePoint(27f, 20f)
         };
+        
+        /// <summary>
+        /// Given an existing curve, returns a new curve isolating to a specific range.
+        /// e.g. if I have an existing age probability curve for humans giving distribution points between 15-100 years
+        /// of age, what would the curve be if I were to limited to between 40 and 60?
+        /// </summary>
+        /// <param name="existingCurve">An existing super-curve.</param>
+        /// <param name="range">A minimum and maximum range to clamp the curve to</param>
+        /// <returns>A curve that only contains the distribution within the desired range.</returns>
+        public static SimpleCurve SubSampleCurve(SimpleCurve existingCurve, IntRange range)
+        {
+            var newCurve = new SimpleCurve();
+            const float distance = 0.1f;
+            float almostMin = range.min + distance;
+            float almostMax = range.max - distance;
+            
+            newCurve.Add(range.min, 0);
+            newCurve.Add(almostMin, existingCurve.Evaluate(almostMin));
+            
+            foreach (var midpoint in existingCurve.Where(p => range.min < p.x && p.x < range.max))
+            {
+                newCurve.Add(midpoint);
+            }
+            
+            newCurve.Add(almostMax, existingCurve.Evaluate(almostMax));
+            newCurve.Add(range.max, 0);
+
+            return newCurve;
+        }
 
         public static int StaticRoll(Pawn pawn, SkillDef skill, float percentRolls)
         {
