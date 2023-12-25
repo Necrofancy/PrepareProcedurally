@@ -6,3 +6,5 @@ _ReSharper.Caches/
 .vs/
 
 riderModule.iml
+*.dll
+*.pdb
