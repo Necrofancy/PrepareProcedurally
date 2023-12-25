@@ -48,7 +48,6 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
                 {
                     skillRecord.passion = passionAndLevel.Passion;
                 }
-                
             }
         }
     }

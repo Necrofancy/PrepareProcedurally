@@ -88,25 +88,23 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             pawn.Name = Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
             
             var bodyTypeSetByBiotech = false;
-            var har = IsHumanoidAlienRacePawn(pawn);
-            if (!har)
+            var isModRacePawn = IsHumanoidAlienRacePawn(pawn);
+            
+            if (ModsConfig.BiotechActive && !isModRacePawn)
             {
-                if (ModsConfig.BiotechActive)
-                {
-                    var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)
-                        .Select(g => g.def.bodyType.Value).Distinct().ToList();
+                var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)
+                    .Select(g => g.def.bodyType.Value).Distinct().ToList();
 
-                    if (bodyTypes.Any())
-                    {
-                        pawn.story.bodyType = GeneUtility.ToBodyType(bodyTypes.RandomElement(), pawn);
-                        bodyTypeSetByBiotech = true;
-                    }
-                }
-
-                if (!bodyTypeSetByBiotech)
+                if (bodyTypes.Any())
                 {
-                    pawn.story.bodyType = Adulthood.BodyTypeFor(pawn.gender);
+                    pawn.story.bodyType = GeneUtility.ToBodyType(bodyTypes.RandomElement(), pawn);
+                    bodyTypeSetByBiotech = true;
                 }
+            }
+
+            if (!bodyTypeSetByBiotech && Adulthood.BodyTypeFor(pawn.gender) is {} bodyType)
+            {
+                pawn.story.bodyType = bodyType;
             }
 
             TraitUtilities.FixTraitOverflow(pawn);
