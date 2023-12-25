@@ -21,6 +21,8 @@
 
 	<SkillPassionTraitBackstory>This trait is forced by the given backstory of the pawn. Locked pawns will not have this trait removed for trait options, and unlocked pawns may reroll a different backstory to avoid this trait if chosen traits conflict with it.</SkillPassionTraitBackstory>
 	<SkillPassionTraitPlayerChosen>This trait is being locked in on request. Click this trait to remove the lock in for this pawn slot.</SkillPassionTraitPlayerChosen>
+	<SkillPassionTraitForced>This trait is being forced by scenario or mod-based character generation. It cannot be removed.</SkillPassionTraitForced>
+
 	<ClickOnPawnToCustomizeSkills>Click For Skill Loadout UI</ClickOnPawnToCustomizeSkills>
 
 	<VariationTooltip>Procedural generation will try to pick pawn backstories and simulate randomization to quickly arrive at a certain loadout of passions. It does so by attaching a weight for each skill and picking stories by the best weight.\n\nVarying this weight by a random amount on generation gives more backstory variety and can help get out of ruts without having to specify each weight to get a specific story combination.</VariationTooltip>

@@ -87,11 +87,6 @@ namespace Necrofancy.PrepareProcedurally
 
             return minAgeForAdulthood is float adulthoodAge && adulthoodAge < 0 ? (int)adulthoodAge : 20;
         }
-        
-        internal static void FixBodyType(Pawn pawn)
-        {
-            // TODO
-        }
 
         private static object FieldUnder(this object obj, string property)
         {

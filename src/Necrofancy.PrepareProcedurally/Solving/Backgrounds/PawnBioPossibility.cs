@@ -88,13 +88,9 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             pawn.Name = Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
             
             var bodyTypeSetByBiotech = false;
-            var isModRacePawn = IsHumanoidAlienRacePawn(pawn);
+            var isModRacePawn = HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn);
 
-            if (isModRacePawn)
-            {
-                HumanoidAlienRaceCompatibility.FixBodyType(pawn);
-            }
-            else
+            if (!isModRacePawn)
             {
                 if (ModsConfig.BiotechActive)
                 {
@@ -149,11 +145,6 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             }
 
             return false;
-        }
-
-        private bool IsHumanoidAlienRacePawn(Pawn pawn)
-        {
-            return !pawn.def.defName.Equals("human");
         }
         
         private void AddIfAny(BackstoryDef story)

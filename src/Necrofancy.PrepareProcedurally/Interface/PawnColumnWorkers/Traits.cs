@@ -16,6 +16,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
     {
         private const string TraitLockedByBackstoryDescription = "SkillPassionTraitBackstory";
         private const string TraitLockedByPlayerChoiceDescription = "SkillPassionTraitPlayerChosen";
+        private const string TraitForcedByScenarioOrMod = "SkillPassionTraitForced";
         
         private static readonly List<Trait> TraitsToRemove = new List<Trait>();
         private static readonly List<TraitRequirement> TraitOptions = new List<TraitRequirement>();
@@ -159,12 +160,17 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
 
                 if (!found)
                 {
-                    if (!TraitUtilities.IsBackstoryTraitOfPawn(trait, pawn) && trait.sourceGene is null)
+                    if (CanRemoveTrait(trait, pawn))
                     {
                         TraitsToRemove.Add(trait);
                     }
                 }
             }
+        }
+
+        private static bool CanRemoveTrait(Trait trait, Pawn pawn)
+        {
+            return !TraitUtilities.IsBackstoryTraitOfPawn(trait, pawn) && trait.sourceGene is null && !trait.ScenForced;
         }
 
         private static string TraitDescriptionWithAdditionalTips(Trait trait, Pawn pawn)
@@ -174,6 +180,11 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             if (TraitUtilities.IsBackstoryTraitOfPawn(trait, pawn))
             {
                 builder.AppendLine().AppendLine().AppendLine(TraitLockedByBackstoryDescription.Translate());
+            }
+
+            if (trait.ScenForced)
+            {
+                builder.AppendLine().AppendLine().AppendLine(TraitForcedByScenarioOrMod.Translate());
             }
             
             var index = StartingPawnUtility.PawnIndex(pawn);
@@ -188,14 +199,19 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
 
         private static Color GetColor(Pawn pawn, Trait trait)
         {
-            if (TraitUtilities.IsBackstoryTraitOfPawn(trait, pawn))
-            {
-                return ColorLibrary.Turquoise;
-            }
-            
             if (trait.Suppressed)
             {
                 return ColoredText.SubtleGrayColor;
+            }
+
+            if (trait.ScenForced)
+            {
+                return ColorLibrary.Aquamarine;
+            }
+            
+            if (TraitUtilities.IsBackstoryTraitOfPawn(trait, pawn))
+            {
+                return ColorLibrary.Turquoise;
             }
             
             if (trait.sourceGene != null)

@@ -104,7 +104,6 @@
     <Compile Include="Solving\Skills\PawnBuilder.cs" />
     <Compile Include="Solving\Skills\SkillFinalizationResult.cs" />
     <Compile Include="Solving\StartingPawnUtilityState.cs" />
-    <Compile Include="Solving\StateEdits\NarrowBioEditor.cs" />
     <Compile Include="Solving\StateEdits\TemporarilyChange.cs" />
     <Compile Include="Solving\StateEdits\TemporaryEdit.cs" />
     <Compile Include="Solving\Weighting\CollectSpecificPassions.cs" />
