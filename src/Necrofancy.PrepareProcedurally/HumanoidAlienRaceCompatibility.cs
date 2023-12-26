@@ -88,6 +88,11 @@ namespace Necrofancy.PrepareProcedurally
             return minAgeForAdulthood is float adulthoodAge && adulthoodAge < 0 ? (int)adulthoodAge : 20;
         }
 
+        public static IReadOnlyList<FactionDef> GetAvailableOtherFactionDefs(FactionDef memberKind)
+        {
+            throw new NotSupportedException("This is unworkable without a specific assembly for HAR");
+        }
+
         private static object FieldUnder(this object obj, string property)
         {
             var type = obj.GetType();

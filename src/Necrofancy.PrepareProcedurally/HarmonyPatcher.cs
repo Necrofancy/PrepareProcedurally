@@ -1,10 +1,11 @@
 using HarmonyLib;
 using Verse;
 
-namespace Necrofancy.PrepareProcedurally.Patches 
+// Resharper disable all
+
+namespace Necrofancy.PrepareProcedurally
 {
     [StaticConstructorOnStartup]
-    // ReSharper disable once UnusedType.Global
     public class HarmonyPatcher 
     {
         static HarmonyPatcher() => new Harmony("Necrofancy.PrepareProcedurally").PatchAll();

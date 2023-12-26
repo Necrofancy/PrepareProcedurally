@@ -20,4 +20,14 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
 
         public void Dispose() => setter(oldValue);
     }
+
+    public static class TemporaryEdit
+    {
+        public static IDisposable NullEdit => new TemporaryEdit<int>(default, default, DoNothingWithData);
+
+        private static void DoNothingWithData(int _)
+        {
+            
+        }
+    }
 }

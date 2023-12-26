@@ -159,16 +159,18 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 addBackToLocked = true;
             }
 
-            using (TemporarilyChange.PlayerFactionMelaninRange(ProcGen.MelaninRange))
-            using (TemporarilyChange.RaceAgeGenerationCurve(ProcGen.AgeRange))
             using (TemporarilyChange.ScenarioBannedTraits(empty))
+            using (TemporarilyChange.PlayerFactionMelaninRange(ProcGen.MelaninRange))
+            using (TemporarilyChange.BiologicalAgeRange(ProcGen.AgeRange, index))
+            using (TemporarilyChange.RequestedGender(bio.Gender, index))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                 ProcGen.OnPawnChanged(pawn);
-                bio.ApplyTo(pawn);
-                builder.Build().ApplyTo(pawn);
-                TraitUtilities.AddForcedTraits(pawn, traits);
             }
+            
+            bio.ApplyBackstoryTo(pawn);
+            builder.Build().ApplySimulatedSkillsTo(pawn);
+            traits.ApplyRequestedTraitsTo(pawn);
 
             if (addBackToLocked)
             {
@@ -196,7 +198,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                     var canBumpUp = CanIncreaseRequirement(req, remainingPoints);
 
                     if (ModsConfig.BiotechActive 
-                        && StartingPawnUtilityState.Requests is { } pawnGenerationRequests)
+                        && StartingPawnUtilityState.GetStartingPawnRequestList() is { } pawnGenerationRequests)
                     {
                         var index = StartingPawnUtility.PawnIndex(pawn);
                         var request = pawnGenerationRequests[index];

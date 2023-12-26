@@ -74,40 +74,11 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             }
         }
 
-        internal static void AddForcedTraits(Pawn pawn, List<TraitRequirement> traits)
-        {
-            traits = HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn)
-                ? traits.Concat(HumanoidAlienRaceCompatibility.GetTraitRequirements(pawn)).ToList()
-                : traits;
-            
-            foreach (var trait in traits)
-            {
-                if (pawn.story?.traits == null 
-                    || pawn.story.traits.HasTrait(trait.def) 
-                    && pawn.story.traits.DegreeOfTrait(trait.def) == trait.degree)
-                {
-                    return;
-                }
-                if (pawn.story.traits.HasTrait(trait.def))
-                {
-                    pawn.story.traits.allTraits.RemoveAll(tr => tr.def == trait.def);
-                }
-                else
-                {
-                    var source = pawn.story.traits.allTraits.Where(tr => !tr.ScenForced && !IsBackstoryTraitOfPawn(tr, pawn));
-                    var conflictingTrait = source.FirstOrDefault(tr => trait.def.ConflictsWith(tr.def));
-                    pawn.story.traits.allTraits.Remove(conflictingTrait);
-                }
-                
-                pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree ?? 0));
-            }
-            
-            FixTraitOverflow(pawn);
-        }
-
         /// <summary>
-        /// If too many traits are forced, then pawn generation will randomly include a fourth or fifth trait.
-        /// Kill those.
+        /// If too many traits are requested, then pawn generation will randomly include a fourth or fifth trait.
+        /// "Requested" traits are not similar to _forced_ traits - the goal is to simulate rolling them specifically.
+        ///
+        /// To accomplish that, remove any randomly-rolled traits until the pawn is back to their max number of traits.
         /// </summary>
         internal static void FixTraitOverflow(Pawn pawn)
         {
@@ -116,6 +87,11 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             var candidates = new List<Trait>();
             foreach (var trait in pawn.story.traits.allTraits)
             {
+                // Biotech-forced traits won't count towards the limit.
+                // Post-1.4, sexuality traits are rolled separately from the 1~3 trait count
+                // Scenario-forced traits are weird, and having enough of them will absolutely put you over 3 traits.
+                
+                // So best to ignore all of these when seeing what traits 'need' to be cut for normal pawn generation.
                 if (trait.sourceGene != null || trait.def.IsSexualityTrait() || trait.ScenForced)
                 {
                     continue;

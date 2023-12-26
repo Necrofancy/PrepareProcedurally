@@ -30,11 +30,6 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             {
                 DrawPageTitle(rect);
 
-                if (ProcGen.SkillPassions is null)
-                {
-                    SetDefaultState();
-                }
-
                 var uiPadding = rect.GetInnerRect();
                 uiPadding.SplitHorizontally(480, out var upper, out var lower);
 
@@ -67,15 +62,6 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
         private static IEnumerable<Pawn> GetStartingPawns()
         {
             return Find.GameInitData.startingAndOptionalPawns.Take(Find.GameInitData.startingPawnCount);
-        }
-
-        public static void SetDefaultState()
-        {
-            ProcGen.SkillPassions = DefDatabase<SkillDef>.AllDefsListForReading
-                .Select(SkillPassionSelection.CreateFromSkill).ToList();
-            var pawnCount = Find.GameInitData.startingPawnCount;
-            ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
-            ProcGen.TraitRequirements = ProcGen.StartingPawns.Select(x => new List<TraitRequirement>()).ToList();
         }
 
         protected override void DoNext()

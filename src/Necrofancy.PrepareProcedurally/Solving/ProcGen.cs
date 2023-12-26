@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
@@ -9,7 +11,7 @@ using Verse;
 namespace Necrofancy.PrepareProcedurally.Solving
 {
     public static class ProcGen
-    {        
+    {
         private static IntRange ageRange = new IntRange(21, 30);
         private static float skillWeightVariation = 1.5f;
         private static FloatRange melaninRange = new FloatRange(0.0f, 0.9f);
@@ -33,6 +35,8 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 }
             }
         }
+        
+        internal static IntRange AllowedAgeRange { get; set; }
 
         internal static float SkillWeightVariation
         {
@@ -99,15 +103,16 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 
                 using (TemporarilyChange.ScenarioBannedTraits(empty))
                 using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
-                using (TemporarilyChange.RaceAgeGenerationCurve(AgeRange))
+                using (TemporarilyChange.BiologicalAgeRange(AgeRange, i))
+                using (TemporarilyChange.RequestedGender(backstory.Background.Gender, i))
                 {
                     pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
-                    TraitUtilities.AddForcedTraits(pawnList[i], forcedTraits);
                 }
 
+                forcedTraits.ApplyRequestedTraitsTo(pawnList[i]);
+                backstory.Background.ApplyBackstoryTo(pawnList[i]);
+                finalization.ApplySimulatedSkillsTo(pawnList[i]);
                 OnPawnChanged(pawnList[i]);
-                backstory.Background.ApplyTo(pawnList[i]);
-                finalization.ApplyTo(pawnList[i]);
             }
 
             Dirty = false;
@@ -139,6 +144,46 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 startingPawns[i] = StartingPawnUtility.RandomizeInPlace(startingPawns[i]);
                 OnPawnChanged(startingPawns[i]);
             }
+        }
+        
+        /// <summary>
+        /// Set up a clean state based on starting scenario, map tile location, and ideology.
+        /// </summary>
+        public static void SetCleanState()
+        {
+            SkillPassions = DefDatabase<SkillDef>.AllDefsListForReading
+                .Select(SkillPassionSelection.CreateFromSkill).ToList();
+            var pawnCount = Find.GameInitData.startingPawnCount;
+            StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
+            TraitRequirements = StartingPawns.Select(x => new List<TraitRequirement>()).ToList();
+
+            var kind = Faction.OfPlayer.def.basicMemberKind;
+            int minimumAdulthoodAge = HumanoidAlienRaceCompatibility.IsHumanoidAlienRaceThingDef(kind.race)
+                ? HumanoidAlienRaceCompatibility.GetAgeForAdulthoodBackstories(kind)
+                : 20;
+            
+            int maximumAdulthoodAge = (int)kind.race.race.ageGenerationCurve.Last().x;
+
+            AllowedAgeRange = new IntRange(minimumAdulthoodAge, maximumAdulthoodAge);
+            ageRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
+            skillWeightVariation = 1.5f;
+            // TODO: For tribal starts it might be fun to have this be based on latitude of the starting location.
+            melaninRange = new FloatRange(0.0f, 0.9f);
+            maxPassionPoints = 7.0f;
+
+            // initial state will be clean so that any pawns that players want to keep from base randomization
+            // won't be swept away by the PrepareProcedurally page automatically updating.
+            Dirty = false;
+        }
+        
+        /// <summary>
+        /// Clear out any state that would result in Pawns being held onto.
+        /// </summary>
+        public static void ClearState()
+        {
+            LastResults = null;
+            StartingPawns = null;
+            LockedPawns.Clear();
         }
     }
 }
