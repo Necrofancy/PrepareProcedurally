@@ -44,9 +44,15 @@ public static class Editor
     public static IntRange AgeRange
     {
         get => ageRange;
-        set => SetProperty(ref ageRange, value);
+        set
+        {
+            if (SetProperty(ref ageRange, value))
+            {
+                RaceAgeRanges[SelectedRace] = RaceAgeRanges[SelectedRace].WithUpdatedAge(value);
+            }
+        }
     }
-        
+
     public static IntRange AllowedAgeRange { get; set; }
 
     public static float SkillWeightVariation
@@ -133,7 +139,7 @@ public static class Editor
         LockedPawns.Clear();
     }
 
-    private static void SetProperty<T>(ref T value, T newValue, [CallerMemberName] string caller = null)
+    private static bool SetProperty<T>(ref T value, T newValue, [CallerMemberName] string caller = null)
     {
         if (!newValue?.Equals(value) == true)
         {
@@ -145,6 +151,10 @@ public static class Editor
                     Log.Message($"Property changed on editor for '{caller}' - Dirty for Procedural Generation");
 #endif
             }
+
+            return true;
         }
+
+        return false;
     }
 }

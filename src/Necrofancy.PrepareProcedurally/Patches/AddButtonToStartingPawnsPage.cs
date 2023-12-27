@@ -19,8 +19,8 @@ public class AddButtonToStartingPawnsPage
     [HarmonyPostfix]
     public static void Postfix(Rect rect, Page_ConfigureStartingPawns __instance) 
     {
-        if (Widgets.ButtonText(new Rect((rect.x + rect.width) / 2 - ButtonDimensions.x / 2, rect.y + ButtonY,
-                ButtonDimensions.x, ButtonDimensions.y), ButtonText)) {
+        if (Widgets.ButtonText(new Rect((rect.x + rect.width) / 2 - ButtonDimensions.x / 2, rect.y + ButtonY, ButtonDimensions.x, ButtonDimensions.y), ButtonText)) 
+        {
             try
             {
                 var gen = new Interface.Pages.PrepareProcedurally();
