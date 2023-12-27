@@ -65,7 +65,26 @@ namespace Necrofancy.PrepareProcedurally.Interface
             skillSelectRect.y -= 18;
             
             // set up biological page section
-            Widgets.Label(new Rect(textRect.x, textRect.y, textRect.width, RowHeight), PawnBiology.Translate());
+            var labelText = new Rect(textRect.x, textRect.y, textRect.width, RowHeight);
+            labelText.SplitVertically(200f, out var labelRect, out var right);
+            right = right.ContractedBy(2);
+            Widgets.Label(labelRect, PawnBiology.Translate());
+            if (ProcGen.RaceAgeRanges.Count > 1 && Widgets.ButtonText(right, ProcGen.SelectedRace.LabelCap))
+            {
+                var targets = ProcGen.RaceAgeRanges.Keys;
+                
+                var selectPawnKinds = new List<FloatMenuOption>();
+                foreach (var option in targets)
+                {
+                    var str = option.LabelCap;
+                    void Select() => ProcGen.SelectedRace = option;
+
+                    selectPawnKinds.Add(new FloatMenuOption(str, Select));
+                }
+
+                Find.WindowStack.Add(new FloatMenu(selectPawnKinds));
+            }
+            
             var bioRect = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight * 5);
             Widgets.DrawMenuSection(bioRect);
             var bioInnerRect = bioRect.GetInnerRect();

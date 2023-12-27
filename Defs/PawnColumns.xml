@@ -22,6 +22,11 @@
   </PawnColumnDef>
 
   <PawnColumnDef>
+    <defName>Race</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Race</workerClass>
+  </PawnColumnDef>
+
+  <PawnColumnDef>
     <defName>StoryChild</defName>
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Childhood</workerClass>
   </PawnColumnDef>

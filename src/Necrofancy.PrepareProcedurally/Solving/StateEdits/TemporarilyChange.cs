@@ -46,17 +46,27 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
             return new TemporaryEdit<PawnGenerationRequest>(currentRequest, editedRequest, SetRequest);
         }
 
-        public static TemporaryEdit<SimpleCurve> AgeThroughRaceProperties(IntRange ageRange, RaceProperties race)
+        public static IDisposable AgeOnAllRelevantRaceProperties(Dictionary<ThingDef, RaceAgeData> settings)
         {
-            SimpleCurve generationCurve = race.ageGenerationCurve;
-            var temporaryCurve = EstimateRolling.SubSampleCurve(generationCurve, ageRange);
-            
-            void SetCurve(SimpleCurve curve)
+            Stack<TemporaryEdit<SimpleCurve>> temporaryEdits = new Stack<TemporaryEdit<SimpleCurve>>();
+
+            foreach (var setting in settings)
             {
-                Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve = curve;
-            }
+                var race = setting.Key.race;
+                var ageRange = setting.Value;
+                
+                SimpleCurve generationCurve = race.ageGenerationCurve;
+                var temporaryCurve = EstimateRolling.SubSampleCurve(generationCurve, ageRange.AgeRange);
             
-            return new TemporaryEdit<SimpleCurve>(generationCurve, temporaryCurve, SetCurve);
+                void SetCurve(SimpleCurve curve)
+                {
+                    race.ageGenerationCurve = curve;
+                }
+            
+                temporaryEdits.Push(new TemporaryEdit<SimpleCurve>(generationCurve, temporaryCurve, SetCurve));
+            }
+
+            return TemporaryEdit.Many(temporaryEdits);
         }
 
         public static IDisposable GenderInRequest(GenderPossibility gender, int pawnIndex)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
 {
@@ -25,9 +27,30 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
     {
         public static IDisposable NullEdit => new TemporaryEdit<int>(default, default, DoNothingWithData);
 
+        public static IDisposable Many<T>(Stack<T> disposables) where T:IDisposable => new TemporaryMultiple<T>(disposables);
+
         private static void DoNothingWithData(int _)
         {
             
+        }
+
+        private class TemporaryMultiple<T> : IDisposable where T : IDisposable
+        {
+            private readonly Stack<T> multiple;
+
+            public TemporaryMultiple(Stack<T> multiple)
+            {
+                this.multiple = multiple;
+            }
+
+            public void Dispose()
+            {
+                while (multiple.Any())
+                {
+                    var disposable = multiple.Pop();
+                    disposable.Dispose();
+                }
+            }
         }
     }
 }

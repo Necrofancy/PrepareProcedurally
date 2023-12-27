@@ -16,9 +16,9 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
                 return;
             
             rect = rect.ContractedBy(4);
-            var label = story.TitleCapFor(pawn.gender);
+            var label = story.TitleShortFor(pawn.gender).CapitalizeFirst();
 
-            var width = Text.CalcSize(story.TitleCapFor(pawn.gender)).x + 8;
+            var width = Text.CalcSize(label).x + 16f;
             
             var color = GUI.color;
             GUI.color = CharacterCardUtility.StackElementBackground;
@@ -39,10 +39,10 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             float maxWidth = 0;
             foreach (var pawn in table.PawnsListForReading)
             {
-                if (StoryFrom(pawn) is null) 
+                if (!(StoryFrom(pawn) is { } story)) 
                     continue;
                 
-                var width = Text.CalcSize(StoryFrom(pawn).TitleCapFor(pawn.gender)).x + 16f;
+                var width = Text.CalcSize(story.TitleShortFor(pawn.gender).CapitalizeFirst()).x + 16f;
                 maxWidth = Math.Max(maxWidth, width);
             }
 

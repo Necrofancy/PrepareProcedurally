@@ -94,7 +94,7 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
 
             string pawnChildhoods = null, pawnAdulthoods = null;
             using (TemporarilyChange.PlayerFactionMelaninRange(ProcGen.MelaninRange))
-            using (TemporarilyChange.AgeThroughRaceProperties(ProcGen.AgeRange, Faction.OfPlayer.def.basicMemberKind.race.race))
+            using (TemporarilyChange.AgeOnAllRelevantRaceProperties(ProcGen.RaceAgeRanges))
             {
                 bool foundBackstoryToWorkWith = false;
                 while (!foundBackstoryToWorkWith)

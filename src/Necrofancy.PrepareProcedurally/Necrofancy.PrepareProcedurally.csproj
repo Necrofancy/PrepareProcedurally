@@ -74,6 +74,7 @@
     <Compile Include="Interface\LazyTexture.cs" />
     <Compile Include="Interface\MaplessPawnTable.cs" />
     <Compile Include="Interface\PawnColumnWorkers\FavoriteColor.cs" />
+    <Compile Include="Interface\PawnColumnWorkers\Race.cs" />
     <Compile Include="Patches\AddButtonToStartingPawnsPage.cs" />
     <Compile Include="Patches\ClearStateOnStartingPawnsClose.cs" />
     <Compile Include="Patches\InitializeStateOnStartingPawnsOpen.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Solving\Backgrounds\SelectBackstorySpecifically.cs" />
     <Compile Include="Solving\Backgrounds\TraitUtilities.cs" />
     <Compile Include="Solving\BalancingSituation.cs" />
+    <Compile Include="Solving\RaceAgeData.cs" />
     <Compile Include="Solving\Compatibility.cs" />
     <Compile Include="Solving\ProcGen.cs" />
     <Compile Include="Solving\SituationFactory.cs" />

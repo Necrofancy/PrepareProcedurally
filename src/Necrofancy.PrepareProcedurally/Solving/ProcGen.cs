@@ -14,7 +14,25 @@ namespace Necrofancy.PrepareProcedurally.Solving
         private static float skillWeightVariation = 1.5f;
         private static FloatRange melaninRange = new FloatRange(0.0f, 0.9f);
         private static float maxPassionPoints = 7.0f;
-        
+        private static ThingDef selectedRace;
+
+        public static Dictionary<ThingDef, RaceAgeData> RaceAgeRanges { get; private set; }
+
+        public static ThingDef SelectedRace
+        {
+            get => selectedRace;
+            set
+            {
+                if (selectedRace != value)
+                {
+                    selectedRace = value;
+                    
+                    AllowedAgeRange = RaceAgeRanges[value].AllowedAgeRange;
+                    AgeRange = RaceAgeRanges[value].AgeRange;
+                }
+            }
+        }
+
         public static List<List<TraitRequirement>> TraitRequirements { get; set; }
         public static List<SkillPassionSelection> SkillPassions { get; set; }
         public static List<Pawn> StartingPawns { get; set; }
@@ -29,6 +47,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
                 if (ageRange != value)
                 {
                     ageRange = value;
+                    RaceAgeRanges[selectedRace] = RaceAgeRanges[selectedRace].WithUpdatedAge(value);
                     Dirty = true;
                 }
             }
@@ -129,12 +148,28 @@ namespace Necrofancy.PrepareProcedurally.Solving
             TraitRequirements = StartingPawns.Select(x => new List<TraitRequirement>()).ToList();
 
             var kind = Faction.OfPlayer.def.basicMemberKind;
+            var race = kind.race.race;
             int minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(kind);
-            
             int maximumAdulthoodAge = (int)kind.race.race.ageGenerationCurve.Last().x;
-
+            melaninRange = new FloatRange(0.0f, 0.9f);
             AllowedAgeRange = new IntRange(minimumAdulthoodAge, maximumAdulthoodAge);
             ageRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
+
+            var biologicalSettings = new RaceAgeData(ageRange, AllowedAgeRange);
+            RaceAgeRanges = new Dictionary<ThingDef, RaceAgeData> { { kind.race, biologicalSettings } };
+
+            SelectedRace = kind.race;
+            
+            foreach (var otherKind in Compatibility.Layer.GetPawnKindsThatCanAlsoGenerateFor(Faction.OfPlayer.def))
+            {
+                minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(otherKind);
+                maximumAdulthoodAge = (int)otherKind.race.race.ageGenerationCurve.Last().x;
+                var allowedAgeRange = new IntRange(minimumAdulthoodAge, maximumAdulthoodAge);
+                melaninRange = new FloatRange(0.0f, 0.9f);
+                ageRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
+                RaceAgeRanges[otherKind.race] = new RaceAgeData(ageRange, allowedAgeRange);
+            }
+
             skillWeightVariation = 1.5f;
             // TODO: For tribal starts it might be fun to have this be based on latitude of the starting location.
             melaninRange = new FloatRange(0.0f, 0.9f);
