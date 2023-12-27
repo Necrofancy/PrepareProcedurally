@@ -77,7 +77,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills
                 return true;
 
             var pointDiff = PointsFor(passion) - PointsFor(currentPassion);
-            if (pointDiff >= ProcGen.MaxPassionPoints - PassionPoints)
+            if (pointDiff >= Editor.MaxPassionPoints - PassionPoints)
                 return false;
 
             var skillRange = skillRanges[def];

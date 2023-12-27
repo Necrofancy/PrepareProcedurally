@@ -3,10 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Necrofancy.PrepareProcedurally.Editor;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
-using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -19,7 +17,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
         public PrepareProcedurally()
         {
             var pawnCount = Find.GameInitData.startingPawnCount;
-            ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
+            Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
         }
 
         public override string PageTitle => "SkillPassionPageTitle".Translate();
@@ -33,7 +31,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
                 var uiPadding = rect.GetInnerRect();
                 uiPadding.SplitHorizontally(480, out var upper, out var lower);
 
-                SkillPassionSelectionUiUtility.DoWindowContents(upper, ProcGen.SkillPassions);
+                SkillPassionSelectionUiUtility.DoWindowContents(upper, Editor.SkillPassions);
 
                 var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400,
                     800);
@@ -67,9 +65,9 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
         protected override void DoNext()
         {
             List<SkillDef> unsatisfiedRequirements = new List<SkillDef>();
-            foreach (var requirement in ProcGen.SkillPassions)
+            foreach (var requirement in Editor.SkillPassions)
             {
-                if (!requirement.StartingGroupSatisfies(ProcGen.StartingPawns))
+                if (!requirement.StartingGroupSatisfies(Editor.StartingPawns))
                     unsatisfiedRequirements.Add(requirement.Skill);
             }
             
@@ -114,17 +112,17 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
 
         private void PropagateToEditor()
         {
-            if (ProcGen.Dirty)
+            if (Editor.Dirty)
             {
                 CloseSubdialogs();
                 
                 var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
                 var pawnCount = Find.GameInitData.startingPawnCount;
-                var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, ProcGen.SkillPassions);
+                var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, Editor.SkillPassions);
                 
                 ProcGen.Generate(situation);
                 
-                ProcGen.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
+                Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
             }
         }
     }

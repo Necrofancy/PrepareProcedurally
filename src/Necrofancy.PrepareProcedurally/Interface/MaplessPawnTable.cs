@@ -7,7 +7,7 @@ using Verse;
 
 // ReSharper disable All
 
-namespace Necrofancy.PrepareProcedurally.Editor
+namespace Necrofancy.PrepareProcedurally.Interface
 {
   /// <summary>
   /// PawnTable implementation without any Look Targets. Those depend on the map, which will cause the

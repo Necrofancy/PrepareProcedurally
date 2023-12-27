@@ -46,14 +46,14 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
 
         public EditSpecificPawn(Pawn pawn)
         {
-            ProcGen.LockedPawns.Add(pawn);
+            Editor.LockedPawns.Add(pawn);
             this.pawn = pawn;
             doCloseX = true;
             
             var pawnIndex = StartingPawnUtility.PawnIndex(pawn);
             reqs = new List<(SkillDef Skill, UsabilityRequirement Usability)>();
-            if (ProcGen.LastResults?.Count > pawnIndex - 1
-                && ProcGen.LastResults[pawnIndex] is { } existing)
+            if (Editor.LastResults?.Count > pawnIndex - 1
+                && Editor.LastResults[pawnIndex] is { } existing)
             {
                 foreach (var skill in DefDatabase<SkillDef>.AllDefsListForReading)
                 {
@@ -100,7 +100,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
             var requiredSkills = new List<SkillDef>();
             var requiredWorkTags = WorkTags.None;
 
-            var variation = new IntRange(10, (int)(ProcGen.SkillWeightVariation*10));
+            var variation = new IntRange(10, (int)(Editor.SkillWeightVariation*10));
             foreach (var (skill, usability) in reqs)
             {
                 switch (usability)
@@ -155,7 +155,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 if (Widgets.ButtonInvisible(buttonRect, icon))
                 {
                     var passionPoints = GetPassionPoints();
-                    var remainingPoints = ProcGen.MaxPassionPoints - passionPoints;
+                    var remainingPoints = Editor.MaxPassionPoints - passionPoints;
                     var canBumpUp = CanIncreaseRequirement(req, remainingPoints);
 
                     if (ModsConfig.BiotechActive 

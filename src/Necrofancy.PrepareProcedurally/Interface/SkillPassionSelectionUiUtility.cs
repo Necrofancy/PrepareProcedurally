@@ -69,15 +69,15 @@ namespace Necrofancy.PrepareProcedurally.Interface
             labelText.SplitVertically(200f, out var labelRect, out var right);
             right = right.ContractedBy(2);
             Widgets.Label(labelRect, PawnBiology.Translate());
-            if (ProcGen.RaceAgeRanges.Count > 1 && Widgets.ButtonText(right, ProcGen.SelectedRace.LabelCap))
+            if (Editor.RaceAgeRanges.Count > 1 && Widgets.ButtonText(right, Editor.SelectedRace.LabelCap))
             {
-                var targets = ProcGen.RaceAgeRanges.Keys;
+                var targets = Editor.RaceAgeRanges.Keys;
                 
                 var selectPawnKinds = new List<FloatMenuOption>();
                 foreach (var option in targets)
                 {
                     var str = option.LabelCap;
-                    void Select() => ProcGen.SelectedRace = option;
+                    void Select() => Editor.SelectedRace = option;
 
                     selectPawnKinds.Add(new FloatMenuOption(str, Select));
                 }
@@ -91,15 +91,15 @@ namespace Necrofancy.PrepareProcedurally.Interface
             
             // age slider
             var ageSlider = new Rect(bioInnerRect.x, bioInnerRect.y, bioInnerRect.width, RowHeight);
-            var ageRange = ProcGen.AgeRange;
+            var ageRange = Editor.AgeRange;
             
             // Age minimum is to force an adulthood backstory.
 
-            int minAge = ProcGen.AllowedAgeRange.min;
-            int maxAge = ProcGen.AllowedAgeRange.max;
+            int minAge = Editor.AllowedAgeRange.min;
+            int maxAge = Editor.AllowedAgeRange.max;
             
             Widgets.IntRange(ageSlider, 1235, ref ageRange, minAge, maxAge, AgeRangeText, minWidth:4);
-            ProcGen.AgeRange = ageRange;
+            Editor.AgeRange = ageRange;
             
             // melanin slider
             var melaninSlider = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 1.5f, bioInnerRect.width, RowHeight);
@@ -108,7 +108,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
             Widgets.IntRange(melaninSlider, 12345, ref melaninRange, 0, maxMelanin, MelaninRangeText, minWidth:1);
             var minSelectedMelanin = genes[melaninRange.min].minMelanin;
             var maxSelectedMelanin = melaninRange.max >= maxMelanin ? 1 : genes[melaninRange.max + 1].minMelanin;
-            ProcGen.MelaninRange = new FloatRange(minSelectedMelanin, maxSelectedMelanin);
+            Editor.MelaninRange = new FloatRange(minSelectedMelanin, maxSelectedMelanin);
 
             var minSkinColor = genes[melaninRange.min].IconColor;
             var maxSkinColor = genes[melaninRange.max].IconColor;
@@ -138,15 +138,15 @@ namespace Necrofancy.PrepareProcedurally.Interface
             
             // skill weight variation
             var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 11, textRect.width, RowHeight);
-            ProcGen.SkillWeightVariation = Widgets.HorizontalSlider_NewTemp(variationSlider, ProcGen.SkillWeightVariation, 1f, 5.0f, true, SkillVariationText.Translate(ProcGen.SkillWeightVariation.ToString("P0")), "Unvarying", "1-5x variation", 0.1f);
+            Editor.SkillWeightVariation = Widgets.HorizontalSlider_NewTemp(variationSlider, Editor.SkillWeightVariation, 1f, 5.0f, true, SkillVariationText.Translate(Editor.SkillWeightVariation.ToString("P0")), "Unvarying", "1-5x variation", 0.1f);
             TooltipHandler.TipRegion(variationSlider, "VariationTooltip".Translate());
 
             // max passion slider and explainer
             var passionSlider = new Rect(textRect.x, textRect.y + RowHeight * 13, textRect.width, RowHeight);
-            ProcGen.MaxPassionPoints = Widgets.HorizontalSlider_NewTemp(passionSlider, ProcGen.MaxPassionPoints, 0, 9.0f, true, PassionMaxText.Translate(ProcGen.MaxPassionPoints.ToString("N1")), "0", "9", 0.5f);
+            Editor.MaxPassionPoints = Widgets.HorizontalSlider_NewTemp(passionSlider, Editor.MaxPassionPoints, 0, 9.0f, true, PassionMaxText.Translate(Editor.MaxPassionPoints.ToString("N1")), "0", "9", 0.5f);
             var textExplainer = new Rect(textRect.x, textRect.y + RowHeight * 14, textRect.width, RowHeight * 2);
             var passionPointsNeeded = skillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
-            var passionPointsAvailable = ProcGen.MaxPassionPoints * Find.GameInitData.startingPawnCount;
+            var passionPointsAvailable = Editor.MaxPassionPoints * Find.GameInitData.startingPawnCount;
             
             TooltipHandler.TipRegion(passionSlider, "PassionPointsDescriptionTooltip".Translate());
             
@@ -249,7 +249,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
                 if (ButtonHit(widgetRow, Minus, selection.major > 0))
                 {
                     selection.major--;
-                    ProcGen.MakeDirty();
+                    Editor.MakeDirty();
                 }
 
                 widgetRow.Gap(GapBeforeNumeric);
@@ -264,7 +264,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
                         selection.minor--;
 
                     selection.major++;
-                    ProcGen.MakeDirty();
+                    Editor.MakeDirty();
                 }
 
                 // draw minor passions selection section if we can give a minor passion role.
@@ -281,7 +281,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
                 if (ButtonHit(widgetRow, Minus, selection.minor > 0))
                 {
                     selection.minor--;
-                    ProcGen.MakeDirty();
+                    Editor.MakeDirty();
                 }
 
                 widgetRow.Gap(GapBeforeNumeric);
@@ -294,7 +294,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
                         selection.usable--;
 
                     selection.minor++;
-                    ProcGen.MakeDirty();
+                    Editor.MakeDirty();
                 }
 
                 // draw minimal non-passion selection section if more pawns can be assigned.
@@ -310,7 +310,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
                 if (ButtonHit(widgetRow, Minus, selection.usable > 0))
                 {
                     selection.usable--;
-                    ProcGen.MakeDirty();
+                    Editor.MakeDirty();
                 }
 
                 widgetRow.Gap(GapBeforeNumeric);
@@ -320,7 +320,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
                 if (ButtonHit(widgetRow, Plus, pawnsRemaining > 0))
                 {
                     selection.usable++;
-                    ProcGen.MakeDirty();
+                    Editor.MakeDirty();
                 }
             }
 
@@ -330,7 +330,7 @@ namespace Necrofancy.PrepareProcedurally.Interface
                 SoundDefOf.Click.PlayOneShotOnCamera();
                 factions.RemoveAt(index);
                 flag = true;
-                ProcGen.MakeDirty();
+                Editor.MakeDirty();
             }
 
             Widgets.EndGroup();

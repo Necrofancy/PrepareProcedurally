@@ -35,7 +35,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
                 void ApplyColor()
                 {
                     pawn.story.favoriteColor = color.color;
-                    ProcGen.LockedPawns.Add(pawn);
+                    Editor.LockedPawns.Add(pawn);
                 }
 
                 options.Add(new FloatMenuGridOption(BaseContent.WhiteTex, ApplyColor, color.color, color.LabelCap));

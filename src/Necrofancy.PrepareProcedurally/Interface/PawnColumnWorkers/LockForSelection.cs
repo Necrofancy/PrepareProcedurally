@@ -31,19 +31,19 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
         {
             if (IsLocked(pawn))
             {
-                ProcGen.LockedPawns.Remove(pawn);
+                Editor.LockedPawns.Remove(pawn);
                 SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera();
             }
             else
             {
-                ProcGen.LockedPawns.Add(pawn);
+                Editor.LockedPawns.Add(pawn);
                 SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera();
             }
         }
 
         protected override int Width => (int)Text.LineHeight;
 
-        private static bool IsLocked(Pawn pawn) => ProcGen.LockedPawns.Contains(pawn);
+        private static bool IsLocked(Pawn pawn) => Editor.LockedPawns.Contains(pawn);
 
         /// <summary>
         /// Lazy load any related textures to avoid having something try resolving off the UI thread at start.

@@ -19,7 +19,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
         public SelectBackstorySpecifically(List<string> spawnCategories)
         {
             this.categoryNames = spawnCategories;
-            foreach (var pawn in ProcGen.LockedPawns)
+            foreach (var pawn in Editor.LockedPawns)
             {
                 var story = pawn.story;
                 alreadyUsed.Add(story.Childhood);
@@ -31,7 +31,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
         public SelectBackstorySpecifically(string categoryName)
         {
             this.categoryNames = new List<string>{categoryName};
-            foreach (var pawn in ProcGen.LockedPawns)
+            foreach (var pawn in Editor.LockedPawns)
             {
                 var story = pawn.story;
                 alreadyUsed.Add(story.Childhood);

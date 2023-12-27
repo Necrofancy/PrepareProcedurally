@@ -3,7 +3,7 @@
 
   <PawnTableDef>
     <defName>PrepareProcedurallyResults</defName>
-    <workerClass>Necrofancy.PrepareProcedurally.Editor.MaplessPawnTable</workerClass>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.MaplessPawnTable</workerClass>
     <columns>
       <li>PawnCanBePrepared</li>
       <li>LockForSelection</li>

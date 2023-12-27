@@ -15,7 +15,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             requiredTraits.AddRange(Compatibility.Layer.GetExtraTraitRequirements(pawn));
 
             var index = StartingPawnUtility.PawnIndex(pawn);
-            if (index < ProcGen.TraitRequirements.Count && ProcGen.TraitRequirements[index] is { } traits)
+            if (index < Editor.TraitRequirements.Count && Editor.TraitRequirements[index] is { } traits)
             {
                 requiredTraits.AddRange(traits);
             }
@@ -38,7 +38,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             }
 
             var index = StartingPawnUtility.PawnIndex(pawn);
-            if (index < ProcGen.TraitRequirements.Count && ProcGen.TraitRequirements[index] is { } traits)
+            if (index < Editor.TraitRequirements.Count && Editor.TraitRequirements[index] is { } traits)
             {
                 requiredTraits.AddRange(traits);
             }

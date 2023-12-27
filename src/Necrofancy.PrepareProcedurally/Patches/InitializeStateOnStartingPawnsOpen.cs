@@ -20,7 +20,7 @@ namespace Necrofancy.PrepareProcedurally.Patches
         [HarmonyPostfix]
         public static void PostOpen(Page_ConfigureStartingPawns __instance) 
         {
-            ProcGen.SetCleanState();
+            Editor.SetCleanState();
         }
     }
 }

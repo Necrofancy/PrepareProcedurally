@@ -19,7 +19,7 @@ namespace Necrofancy.PrepareProcedurally.Patches
         [HarmonyPostfix]
         public static void DoNext() 
         {
-            ProcGen.ClearState();
+            Editor.ClearState();
             
             while (Find.WindowStack.WindowOfType<Interface.Dialogs.EditSpecificPawn>() is { } dialog)
             {

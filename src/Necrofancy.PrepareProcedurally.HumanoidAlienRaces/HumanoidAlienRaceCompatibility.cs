@@ -86,15 +86,15 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
             var index = StartingPawnUtility.PawnIndex(pawn);
 
             var addBackToLocked = false;
-            if (ProcGen.LockedPawns.Contains(pawn))
+            if (Editor.LockedPawns.Contains(pawn))
             {
-                ProcGen.LockedPawns.Remove(pawn);
+                Editor.LockedPawns.Remove(pawn);
                 addBackToLocked = true;
             }
 
             string pawnChildhoods = null, pawnAdulthoods = null;
-            using (TemporarilyChange.PlayerFactionMelaninRange(ProcGen.MelaninRange))
-            using (TemporarilyChange.AgeOnAllRelevantRaceProperties(ProcGen.RaceAgeRanges))
+            using (TemporarilyChange.PlayerFactionMelaninRange(Editor.MelaninRange))
+            using (TemporarilyChange.AgeOnAllRelevantRaceProperties(Editor.RaceAgeRanges))
             {
                 bool foundBackstoryToWorkWith = false;
                 while (!foundBackstoryToWorkWith)
@@ -113,7 +113,7 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
             }
             
             var specifier = new SelectBackstorySpecifically(new List<string>{pawnChildhoods, pawnAdulthoods});
-            var bio = specifier.GetBestBio(collector.Weight, ProcGen.TraitRequirements[index]);
+            var bio = specifier.GetBestBio(collector.Weight, Editor.TraitRequirements[index]);
             var traits = bio.Traits;
 
             var builder = new PawnBuilder(bio);
@@ -131,7 +131,7 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
 
             if (addBackToLocked)
             {
-                ProcGen.LockedPawns.Add(pawn);
+                Editor.LockedPawns.Add(pawn);
             }
 
             return pawn;
@@ -142,15 +142,15 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
             // it's actually impossible to try balancing up-front because I don't know what backstories are available
             // so at each step let's try grabbing some passions and go through each unlocked pawn.
 
-            var variation = new IntRange(10, (int)(ProcGen.SkillWeightVariation * 10));
+            var variation = new IntRange(10, (int)(Editor.SkillWeightVariation * 10));
             var backgrounds = BackstorySolver.TryToSolveWith(situation, variation);
             var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
-            ProcGen.LastResults = finalSkills;
+            Editor.LastResults = finalSkills;
             
-            for (int pawnIndex = 0; pawnIndex < ProcGen.StartingPawns.Count; pawnIndex++)
+            for (int pawnIndex = 0; pawnIndex < Editor.StartingPawns.Count; pawnIndex++)
             {
-                var pawn = ProcGen.StartingPawns[pawnIndex];
-                if (ProcGen.LockedPawns.Contains(pawn) || !ProcGen.LastResults[pawnIndex].HasValue)
+                var pawn = Editor.StartingPawns[pawnIndex];
+                if (Editor.LockedPawns.Contains(pawn) || !Editor.LastResults[pawnIndex].HasValue)
                 {
                     continue;
                 }
@@ -158,7 +158,7 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
                 var reqs = new List<(SkillDef Skill, UsabilityRequirement Usability)>();
                 foreach (var skill in DefDatabase<SkillDef>.AllDefsListForReading)
                 {
-                    var result = ProcGen.LastResults[pawnIndex].Value.FinalRanges[skill];
+                    var result = Editor.LastResults[pawnIndex].Value.FinalRanges[skill];
                     var usability = result.Passion switch
                     {
                         Passion.Major => UsabilityRequirement.Major,
@@ -206,7 +206,7 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
                 }
             
                 var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
-                ProcGen.StartingPawns[pawnIndex] = RandomizeSingularPawn(pawn, collectSpecificPassions, reqs);
+                Editor.StartingPawns[pawnIndex] = RandomizeSingularPawn(pawn, collectSpecificPassions, reqs);
             }
         }
     }

@@ -20,8 +20,8 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             for (var i = currentBackgrounds.Count; i < situation.Pawns; i++)
             {
                 // Evil static state here
-                var existingPawn = ProcGen.StartingPawns[i];
-                if (ProcGen.LockedPawns.Contains(existingPawn))
+                var existingPawn = Editor.StartingPawns[i];
+                if (Editor.LockedPawns.Contains(existingPawn))
                 {
                     currentBackgrounds.Add(StaticBackgroundPossibility(existingPawn));
                     continue;
@@ -34,7 +34,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
                 }
 
                 var skillWeightingSystem = new SpecificSkillWeights(weights);
-                var bio = specifier.GetBestBio(skillWeightingSystem.Weight, ProcGen.TraitRequirements[i]);
+                var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
                 var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
                 currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, true));
             }

@@ -28,7 +28,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
         {
             TraitOptions.Clear();
 
-            var lockedPawn = ProcGen.LockedPawns.Contains(pawn);
+            var lockedPawn = Editor.LockedPawns.Contains(pawn);
             var needs = lockedPawn ? TraitUtilities.RequiredTraitsForLockedPawn(pawn) : TraitUtilities.RequiredTraitsForUnlockedPawn(pawn);
             TraitOptions.AddRange(TraitUtilities.GetAvailableTraits(needs));
             
@@ -85,7 +85,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
         private static void AddTraitToLockedPawn(Pawn pawn, TraitRequirement option)
         {
             var index = StartingPawnUtility.PawnIndex(pawn);
-            ProcGen.TraitRequirements[index].Add(option);
+            Editor.TraitRequirements[index].Add(option);
 
             foreach (var trait in pawn.story.traits.allTraits)
             {
@@ -109,8 +109,8 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
         private static void AddTraitToUnlockedPawn(Pawn pawn, TraitRequirement option)
         {
             var index = StartingPawnUtility.PawnIndex(pawn);
-            ProcGen.TraitRequirements[index].Add(option);
-            ProcGen.MakeDirty();
+            Editor.TraitRequirements[index].Add(option);
+            Editor.MakeDirty();
         }
 
         public override int GetMinWidth(PawnTable table)
@@ -146,7 +146,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             if (Widgets.ButtonInvisible(rect, doMouseoverSound: true))
             {
                 var index = StartingPawnUtility.PawnIndex(pawn);
-                var requiredTraits = ProcGen.TraitRequirements[index];
+                var requiredTraits = Editor.TraitRequirements[index];
                 bool found = false;
                 foreach (var required in requiredTraits)
                 {
@@ -188,7 +188,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             }
             
             var index = StartingPawnUtility.PawnIndex(pawn);
-            var forcedTraits = ProcGen.TraitRequirements[index];
+            var forcedTraits = Editor.TraitRequirements[index];
             if (forcedTraits.Any(x => x.def == trait.def && x.degree == trait.Degree))
             {
                 builder.AppendLine().AppendLine().AppendLine(TraitLockedByPlayerChoiceDescription.Translate());
@@ -220,7 +220,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
             }
 
             var index = StartingPawnUtility.PawnIndex(pawn);
-            var forcedTraits = ProcGen.TraitRequirements[index];
+            var forcedTraits = Editor.TraitRequirements[index];
             if (forcedTraits.Any(x => x.def == trait.def && x.degree == trait.Degree))
             {
                 return ColoredText.ImpactColor;

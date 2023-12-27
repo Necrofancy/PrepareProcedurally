@@ -31,10 +31,10 @@ namespace Necrofancy.PrepareProcedurally.Solving
 
             var empty = new List<TraitDef>();
 
-            var variation = new IntRange(10, (int)(ProcGen.SkillWeightVariation * 10));
+            var variation = new IntRange(10, (int)(Editor.SkillWeightVariation * 10));
             var backgrounds = BackstorySolver.TryToSolveWith(situation, variation);
             var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
-            ProcGen.LastResults = finalSkills;
+            Editor.LastResults = finalSkills;
             for (var i = 0; i < pawnCount; i++)
             {
                 var backstory = backgrounds[i];
@@ -43,8 +43,8 @@ namespace Necrofancy.PrepareProcedurally.Solving
                     continue;
                 
                 using (TemporarilyChange.ScenarioBannedTraits(empty))
-                using (TemporarilyChange.PlayerFactionMelaninRange(ProcGen.MelaninRange))
-                using (TemporarilyChange.BiologicalAgeRangeInRequest(ProcGen.AgeRange, i))
+                using (TemporarilyChange.PlayerFactionMelaninRange(Editor.MelaninRange))
+                using (TemporarilyChange.BiologicalAgeRangeInRequest(Editor.AgeRange, i))
                 using (TemporarilyChange.GenderInRequest(backstory.Background.Gender, i))
                 {
                     pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
@@ -63,7 +63,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
             var index = StartingPawnUtility.PawnIndex(pawn);
             var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
             var specifier = new SelectBackstorySpecifically(backstoryCategory);
-            var bio = specifier.GetBestBio(collector.Weight, ProcGen.TraitRequirements[index]);
+            var bio = specifier.GetBestBio(collector.Weight, Editor.TraitRequirements[index]);
             var traits = bio.Traits;
             var empty = new List<TraitDef>();
 
@@ -77,15 +77,15 @@ namespace Necrofancy.PrepareProcedurally.Solving
             }
 
             var addBackToLocked = false;
-            if (ProcGen.LockedPawns.Contains(pawn))
+            if (Editor.LockedPawns.Contains(pawn))
             {
-                ProcGen.LockedPawns.Remove(pawn);
+                Editor.LockedPawns.Remove(pawn);
                 addBackToLocked = true;
             }
 
             using (TemporarilyChange.ScenarioBannedTraits(empty))
-            using (TemporarilyChange.PlayerFactionMelaninRange(ProcGen.MelaninRange))
-            using (TemporarilyChange.BiologicalAgeRangeInRequest(ProcGen.AgeRange, index))
+            using (TemporarilyChange.PlayerFactionMelaninRange(Editor.MelaninRange))
+            using (TemporarilyChange.BiologicalAgeRangeInRequest(Editor.AgeRange, index))
             using (TemporarilyChange.GenderInRequest(bio.Gender, index))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);
@@ -98,7 +98,7 @@ namespace Necrofancy.PrepareProcedurally.Solving
 
             if (addBackToLocked)
             {
-                ProcGen.LockedPawns.Add(pawn);
+                Editor.LockedPawns.Add(pawn);
             }
 
             return pawn;

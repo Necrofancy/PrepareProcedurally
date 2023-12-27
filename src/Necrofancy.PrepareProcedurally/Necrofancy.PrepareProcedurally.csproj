@@ -70,6 +70,7 @@
     <Compile Include="Defs\BySetup.cs" />
     <Compile Include="Defs\BySetupOf.cs" />
     <Compile Include="Defs\SkillRequirementDef.cs" />
+    <Compile Include="Editor.cs" />
     <Compile Include="HarmonyPatcher.cs" />
     <Compile Include="Interface\LazyTexture.cs" />
     <Compile Include="Interface\MaplessPawnTable.cs" />
