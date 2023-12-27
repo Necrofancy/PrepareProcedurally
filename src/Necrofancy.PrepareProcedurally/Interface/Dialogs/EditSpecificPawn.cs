@@ -134,48 +134,9 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs
                 }
             }
             
-            var index = StartingPawnUtility.PawnIndex(pawn);
-
-            var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
             var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
-            var specifier = new SelectBackstorySpecifically(backstoryCategory);
-            var bio = specifier.GetBestBio(collectSpecificPassions.Weight, ProcGen.TraitRequirements[index]);
-            var traits = bio.Traits;
-            var empty = new List<TraitDef>();
 
-            var builder = new PawnBuilder(bio);
-            foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
-            {
-                if (usability == UsabilityRequirement.Major)
-                    builder.TryLockInPassion(skill, Passion.Major);
-                else if (usability == UsabilityRequirement.Minor)
-                    builder.TryLockInPassion(skill, Passion.Minor);
-            }
-
-            var addBackToLocked = false;
-            if (ProcGen.LockedPawns.Contains(pawn))
-            {
-                ProcGen.LockedPawns.Remove(pawn);
-                addBackToLocked = true;
-            }
-
-            using (TemporarilyChange.ScenarioBannedTraits(empty))
-            using (TemporarilyChange.PlayerFactionMelaninRange(ProcGen.MelaninRange))
-            using (TemporarilyChange.BiologicalAgeRange(ProcGen.AgeRange, index))
-            using (TemporarilyChange.RequestedGender(bio.Gender, index))
-            {
-                pawn = StartingPawnUtility.RandomizeInPlace(pawn);
-                ProcGen.OnPawnChanged(pawn);
-            }
-            
-            bio.ApplyBackstoryTo(pawn);
-            builder.Build().ApplySimulatedSkillsTo(pawn);
-            traits.ApplyRequestedTraitsTo(pawn);
-
-            if (addBackToLocked)
-            {
-                ProcGen.LockedPawns.Add(pawn);
-            }
+            pawn = Compatibility.Layer.RandomizeSingularPawn(pawn, collectSpecificPassions, reqs);
         }
 
         private void DrawButtons(Rect rect)

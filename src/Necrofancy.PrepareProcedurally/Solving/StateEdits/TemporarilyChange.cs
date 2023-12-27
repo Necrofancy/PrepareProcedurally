@@ -21,23 +21,19 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
     /// </summary>
     public static class TemporarilyChange
     {
-        public static IDisposable BiologicalAgeRange(IntRange ageRange, int pawnIndex)
+        public static IDisposable BiologicalAgeRangeInRequest(IntRange ageRange, int pawnIndex)
         {
+            if (!(StartingPawnUtilityState.GetStartingPawnRequestList() is { } startingPawnRequests)
+                || startingPawnRequests.Count <= pawnIndex)
+            {
+                return TemporaryEdit.NullEdit;
+            }
+            
             var pawnKind = Faction.OfPlayer.def.basicMemberKind;
             SimpleCurve generationCurve = pawnKind.race.race.ageGenerationCurve;
             
             var temporaryCurve = EstimateRolling.SubSampleCurve(generationCurve, ageRange);
-            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRaceThingDef(pawnKind.race))
-            {
-                void SetCurve(SimpleCurve curve)
-                {
-                    Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve = curve;
-                }
-            
-                return new TemporaryEdit<SimpleCurve>(generationCurve, temporaryCurve, SetCurve);
-            }
 
-            var startingPawnRequests = StartingPawnUtilityState.GetStartingPawnRequestList();
             var currentRequest = startingPawnRequests[pawnIndex];
             var editedRequest = startingPawnRequests[pawnIndex];
 
@@ -50,16 +46,27 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
             return new TemporaryEdit<PawnGenerationRequest>(currentRequest, editedRequest, SetRequest);
         }
 
-        public static IDisposable RequestedGender(GenderPossibility gender, int pawnIndex)
+        public static TemporaryEdit<SimpleCurve> AgeThroughRaceProperties(IntRange ageRange, RaceProperties race)
         {
-            var pawnKind = Faction.OfPlayer.def.basicMemberKind;
-            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRaceThingDef(pawnKind.race))
+            SimpleCurve generationCurve = race.ageGenerationCurve;
+            var temporaryCurve = EstimateRolling.SubSampleCurve(generationCurve, ageRange);
+            
+            void SetCurve(SimpleCurve curve)
             {
-                // Maybe I'll look at this later...
+                Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve = curve;
+            }
+            
+            return new TemporaryEdit<SimpleCurve>(generationCurve, temporaryCurve, SetCurve);
+        }
+
+        public static IDisposable GenderInRequest(GenderPossibility gender, int pawnIndex)
+        {
+            if (!(StartingPawnUtilityState.GetStartingPawnRequestList() is { } startingPawnRequests)
+                || startingPawnRequests.Count <= pawnIndex)
+            {
                 return TemporaryEdit.NullEdit;
             }
             
-            var startingPawnRequests = StartingPawnUtilityState.GetStartingPawnRequestList();
             var currentRequest = startingPawnRequests[pawnIndex];
             var editedRequest = startingPawnRequests[pawnIndex];
 

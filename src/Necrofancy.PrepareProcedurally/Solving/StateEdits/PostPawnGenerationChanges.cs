@@ -50,14 +50,8 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
             pawn.Name = bio.Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
             
             var bodyTypeSetByBiotech = false;
-            var isModRacePawn = HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn);
-
-            // Some HAR races - furry mods in particular - explode if pawn.story.bodyType is change, and I don't know
-            // how to isolate it to just those races and treat them differently. 
             
-            // My current assumption is that only humans leverage this in much detail, so I'm only mucking with body
-            // types if they are specifically human.
-            if (!isModRacePawn)
+            if (Compatibility.Layer.AllowEditingBodyType(pawn))
             {
                 if (ModsConfig.BiotechActive)
                 {
@@ -126,9 +120,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits
         /// </summary>
         public static void ApplyRequestedTraitsTo(this List<TraitRequirement> traits, Pawn pawn)
         {
-            traits = HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn)
-                ? traits.Concat(HumanoidAlienRaceCompatibility.GetTraitRequirements(pawn)).ToList()
-                : traits;
+            traits = traits.Concat(Compatibility.Layer.GetExtraTraitRequirements(pawn)).ToList();
             
             foreach (var trait in traits)
             {

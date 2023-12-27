@@ -1,4 +1,10 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=C_003A_005CProgram_0020Files_0020_0028x86_0029_005CSteam_005Csteamapps_005Ccommon_005CRimWorld_005CMods_005CAlienRaces_005C1_002E4_005CAssemblies_005CAlienRace_002Edll/@EntryIndexedValue">True</s:Boolean>
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
+  &lt;Assembly Path="C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AlienRaces\1.4\Assemblies\AlienRace.dll" /&gt;&#xD;
+&lt;/AssemblyExplorer&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=eeb973cd_002D638b_002D4516_002D81b6_002D3419f22103d1/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Necrofancy.PrepareProcedurally.Test&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Project Location="C:\Users\BtCar\RiderProjects\PrepareProcedurally\src\Necrofancy.PrepareProcedurally.Test" Presentation="&amp;lt;Necrofancy.PrepareProcedurally.Test&amp;gt;" /&gt;&#xD;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=0da1c295_002D69ab_002D4ccb_002Dab8a_002Dfc8c9a68f303_0023Necrofancy_002EPrepareProcedurally_002ETest/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=cc9bd976_002Db901_002D4216_002Da782_002De97f02766bbb_0023Necrofancy_002EPrepareProcedurally_002ETest_002EMod/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

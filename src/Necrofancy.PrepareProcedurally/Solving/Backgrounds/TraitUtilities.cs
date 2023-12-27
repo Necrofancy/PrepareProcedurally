@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
@@ -13,11 +11,8 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
         internal static List<TraitRequirement> RequiredTraitsForUnlockedPawn(Pawn pawn)
         {
             var requiredTraits = new List<TraitRequirement>();
-
-            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn))
-            {
-                requiredTraits.AddRange(HumanoidAlienRaceCompatibility.GetTraitRequirements(pawn));
-            }
+            
+            requiredTraits.AddRange(Compatibility.Layer.GetExtraTraitRequirements(pawn));
 
             var index = StartingPawnUtility.PawnIndex(pawn);
             if (index < ProcGen.TraitRequirements.Count && ProcGen.TraitRequirements[index] is { } traits)
@@ -31,11 +26,8 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
         internal static List<TraitRequirement> RequiredTraitsForLockedPawn(Pawn pawn)
         {
             var requiredTraits = new List<TraitRequirement>();
-            
-            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn))
-            {
-                requiredTraits.AddRange(HumanoidAlienRaceCompatibility.GetTraitRequirements(pawn));
-            }
+
+            requiredTraits.AddRange(Compatibility.Layer.GetExtraTraitRequirements(pawn));
             
             foreach (var trait in pawn.story.traits.allTraits)
             {
@@ -118,28 +110,14 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 
         internal static int MaxAllowedTraits(Pawn pawn)
         {
-            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn))
-            {
-                return MaxNonSexualityTraits + HumanoidAlienRaceCompatibility.GetMaxTraits(pawn);
-            }
-
-            return MaxNonSexualityTraits;
+            return Compatibility.Layer.GetMaximumGeneratedTraits(pawn);
         }
         
         internal static bool IsBackstoryTraitOfPawn(Trait trait, Pawn pawn)
         {
             bool isChildHoodBackstory = pawn.story.Adulthood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
             bool isAdulthoodBackstory = pawn.story.Childhood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
-            if (HumanoidAlienRaceCompatibility.IsHumanoidAlienRacePawn(pawn))
-            {
-                var requiredRaceTraits = HumanoidAlienRaceCompatibility.GetTraitRequirements(pawn);
-                bool isRequiredRaceTrait = requiredRaceTraits.Any(x => x.def == trait.def);
-                return isRequiredRaceTrait || isChildHoodBackstory || isAdulthoodBackstory;
-            }
-            else
-            {
-                return isChildHoodBackstory || isAdulthoodBackstory;
-            }
+            return isChildHoodBackstory || isAdulthoodBackstory;
         }
 
         private static bool BackstoryMatch(Trait traitInstance, BackstoryTrait backstoryTrait)

@@ -9,16 +9,28 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
 {
     public class SelectBackstorySpecifically
     {
-        private readonly string categoryName;
+        private readonly List<string> categoryNames;
         
         private readonly List<BackstoryDef> childhoodStories = new List<BackstoryDef>();
         private readonly List<BackstoryDef> adulthoodStories = new List<BackstoryDef>();
 
         private readonly HashSet<BackstoryDef> alreadyUsed = new HashSet<BackstoryDef>();
 
+        public SelectBackstorySpecifically(List<string> spawnCategories)
+        {
+            this.categoryNames = spawnCategories;
+            foreach (var pawn in ProcGen.LockedPawns)
+            {
+                var story = pawn.story;
+                alreadyUsed.Add(story.Childhood);
+                if (story.Adulthood != null)
+                    alreadyUsed.Add(story.Adulthood);
+            }
+        }
+        
         public SelectBackstorySpecifically(string categoryName)
         {
-            this.categoryName = categoryName;
+            this.categoryNames = new List<string>{categoryName};
             foreach (var pawn in ProcGen.LockedPawns)
             {
                 var story = pawn.story;
@@ -52,7 +64,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             adulthoodStories.Clear();
             
             foreach (var backstory in DefDatabase<BackstoryDef>.AllDefsListForReading)
-                if (backstory.shuffleable && backstory.spawnCategories.Contains(categoryName))
+                if (backstory.shuffleable && backstory.spawnCategories.Any(x => categoryNames.Contains(x)))
                 {
                     var list = backstory.slot == BackstorySlot.Childhood ? childhoodStories : adulthoodStories;
                     if (!alreadyUsed.Contains(backstory))
@@ -128,6 +140,6 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
             return false;
         }
 
-        private bool AllowedBio(PawnBio bio) => bio.childhood.spawnCategories.Contains(categoryName);
+        private bool AllowedBio(PawnBio bio) => bio.childhood.spawnCategories.Any(x => categoryNames.Contains(x));
     }
 }
