@@ -124,6 +124,8 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
                 
                 Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
             }
+
+            Editor.AllowDirtying = true;
         }
     }
 }

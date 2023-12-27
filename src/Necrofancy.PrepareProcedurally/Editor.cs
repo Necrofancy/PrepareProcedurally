@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace Necrofancy.PrepareProcedurally
@@ -43,15 +45,7 @@ namespace Necrofancy.PrepareProcedurally
         public static IntRange AgeRange
         {
             get => ageRange;
-            set
-            {
-                if (ageRange != value)
-                {
-                    ageRange = value;
-                    RaceAgeRanges[selectedRace] = RaceAgeRanges[selectedRace].WithUpdatedAge(value);
-                    Dirty = true;
-                }
-            }
+            set => SetProperty(ref ageRange, value);
         }
         
         public static IntRange AllowedAgeRange { get; set; }
@@ -59,53 +53,43 @@ namespace Necrofancy.PrepareProcedurally
         public static float SkillWeightVariation
         {
             get => skillWeightVariation;
-            set
-            {
-                // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (skillWeightVariation != value)
-                {
-                    skillWeightVariation = value;
-                    Dirty = true;
-                }
-            }
+            set => SetProperty(ref skillWeightVariation, value);
         }
 
         public static FloatRange MelaninRange
         {
             get => melaninRange;
-            set
-            {
-                if (melaninRange != value)
-                {
-                    melaninRange = value;
-                    Dirty = true;
-                }
-            }
+            set => SetProperty(ref melaninRange, value);
         }
 
         public static float MaxPassionPoints
         {
             get => maxPassionPoints;
-            set
-            {
-                // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (maxPassionPoints != value)
-                {
-                    maxPassionPoints = value;
-                    Dirty = true;
-                }
-            }
+            set => SetProperty(ref maxPassionPoints, value);
         }
 
         internal static bool Dirty { get; set; }
+        
+        internal static bool AllowDirtying { get; set; }
 
-        public static void MakeDirty() => Dirty = true;
+        public static void MakeDirty()
+        {
+            if (AllowDirtying)
+            {
+                Dirty = true;
+            }
+        }
         
         /// <summary>
         /// Set up a clean state based on starting scenario, map tile location, and ideology.
         /// </summary>
         public static void SetCleanState()
         {
+            Dirty = false;
+            AllowDirtying = false;
+            
+            ClearState();
+            
             SkillPassions = DefDatabase<SkillDef>.AllDefsListForReading
                 .Select(SkillPassionSelection.CreateFromSkill).ToList();
             var pawnCount = Find.GameInitData.startingPawnCount;
@@ -113,10 +97,9 @@ namespace Necrofancy.PrepareProcedurally
             TraitRequirements = StartingPawns.Select(x => new List<TraitRequirement>()).ToList();
 
             var kind = Faction.OfPlayer.def.basicMemberKind;
-            var race = kind.race.race;
             int minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(kind);
             int maximumAdulthoodAge = (int)kind.race.race.ageGenerationCurve.Last().x;
-            melaninRange = new FloatRange(0.0f, 0.9f);
+            melaninRange = new FloatRange(0.0f, 1f);
             AllowedAgeRange = new IntRange(minimumAdulthoodAge, maximumAdulthoodAge);
             ageRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
 
@@ -139,10 +122,6 @@ namespace Necrofancy.PrepareProcedurally
             // TODO: For tribal starts it might be fun to have this be based on latitude of the starting location.
             melaninRange = new FloatRange(0.0f, 0.9f);
             maxPassionPoints = 7.0f;
-
-            // initial state will be clean so that any pawns that players want to keep from base randomization
-            // won't be swept away by the PrepareProcedurally page automatically updating.
-            Dirty = false;
         }
         
         /// <summary>
@@ -153,6 +132,19 @@ namespace Necrofancy.PrepareProcedurally
             LastResults = null;
             StartingPawns = null;
             LockedPawns.Clear();
+        }
+
+        private static void SetProperty<T>(ref T value, T newValue, [CallerMemberName] string caller = null)
+        {
+            if (!newValue?.Equals(value) == true)
+            {
+                value = newValue;
+                if (AllowDirtying)
+                {
+                    Dirty = true;
+                    Log.Message($"Property changed on editor for '{caller}' - Dirty for Procedural Generation");
+                }
+            }
         }
     }
 }
