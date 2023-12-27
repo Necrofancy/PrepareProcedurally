@@ -18,7 +18,7 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
     {
         static HumanoidAlienRaceCompatibility()
         {
-            Log.Error("Prepare Procedurally - Loaded Compatibility for Human Alien Races");
+            Log.Message("Prepare Procedurally - Loaded Compatibility for Human Alien Races");
             Layer = new HumanoidAlienRaceCompatibility();
         }
         
