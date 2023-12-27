@@ -141,7 +141,9 @@ namespace Necrofancy.PrepareProcedurally
                 if (AllowDirtying)
                 {
                     Dirty = true;
+#if DEBUG
                     Log.Message($"Property changed on editor for '{caller}' - Dirty for Procedural Generation");
+#endif
                 }
             }
         }
