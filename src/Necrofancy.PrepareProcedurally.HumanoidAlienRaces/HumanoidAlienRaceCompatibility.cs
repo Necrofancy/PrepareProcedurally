@@ -18,7 +18,7 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
     {
         static HumanoidAlienRaceCompatibility()
         {
-            Log.Error("HELLO YES YOU HAVE LOADED THE HAR COMPATIBILITY DLL");
+            Log.Error("Prepare Procedurally - Loaded Compatibility for Human Alien Races");
             Layer = new HumanoidAlienRaceCompatibility();
         }
         
