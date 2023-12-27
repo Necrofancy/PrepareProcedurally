@@ -92,15 +92,25 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
                 addBackToLocked = true;
             }
 
+            string pawnChildhoods = null, pawnAdulthoods = null;
             using (TemporarilyChange.PlayerFactionMelaninRange(ProcGen.MelaninRange))
             using (TemporarilyChange.AgeThroughRaceProperties(ProcGen.AgeRange, Faction.OfPlayer.def.basicMemberKind.race.race))
             {
-                pawn = StartingPawnUtility.RandomizeInPlace(pawn);
-                ProcGen.OnPawnChanged(pawn);
-            }
+                bool foundBackstoryToWorkWith = false;
+                while (!foundBackstoryToWorkWith)
+                {
+                    pawn = StartingPawnUtility.RandomizeInPlace(pawn);
+                    ProcGen.OnPawnChanged(pawn);
 
-            var pawnChildhoods = pawn.story.Childhood.spawnCategories.First();
-            var pawnAdulthoods = pawn.story.Adulthood.spawnCategories.First();
+                    if (pawn.story.Childhood.spawnCategories.Any() &&
+                        pawn.story.Adulthood?.spawnCategories.Any() == true)
+                    {
+                        pawnChildhoods = pawn.story.Childhood.spawnCategories.First();
+                        pawnAdulthoods = pawn.story.Adulthood.spawnCategories.First();
+                        foundBackstoryToWorkWith = true;
+                    }
+                }
+            }
             
             var specifier = new SelectBackstorySpecifically(new List<string>{pawnChildhoods, pawnAdulthoods});
             var bio = specifier.GetBestBio(collector.Weight, ProcGen.TraitRequirements[index]);
@@ -129,7 +139,75 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces
 
         public override void RandomizeForTeam(BalancingSituation situation)
         {
-            //TODO reroll individually collecting some passions.
+            // it's actually impossible to try balancing up-front because I don't know what backstories are available
+            // so at each step let's try grabbing some passions and go through each unlocked pawn.
+
+            var variation = new IntRange(10, (int)(ProcGen.SkillWeightVariation * 10));
+            var backgrounds = BackstorySolver.TryToSolveWith(situation, variation);
+            var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
+            ProcGen.LastResults = finalSkills;
+            
+            for (int pawnIndex = 0; pawnIndex < ProcGen.StartingPawns.Count; pawnIndex++)
+            {
+                var pawn = ProcGen.StartingPawns[pawnIndex];
+                if (ProcGen.LockedPawns.Contains(pawn) || !ProcGen.LastResults[pawnIndex].HasValue)
+                {
+                    continue;
+                }
+                
+                var reqs = new List<(SkillDef Skill, UsabilityRequirement Usability)>();
+                foreach (var skill in DefDatabase<SkillDef>.AllDefsListForReading)
+                {
+                    var result = ProcGen.LastResults[pawnIndex].Value.FinalRanges[skill];
+                    var usability = result.Passion switch
+                    {
+                        Passion.Major => UsabilityRequirement.Major,
+                        Passion.Minor => UsabilityRequirement.Minor,
+                        _ => UsabilityRequirement.CanBeOff
+                    };
+                    reqs.Add((skill, usability));
+                }
+                
+                var dict = new Dictionary<SkillDef, int>();
+                var requiredSkills = new List<SkillDef>();
+                var requiredWorkTags = WorkTags.None;
+
+                foreach (var (skill, usability) in reqs)
+                {
+                    switch (usability)
+                    {
+                        case UsabilityRequirement.Major:
+                            dict[skill] = 20 * variation.RandomInRange;
+                            requiredWorkTags |= skill.disablingWorkTags;
+                            requiredSkills.Add(skill);
+                            break;
+                        case UsabilityRequirement.Minor:
+                            dict[skill] = 10 * variation.RandomInRange;
+                            requiredWorkTags |= skill.disablingWorkTags;
+                            requiredSkills.Add(skill);
+                            break;
+                        case UsabilityRequirement.Usable:
+                            dict[skill] = 5 * variation.RandomInRange;
+                            requiredWorkTags |= skill.disablingWorkTags;
+                            requiredSkills.Add(skill);
+                            break;
+                        default:
+                            dict[skill] = -5 * variation.RandomInRange;
+                            break;
+                    }
+                }
+
+                foreach (var workType in DefDatabase<WorkTypeDef>.AllDefsListForReading)
+                {
+                    if (requiredSkills.Any(requiredSkills.Contains))
+                    {
+                        requiredWorkTags |= workType.workTags;
+                    }
+                }
+            
+                var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
+                ProcGen.StartingPawns[pawnIndex] = RandomizeSingularPawn(pawn, collectSpecificPassions, reqs);
+            }
         }
     }
 }
