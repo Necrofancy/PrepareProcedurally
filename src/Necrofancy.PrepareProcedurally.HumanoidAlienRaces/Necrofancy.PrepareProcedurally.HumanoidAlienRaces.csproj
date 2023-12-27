@@ -68,6 +68,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="AlienProcGen.cs" />
         <Compile Include="HumanoidAlienRaceCompatibility.cs" />
         <Compile Include="LogAssembly.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
