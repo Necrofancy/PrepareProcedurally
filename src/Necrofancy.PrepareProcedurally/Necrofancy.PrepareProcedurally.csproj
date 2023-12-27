@@ -77,6 +77,7 @@
     <Compile Include="Interface\MaplessPawnTable.cs" />
     <Compile Include="Interface\PawnColumnWorkers\FavoriteColor.cs" />
     <Compile Include="Interface\PawnColumnWorkers\Race.cs" />
+    <Compile Include="LogAssembly.cs" />
     <Compile Include="Patches\AddButtonToStartingPawnsPage.cs" />
     <Compile Include="Patches\ClearStateOnStartingPawnsClose.cs" />
     <Compile Include="Patches\InitializeStateOnStartingPawnsOpen.cs" />
