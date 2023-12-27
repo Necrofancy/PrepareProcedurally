@@ -6,133 +6,132 @@ using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using Verse;
 
-namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
+namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
+
+public static class BackstorySolver
 {
-    public static class BackstorySolver
+    public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(BalancingSituation situation, IntRange variation, IEnumerable<Pawn>? keepPawns = null)
     {
-        public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(BalancingSituation situation, IntRange variation, IEnumerable<Pawn>? keepPawns = null)
-        {
-            const int age = 35;
-            var specifier = new SelectBackstorySpecifically(situation.CategoryName);
-            var currentBackgrounds = new List<BackgroundPossibility>(situation.Pawns);
+        const int age = 35;
+        var specifier = new SelectBackstorySpecifically(situation.CategoryName);
+        var currentBackgrounds = new List<BackgroundPossibility>(situation.Pawns);
             
-            var weights = new Dictionary<SkillPassionSelection, int>();
-            for (var i = currentBackgrounds.Count; i < situation.Pawns; i++)
+        var weights = new Dictionary<SkillPassionSelection, int>();
+        for (var i = currentBackgrounds.Count; i < situation.Pawns; i++)
+        {
+            // Evil static state here
+            var existingPawn = Editor.StartingPawns[i];
+            if (Editor.LockedPawns.Contains(existingPawn))
             {
-                // Evil static state here
-                var existingPawn = Editor.StartingPawns[i];
-                if (Editor.LockedPawns.Contains(existingPawn))
-                {
-                    currentBackgrounds.Add(StaticBackgroundPossibility(existingPawn));
-                    continue;
-                }
+                currentBackgrounds.Add(StaticBackgroundPossibility(existingPawn));
+                continue;
+            }
                 
-                foreach (var requirement in situation.SkillRequirements)
-                {
-                    var moddedByVariation = requirement.GetWeights(currentBackgrounds) * variation.RandomInRange;
-                    weights[requirement] = moddedByVariation;
-                }
-
-                var skillWeightingSystem = new SpecificSkillWeights(weights);
-                var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
-                var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
-                currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, true));
+            foreach (var requirement in situation.SkillRequirements)
+            {
+                var moddedByVariation = requirement.GetWeights(currentBackgrounds) * variation.RandomInRange;
+                weights[requirement] = moddedByVariation;
             }
 
-            return currentBackgrounds;
+            var skillWeightingSystem = new SpecificSkillWeights(weights);
+            var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
+            var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
+            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, true));
         }
 
-        private static BackgroundPossibility StaticBackgroundPossibility(Pawn pawn)
-        {
-            var bio = new BioPossibility(pawn.story.Childhood, pawn.story.Adulthood);
-            var dict = new Dictionary<SkillDef, IntRange>();
-            foreach (var skill in pawn.skills.skills)
-            {
-                dict[skill.def] = new IntRange(skill.levelInt, skill.levelInt);
-            }
+        return currentBackgrounds;
+    }
 
-            return new BackgroundPossibility(bio, dict, false);
+    private static BackgroundPossibility StaticBackgroundPossibility(Pawn pawn)
+    {
+        var bio = new BioPossibility(pawn.story.Childhood, pawn.story.Adulthood);
+        var dict = new Dictionary<SkillDef, IntRange>();
+        foreach (var skill in pawn.skills.skills)
+        {
+            dict[skill.def] = new IntRange(skill.levelInt, skill.levelInt);
         }
 
-        public static IReadOnlyList<SkillFinalizationResult?> FigureOutPassions(
-            IReadOnlyList<BackgroundPossibility> bios,
-            BalancingSituation situation)
+        return new BackgroundPossibility(bio, dict, false);
+    }
+
+    public static IReadOnlyList<SkillFinalizationResult?> FigureOutPassions(
+        IReadOnlyList<BackgroundPossibility> bios,
+        BalancingSituation situation)
+    {
+        // two lists; one that can be re-ordered at will to try locking in skills easier
+        // and one that retains order to return results later.
+        var pawnsInOriginalOrder = new PawnBuilder?[bios.Count];
+        var list = new List<PawnBuilder?>(bios.Count);
+        for (var i = 0; i < bios.Count; i++)
         {
-            // two lists; one that can be re-ordered at will to try locking in skills easier
-            // and one that retains order to return results later.
-            var pawnsInOriginalOrder = new PawnBuilder?[bios.Count];
-            var list = new List<PawnBuilder?>(bios.Count);
-            for (var i = 0; i < bios.Count; i++)
-            {
-                var possibility = bios[i];
-                var builder = possibility.CanChange
-                    ? new PawnBuilder(possibility.Background)
-                    : null;
+            var possibility = bios[i];
+            var builder = possibility.CanChange
+                ? new PawnBuilder(possibility.Background)
+                : null;
                 
-                pawnsInOriginalOrder[i] = builder;
-                list.Add(builder);
-            }
+            pawnsInOriginalOrder[i] = builder;
+            list.Add(builder);
+        }
             
-            // run non-backstory-related skills last 
-            var skillRequirements = situation.SkillRequirements
-                .OrderByDescending(x => x.Skill.usuallyDefinedInBackstories)
-                .ThenByDescending(x => x.major)
-                .ThenByDescending(x => x.minor)
-                .ThenByDescending(x => x.usable);
-            foreach (var req in skillRequirements)
-            {
-                var skillsDescending = new SkillMaxDescending(req.Skill);
-                list.Sort(skillsDescending);
-                LockInAsNeeded(req, list);
-            }
-
-            var results = new List<SkillFinalizationResult?>(bios.Count);
-            foreach (var builder in pawnsInOriginalOrder)
-            {
-                results.Add(builder?.Build() ?? null);
-            }
-
-            return results;
+        // run non-backstory-related skills last 
+        var skillRequirements = situation.SkillRequirements
+            .OrderByDescending(x => x.Skill.usuallyDefinedInBackstories)
+            .ThenByDescending(x => x.major)
+            .ThenByDescending(x => x.minor)
+            .ThenByDescending(x => x.usable);
+        foreach (var req in skillRequirements)
+        {
+            var skillsDescending = new SkillMaxDescending(req.Skill);
+            list.Sort(skillsDescending);
+            LockInAsNeeded(req, list);
         }
 
-        private static void LockInAsNeeded(SkillPassionSelection req, IReadOnlyList<PawnBuilder?> pawns)
+        var results = new List<SkillFinalizationResult?>(bios.Count);
+        foreach (var builder in pawnsInOriginalOrder)
         {
-            var goal = req.Total;
-            foreach (var pawnBuilder in pawns)
-            {
-                if (pawnBuilder?.LockIn(req, goal) == true)
-                {
-                    goal--;
-                    if (goal == 0)
-                        break;
-                }
-            }
+            results.Add(builder?.Build() ?? null);
         }
 
-        private readonly struct SkillMaxDescending : IComparer<PawnBuilder>
+        return results;
+    }
+
+    private static void LockInAsNeeded(SkillPassionSelection req, IReadOnlyList<PawnBuilder?> pawns)
+    {
+        var goal = req.Total;
+        foreach (var pawnBuilder in pawns)
         {
-            private readonly SkillDef def;
-
-            public SkillMaxDescending(SkillDef def)
+            if (pawnBuilder?.LockIn(req, goal) == true)
             {
-                this.def = def;
+                goal--;
+                if (goal == 0)
+                    break;
             }
+        }
+    }
 
-            public int Compare(PawnBuilder x, PawnBuilder y)
-            {
-                if (ReferenceEquals(x, y)) return 0;
-                if (ReferenceEquals(null, y)) return -1;
-                if (ReferenceEquals(null, x)) return 1;
+    private readonly struct SkillMaxDescending : IComparer<PawnBuilder>
+    {
+        private readonly SkillDef def;
 
-                var byPassion = x.PassionPoints.CompareTo(y.PassionPoints);
-                var bySkillMax = y.MaxOf(def).CompareTo(x.MaxOf(def));
+        public SkillMaxDescending(SkillDef def)
+        {
+            this.def = def;
+        }
 
-                return def.usuallyDefinedInBackstories
-                    ? bySkillMax != 0 ? bySkillMax : byPassion
-                    : byPassion != 0
-                        ? byPassion
-                        : bySkillMax;
-            }
+        public int Compare(PawnBuilder x, PawnBuilder y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return -1;
+            if (ReferenceEquals(null, x)) return 1;
+
+            var byPassion = x.PassionPoints.CompareTo(y.PassionPoints);
+            var bySkillMax = y.MaxOf(def).CompareTo(x.MaxOf(def));
+
+            return def.usuallyDefinedInBackstories
+                ? bySkillMax != 0 ? bySkillMax : byPassion
+                : byPassion != 0
+                    ? byPassion
+                    : bySkillMax;
         }
     }
 }

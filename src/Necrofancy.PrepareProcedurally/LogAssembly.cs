@@ -2,15 +2,14 @@
 using JetBrains.Annotations;
 using Verse;
 
-namespace Necrofancy.PrepareProcedurally
+namespace Necrofancy.PrepareProcedurally;
+
+[StaticConstructorOnStartup, UsedImplicitly]
+public static class LogAssembly
 {
-    [StaticConstructorOnStartup, UsedImplicitly]
-    public static class LogAssembly
+    static LogAssembly()
     {
-        static LogAssembly()
-        {
-            var assembly = Assembly.GetExecutingAssembly().GetName();
-            Log.Message($"{assembly.Name}: v{assembly.Version}");
-        }
+        var assembly = Assembly.GetExecutingAssembly().GetName();
+        Log.Message($"{assembly.Name}: v{assembly.Version}");
     }
 }

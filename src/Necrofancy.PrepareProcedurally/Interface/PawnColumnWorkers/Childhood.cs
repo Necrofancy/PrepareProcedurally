@@ -3,13 +3,12 @@ using Verse;
 
 // ReSharper disable once UnusedType.Global
 
-namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers
+namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
+
+public class Childhood : Backstory
 {
-    public class Childhood : Backstory
+    protected override BackstoryDef StoryFrom(Pawn pawn)
     {
-        protected override BackstoryDef StoryFrom(Pawn pawn)
-        {
-            return pawn.story.Childhood;
-        }
+        return pawn.story.Childhood;
     }
 }

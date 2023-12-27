@@ -3,17 +3,16 @@ using System.Linq;
 using RimWorld;
 using Verse;
 
-namespace Necrofancy.PrepareProcedurally.Solving.Skills
-{
-    public readonly struct SkillFinalizationResult
-    {
-        public SkillFinalizationResult(IReadOnlyDictionary<SkillDef, PassionAndLevel> finalRanges, bool validVanillaPawn)
-        {
-            FinalRanges = finalRanges;
-            ValidVanillaPawn = validVanillaPawn;
-        }
+namespace Necrofancy.PrepareProcedurally.Solving.Skills;
 
-        public bool ValidVanillaPawn { get; }
-        public IReadOnlyDictionary<SkillDef, PassionAndLevel> FinalRanges { get; }
+public readonly struct SkillFinalizationResult
+{
+    public SkillFinalizationResult(IReadOnlyDictionary<SkillDef, PassionAndLevel> finalRanges, bool validVanillaPawn)
+    {
+        FinalRanges = finalRanges;
+        ValidVanillaPawn = validVanillaPawn;
     }
+
+    public bool ValidVanillaPawn { get; }
+    public IReadOnlyDictionary<SkillDef, PassionAndLevel> FinalRanges { get; }
 }

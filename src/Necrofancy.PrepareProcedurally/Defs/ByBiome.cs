@@ -2,12 +2,11 @@
 using RimWorld;
 using Verse;
 
-namespace Necrofancy.PrepareProcedurally.Defs
+namespace Necrofancy.PrepareProcedurally.Defs;
+
+public class ByBiome : Def
 {
-    public class ByBiome : Def
-    {
-        public List<BiomeDef> biome;
-        public List<SkillRequirementDef> skillRequirements;
-        public FloatRange? tribeMelanin;
-    }
+    public List<BiomeDef> biome;
+    public List<SkillRequirementDef> skillRequirements;
+    public FloatRange? tribeMelanin;
 }

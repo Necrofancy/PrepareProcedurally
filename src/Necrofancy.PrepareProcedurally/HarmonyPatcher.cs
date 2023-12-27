@@ -3,11 +3,10 @@ using Verse;
 
 // Resharper disable all
 
-namespace Necrofancy.PrepareProcedurally
+namespace Necrofancy.PrepareProcedurally;
+
+[StaticConstructorOnStartup]
+public class HarmonyPatcher 
 {
-    [StaticConstructorOnStartup]
-    public class HarmonyPatcher 
-    {
-        static HarmonyPatcher() => new Harmony("Necrofancy.PrepareProcedurally").PatchAll();
-    }
+    static HarmonyPatcher() => new Harmony("Necrofancy.PrepareProcedurally").PatchAll();
 }

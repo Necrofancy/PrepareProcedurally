@@ -2,13 +2,12 @@
 
 // ReSharper disable All
 
-namespace Necrofancy.PrepareProcedurally.Defs
-{
-    [DefOf]
-    public class BySetupOf
-    {
-        public static BySetup Basic;
+namespace Necrofancy.PrepareProcedurally.Defs;
 
-        static BySetupOf() => DefOfHelper.EnsureInitializedInCtor(typeof (BySetupOf));
-    }
+[DefOf]
+public class BySetupOf
+{
+    public static BySetup Basic;
+
+    static BySetupOf() => DefOfHelper.EnsureInitializedInCtor(typeof (BySetupOf));
 }

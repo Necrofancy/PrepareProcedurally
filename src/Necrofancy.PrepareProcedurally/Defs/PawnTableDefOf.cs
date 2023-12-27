@@ -3,13 +3,12 @@
 // ReSharper disable once UnusedType.Global
 // ReSharper disable once InconsistentNaming
 
-namespace Necrofancy.PrepareProcedurally.Defs
+namespace Necrofancy.PrepareProcedurally.Defs;
+
+[DefOf]
+public static class PawnTableDefOf
 {
-    [DefOf]
-    public static class PawnTableDefOf
-    {
-        public static PawnTableDef PrepareProcedurallyResults;
+    public static PawnTableDef PrepareProcedurallyResults;
         
-        static PawnTableDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof (PawnTableDefOf));
-    }
+    static PawnTableDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof (PawnTableDefOf));
 }

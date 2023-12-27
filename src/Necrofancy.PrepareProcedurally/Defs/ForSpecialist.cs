@@ -4,12 +4,11 @@ using Verse;
 
 // ReSharper disable All
 
-namespace Necrofancy.PrepareProcedurally.Defs
-{
-    public class ForSpecialist : Def
-    {
-        public PreceptDef IdeologyRole;
+namespace Necrofancy.PrepareProcedurally.Defs;
 
-        public Dictionary<SkillDef, int> WeightingForSkills;
-    }
+public class ForSpecialist : Def
+{
+    public PreceptDef IdeologyRole;
+
+    public Dictionary<SkillDef, int> WeightingForSkills;
 }

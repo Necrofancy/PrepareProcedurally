@@ -2,127 +2,126 @@
 using RimWorld;
 using Verse;
 
-namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds
+namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
+
+internal static class TraitUtilities
 {
-    internal static class TraitUtilities
+    private static readonly int MaxNonSexualityTraits = 3;
+        
+    internal static List<TraitRequirement> RequiredTraitsForUnlockedPawn(Pawn pawn)
     {
-        private static readonly int MaxNonSexualityTraits = 3;
-        
-        internal static List<TraitRequirement> RequiredTraitsForUnlockedPawn(Pawn pawn)
-        {
-            var requiredTraits = new List<TraitRequirement>();
+        var requiredTraits = new List<TraitRequirement>();
             
-            requiredTraits.AddRange(Compatibility.Layer.GetExtraTraitRequirements(pawn));
+        requiredTraits.AddRange(Compatibility.Layer.GetExtraTraitRequirements(pawn));
 
-            var index = StartingPawnUtility.PawnIndex(pawn);
-            if (index < Editor.TraitRequirements.Count && Editor.TraitRequirements[index] is { } traits)
-            {
-                requiredTraits.AddRange(traits);
-            }
-
-            return requiredTraits;
+        var index = StartingPawnUtility.PawnIndex(pawn);
+        if (index < Editor.TraitRequirements.Count && Editor.TraitRequirements[index] is { } traits)
+        {
+            requiredTraits.AddRange(traits);
         }
 
-        internal static List<TraitRequirement> RequiredTraitsForLockedPawn(Pawn pawn)
-        {
-            var requiredTraits = new List<TraitRequirement>();
+        return requiredTraits;
+    }
 
-            requiredTraits.AddRange(Compatibility.Layer.GetExtraTraitRequirements(pawn));
+    internal static List<TraitRequirement> RequiredTraitsForLockedPawn(Pawn pawn)
+    {
+        var requiredTraits = new List<TraitRequirement>();
+
+        requiredTraits.AddRange(Compatibility.Layer.GetExtraTraitRequirements(pawn));
             
-            foreach (var trait in pawn.story.traits.allTraits)
+        foreach (var trait in pawn.story.traits.allTraits)
+        {
+            if (IsBackstoryTraitOfPawn(trait, pawn))
             {
-                if (IsBackstoryTraitOfPawn(trait, pawn))
-                {
-                    requiredTraits.Add(new TraitRequirement { def = trait.def, degree = trait.Degree });
-                }
+                requiredTraits.Add(new TraitRequirement { def = trait.def, degree = trait.Degree });
             }
-
-            var index = StartingPawnUtility.PawnIndex(pawn);
-            if (index < Editor.TraitRequirements.Count && Editor.TraitRequirements[index] is { } traits)
-            {
-                requiredTraits.AddRange(traits);
-            }
-
-            return requiredTraits;
         }
 
-        internal static IEnumerable<TraitRequirement> GetAvailableTraits(List<TraitRequirement> neededTraits)
+        var index = StartingPawnUtility.PawnIndex(pawn);
+        if (index < Editor.TraitRequirements.Count && Editor.TraitRequirements[index] is { } traits)
         {
-            var nonSexualityCount = neededTraits.Count(x => !x.def.IsSexualityTrait());
-            foreach (var possibleTrait in DefDatabase<TraitDef>.AllDefsListForReading)
+            requiredTraits.AddRange(traits);
+        }
+
+        return requiredTraits;
+    }
+
+    internal static IEnumerable<TraitRequirement> GetAvailableTraits(List<TraitRequirement> neededTraits)
+    {
+        var nonSexualityCount = neededTraits.Count(x => !x.def.IsSexualityTrait());
+        foreach (var possibleTrait in DefDatabase<TraitDef>.AllDefsListForReading)
+        {
+            if ((possibleTrait.IsSexualityTrait() || nonSexualityCount < MaxNonSexualityTraits) 
+                && neededTraits.AllowsTrait(possibleTrait))
             {
-                if ((possibleTrait.IsSexualityTrait() || nonSexualityCount < MaxNonSexualityTraits) 
-                    && neededTraits.AllowsTrait(possibleTrait))
+                foreach (var data in possibleTrait.degreeDatas)
                 {
-                    foreach (var data in possibleTrait.degreeDatas)
+                    yield return new TraitRequirement
                     {
-                        yield return new TraitRequirement
-                        {
-                            def = possibleTrait, 
-                            degree = data.degree
-                        };
-                    }
+                        def = possibleTrait, 
+                        degree = data.degree
+                    };
                 }
             }
         }
+    }
 
-        /// <summary>
-        /// If too many traits are requested, then pawn generation will randomly include a fourth or fifth trait.
-        /// "Requested" traits are not similar to _forced_ traits - the goal is to simulate rolling them specifically.
-        ///
-        /// To accomplish that, remove any randomly-rolled traits until the pawn is back to their max number of traits.
-        /// </summary>
-        internal static void FixTraitOverflow(Pawn pawn)
+    /// <summary>
+    /// If too many traits are requested, then pawn generation will randomly include a fourth or fifth trait.
+    /// "Requested" traits are not similar to _forced_ traits - the goal is to simulate rolling them specifically.
+    ///
+    /// To accomplish that, remove any randomly-rolled traits until the pawn is back to their max number of traits.
+    /// </summary>
+    internal static void FixTraitOverflow(Pawn pawn)
+    {
+        var neededTraits = RequiredTraitsForLockedPawn(pawn);
+        var traitSlots = 0;
+        var candidates = new List<Trait>();
+        foreach (var trait in pawn.story.traits.allTraits)
         {
-            var neededTraits = RequiredTraitsForLockedPawn(pawn);
-            var traitSlots = 0;
-            var candidates = new List<Trait>();
-            foreach (var trait in pawn.story.traits.allTraits)
+            // Biotech-forced traits won't count towards the limit.
+            // Post-1.4, sexuality traits are rolled separately from the 1~3 trait count
+            // Scenario-forced traits are weird, and having enough of them will absolutely put you over 3 traits.
+                
+            // So best to ignore all of these when seeing what traits 'need' to be cut for normal pawn generation.
+            if (trait.sourceGene != null || trait.def.IsSexualityTrait() || trait.ScenForced)
             {
-                // Biotech-forced traits won't count towards the limit.
-                // Post-1.4, sexuality traits are rolled separately from the 1~3 trait count
-                // Scenario-forced traits are weird, and having enough of them will absolutely put you over 3 traits.
-                
-                // So best to ignore all of these when seeing what traits 'need' to be cut for normal pawn generation.
-                if (trait.sourceGene != null || trait.def.IsSexualityTrait() || trait.ScenForced)
-                {
-                    continue;
-                }
-
-                traitSlots++;
-
-                if (neededTraits.Any(x => x.def == trait.def && x.degree == trait.Degree))
-                {
-                    continue;
-                }
-                
-                candidates.Add(trait);
+                continue;
             }
 
-            while (traitSlots > MaxAllowedTraits(pawn))
+            traitSlots++;
+
+            if (neededTraits.Any(x => x.def == trait.def && x.degree == trait.Degree))
             {
-                var traitToRemove = candidates.RandomElement();
-                pawn.story.traits.RemoveTrait(traitToRemove);
-                candidates.Remove(traitToRemove);
-                traitSlots--;
+                continue;
             }
+                
+            candidates.Add(trait);
         }
 
-        internal static int MaxAllowedTraits(Pawn pawn)
+        while (traitSlots > MaxAllowedTraits(pawn))
         {
-            return Compatibility.Layer.GetMaximumGeneratedTraits(pawn);
+            var traitToRemove = candidates.RandomElement();
+            pawn.story.traits.RemoveTrait(traitToRemove);
+            candidates.Remove(traitToRemove);
+            traitSlots--;
         }
+    }
+
+    internal static int MaxAllowedTraits(Pawn pawn)
+    {
+        return Compatibility.Layer.GetMaximumGeneratedTraits(pawn);
+    }
         
-        internal static bool IsBackstoryTraitOfPawn(Trait trait, Pawn pawn)
-        {
-            bool isChildHoodBackstory = pawn.story.Adulthood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
-            bool isAdulthoodBackstory = pawn.story.Childhood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
-            return isChildHoodBackstory || isAdulthoodBackstory;
-        }
+    internal static bool IsBackstoryTraitOfPawn(Trait trait, Pawn pawn)
+    {
+        bool isChildHoodBackstory = pawn.story.Adulthood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
+        bool isAdulthoodBackstory = pawn.story.Childhood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
+        return isChildHoodBackstory || isAdulthoodBackstory;
+    }
 
-        private static bool BackstoryMatch(Trait traitInstance, BackstoryTrait backstoryTrait)
-        {
-            return backstoryTrait.def == traitInstance.def && backstoryTrait.degree == traitInstance.Degree;
-        }
+    private static bool BackstoryMatch(Trait traitInstance, BackstoryTrait backstoryTrait)
+    {
+        return backstoryTrait.def == traitInstance.def && backstoryTrait.degree == traitInstance.Degree;
     }
 }
