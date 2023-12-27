@@ -16,12 +16,12 @@
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.IdeologicalRole</workerClass>
   </PawnColumnDef>
 
-  <PawnColumnDef>
+  <PawnColumnDef MayRequire="Ludeon.RimWorld.Ideology">
     <defName>FavoriteColor</defName>
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.FavoriteColor</workerClass>
   </PawnColumnDef>
 
-  <PawnColumnDef>
+  <PawnColumnDef MayRequire="erdelf.humanoidalienraces_steam">
     <defName>Race</defName>
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Race</workerClass>
   </PawnColumnDef>
@@ -36,7 +36,7 @@
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Adulthood</workerClass>
   </PawnColumnDef>
 
-  <PawnColumnDef>
+  <PawnColumnDef MayRequire="Ludeon.RimWorld.Biotech">
     <defName>SelectXeno</defName>
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.XenotypeSelection</workerClass>
   </PawnColumnDef>

@@ -62,6 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compatibility.cs" />
     <Compile Include="Defs\ByBiome.cs" />
     <Compile Include="Defs\ByPrecept.cs" />
     <Compile Include="Defs\ForSpecialist.cs" />
@@ -87,7 +88,6 @@
     <Compile Include="Solving\Backgrounds\TraitUtilities.cs" />
     <Compile Include="Solving\BalancingSituation.cs" />
     <Compile Include="Solving\RaceAgeData.cs" />
-    <Compile Include="Solving\Compatibility.cs" />
     <Compile Include="Solving\ProcGen.cs" />
     <Compile Include="Solving\SituationFactory.cs" />
     <Compile Include="Interface\Dialogs\EditSpecificPawn.cs" />

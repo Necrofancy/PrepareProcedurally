@@ -48,12 +48,11 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
             catch (Exception e)
             {
                 Log.Error($"Exception In Workflow of Prepare Procedurally - Closing Window\n{e}");
-
                 ProcGen.CleanUpOnError();
-                this.FullyClose();
                 string errorMessage = "PrepareProcedurallyErrorMessage".Translate(e.Message);
                 var window = new Dialog_MessageBox(errorMessage);
                 Find.WindowStack.Add(window);
+                Close();
             }
         }
 
@@ -120,9 +119,10 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages
                 var pawnCount = Find.GameInitData.startingPawnCount;
                 var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, Editor.SkillPassions);
                 
-                ProcGen.Generate(situation);
-                
+                Compatibility.Layer.RandomizeForTeam(situation);
                 Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
+
+                Editor.Dirty = false;
             }
 
             Editor.AllowDirtying = true;

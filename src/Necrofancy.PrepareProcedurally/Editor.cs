@@ -6,7 +6,6 @@ using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
-using UnityEngine;
 using Verse;
 
 namespace Necrofancy.PrepareProcedurally
