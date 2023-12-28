@@ -14,10 +14,10 @@ public class PawnBuilder
     private readonly Dictionary<SkillDef, IntRange> skillRanges = new();
     private readonly Dictionary<SkillDef, Passion> passions = new();
 
-    public PawnBuilder(BioPossibility bioPossibility)
+    public PawnBuilder(BioPossibility bioPossibility, float age)
     {
         this.bioPossibility = bioPossibility;
-        GetInitialSkillRanges();
+        GetInitialSkillRanges(age);
     }
 
     public float PassionPoints { get; private set; }
@@ -184,12 +184,12 @@ public class PawnBuilder
         }
     }
 
-    private void GetInitialSkillRanges()
+    private void GetInitialSkillRanges(float age)
     {
         foreach (var skill in DefDatabase<SkillDef>.AllDefs)
         {
-            var min = EstimateRolling.StaticRoll(in bioPossibility, 35, skill, 0f);
-            var max = EstimateRolling.StaticRoll(in bioPossibility, 35, skill, .98f);
+            var min = EstimateRolling.StaticRoll(in bioPossibility, age, skill, 0f);
+            var max = EstimateRolling.StaticRoll(in bioPossibility, age, skill, .98f);
             skillRanges[skill] = new IntRange(min, max);
             passions[skill] = Passion.None;
         }

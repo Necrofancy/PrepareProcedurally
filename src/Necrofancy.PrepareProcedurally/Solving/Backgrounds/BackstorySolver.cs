@@ -65,7 +65,7 @@ public static class BackstorySolver
         {
             var possibility = bios[i];
             var builder = possibility.CanChange
-                ? new PawnBuilder(possibility.Background)
+                ? new PawnBuilder(possibility.Background, possibility.AssumedAge)
                 : null;
 
             pawnsInOriginalOrder[i] = builder;

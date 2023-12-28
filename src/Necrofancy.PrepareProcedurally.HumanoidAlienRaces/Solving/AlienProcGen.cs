@@ -54,7 +54,7 @@ public static class AlienProcGen
         var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
 
-        var builder = new PawnBuilder(bio);
+        var builder = new PawnBuilder(bio, pawn.ageTracker.AgeBiologicalYearsFloat);
         foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
             if (usability == UsabilityRequirement.Major)
                 builder.TryLockInPassion(skill, Passion.Major);

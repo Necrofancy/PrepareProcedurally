@@ -67,7 +67,7 @@ public static class ProcGen
         var traits = bio.Traits;
         var empty = new List<TraitDef>();
 
-        var builder = new PawnBuilder(bio);
+        var builder = new PawnBuilder(bio, age);
         foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
             if (usability == UsabilityRequirement.Major)
                 builder.TryLockInPassion(skill, Passion.Major);
