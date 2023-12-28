@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +13,6 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages;
 
 public class PrepareProcedurally : Page
 {
-    public PrepareProcedurally()
-    {
-        var pawnCount = Find.GameInitData.startingPawnCount;
-        Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
-    }
-
     public override string PageTitle => "SkillPassionPageTitle".Translate();
 
     public override void DoWindowContents(Rect rect)
@@ -47,12 +40,12 @@ public class PrepareProcedurally : Page
         }
         catch (Exception e)
         {
+            Close();
             Log.Error($"Exception In Workflow of Prepare Procedurally - Closing Window\n{e}");
             ProcGen.CleanUpOnError();
             string errorMessage = "PrepareProcedurallyErrorMessage".Translate(e.Message);
             var window = new Dialog_MessageBox(errorMessage);
             Find.WindowStack.Add(window);
-            Close();
         }
     }
 
@@ -63,16 +56,14 @@ public class PrepareProcedurally : Page
 
     protected override void DoNext()
     {
-        List<SkillDef> unsatisfiedRequirements = new List<SkillDef>();
+        var unsatisfiedRequirements = new List<SkillDef>();
         foreach (var requirement in Editor.SkillPassions)
-        {
             if (!requirement.StartingGroupSatisfies(Editor.StartingPawns))
                 unsatisfiedRequirements.Add(requirement.Skill);
-        }
-            
+
         if (unsatisfiedRequirements.Any())
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             foreach (var unsatisfied in unsatisfiedRequirements)
             {
                 builder.Append("    - ");
@@ -97,10 +88,7 @@ public class PrepareProcedurally : Page
 
     private static void CloseSubdialogs()
     {
-        while (Find.WindowStack.WindowOfType<EditSpecificPawn>() is { } editSpecificPawn)
-        {
-            editSpecificPawn.Close(doCloseSound: false);
-        }
+        while (Find.WindowStack.WindowOfType<EditSpecificPawn>() is { } editSpecificPawn) editSpecificPawn.Close(false);
     }
 
     private void FullyClose()
@@ -114,11 +102,11 @@ public class PrepareProcedurally : Page
         if (Editor.Dirty)
         {
             CloseSubdialogs();
-                
+
             var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
             var pawnCount = Find.GameInitData.startingPawnCount;
             var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, Editor.SkillPassions);
-                
+
             Compatibility.Layer.RandomizeForTeam(situation);
             Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
 

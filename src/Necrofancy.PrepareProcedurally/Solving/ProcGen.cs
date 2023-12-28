@@ -31,7 +31,7 @@ public static class ProcGen
         for (var i = 0; i < pawnCount; i++)
         {
             var backstory = backgrounds[i];
-            var forcedTraits = backstory.Background.Traits;
+            var traits = backstory.Background.Traits;
             if (!(finalSkills[i] is { } finalization))
                 continue;
 
@@ -44,7 +44,7 @@ public static class ProcGen
             }
 
             PostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, pawnList[i]);
-            forcedTraits.ApplyRequestedTraitsTo(pawnList[i]);
+            traits.ApplyRequestedTraitsTo(pawnList[i]);
             finalization.ApplySimulatedSkillsTo(pawnList[i]);
             OnPawnChanged(pawnList[i]);
         }
