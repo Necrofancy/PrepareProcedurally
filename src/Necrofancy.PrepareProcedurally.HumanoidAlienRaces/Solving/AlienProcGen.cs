@@ -21,9 +21,6 @@ public static class AlienProcGen
     public static Pawn RandomizeSingularPawn(Pawn pawn, CollectSpecificPassions collector,
         List<(SkillDef Skill, UsabilityRequirement Usability)> reqs)
     {
-        if (RaceAgeRanges.Count == 1 && SelectedRace.IsHuman())
-            return ProcGen.RandomizeSingularPawn(pawn, collector, reqs);
-
         var index = StartingPawnUtility.PawnIndex(pawn);
 
         var addBackToLocked = false;
@@ -75,12 +72,6 @@ public static class AlienProcGen
 
     public static void RandomizeTeam(BalancingSituation situation)
     {
-        if (RaceAgeRanges.Count == 1 && SelectedRace.IsHuman())
-        {
-            ProcGen.RandomizeForTeam(situation);
-            return;
-        }
-
         // it's actually impossible to try balancing up-front because I don't know what backstories are available
         // so let's generate the pawns first to figure out their race and figure it out from there.
         List<AlienCategories> categories = new(StartingPawns.Count);

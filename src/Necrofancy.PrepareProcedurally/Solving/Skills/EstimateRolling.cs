@@ -96,41 +96,6 @@ public static class EstimateRolling
         return newCurve;
     }
 
-    public static int StaticRoll(Pawn pawn, SkillDef skill, float percentRolls)
-    {
-        var start = skill.usuallyDefinedInBackstories
-            ? StartingValue.AssumingPercentRoll(percentRolls)
-            : NonBackstoryStartingValueCurve.AssumingPercentRoll(percentRolls);
-
-        float story = 0;
-        var backstoryMultiplier = BackstoryMultiplier.AssumingPercentRoll(percentRolls);
-
-        void AddBackstory(BackstoryDef backstory)
-        {
-            if (!backstory.skillGains.TryGetValue(skill, out var value))
-                return;
-
-            var multiplied = backstoryMultiplier * value;
-            story += multiplied;
-        }
-
-        AddBackstory(pawn.story.Childhood);
-        AddBackstory(pawn.story.Adulthood);
-
-        var ageMax = AgeSkillMaxFactorCurve.Evaluate(pawn.ageTracker.AgeBiologicalYears);
-        var ageMultiplierRange = new FloatRange(1.0f, ageMax);
-        var ageMultiplier = ageMultiplierRange.AssumingPercentRoll(percentRolls);
-
-        var curveValue = (start + story) * ageMultiplier + pawn.kindDef.extraSkillLevels;
-
-        var fromAdjustmentCurve = LevelFinalAdjustmentCurve.Evaluate(curveValue);
-        var range = pawn.kindDef.skills?.SingleOrDefault(range => range.Skill == skill)?.Range ?? NoRange;
-
-        var finalValue = fromAdjustmentCurve > range.max ? range.max : fromAdjustmentCurve;
-
-        return Mathf.Clamp(Mathf.RoundToInt(finalValue), 0, 20);
-    }
-
     public static int StaticRoll(in BioPossibility bioPossibility, float age, SkillDef skill, float roll)
     {
         var start = skill.usuallyDefinedInBackstories

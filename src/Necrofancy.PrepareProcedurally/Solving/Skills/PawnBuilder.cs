@@ -11,18 +11,21 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills;
 public class PawnBuilder
 {
     private readonly BioPossibility bioPossibility;
-    private readonly Dictionary<SkillDef, IntRange> skillRanges = new Dictionary<SkillDef, IntRange>();
-    private readonly Dictionary<SkillDef, Passion> passions = new Dictionary<SkillDef, Passion>();
+    private readonly Dictionary<SkillDef, IntRange> skillRanges = new();
+    private readonly Dictionary<SkillDef, Passion> passions = new();
 
     public PawnBuilder(BioPossibility bioPossibility)
     {
         this.bioPossibility = bioPossibility;
         GetInitialSkillRanges();
     }
-        
+
     public float PassionPoints { get; private set; }
 
-    public int MaxOf(SkillDef def) => skillRanges[def].max;
+    public int MaxOf(SkillDef def)
+    {
+        return skillRanges[def].max;
+    }
 
     public bool LockIn(SkillPassionSelection req, int remaining)
     {
@@ -33,7 +36,7 @@ public class PawnBuilder
                 : used < req.major + req.minor
                     ? Passion.Minor
                     : Passion.None;
-            
+
         var def = req.Skill;
         var range = skillRanges[def];
 
@@ -83,7 +86,7 @@ public class PawnBuilder
         var skillRange = skillRanges[def];
         var newMin = NewMin(skillRange, passion);
         skillRanges[def] = new IntRange(newMin, skillRange.max);
-            
+
         passions[def] = passion;
         PassionPoints += pointDiff;
         return true;
@@ -115,13 +118,13 @@ public class PawnBuilder
             .OrderByDescending(x => x.Value.min)
             .Select(x => x.Key)
             .ToList();
-            
+
         foreach (var skill in skills)
         {
             exhaustedPoints |= !CanBalanceAroundPassion(skill, Passion.Minor, minorPassionedSkills);
             exhaustedPoints |= !CanBalanceAroundPassion(skill, Passion.Major, majorPassionedSkills);
         }
-            
+
         var levels = new Dictionary<SkillDef, PassionAndLevel>();
         foreach (var skill in skills)
         {
@@ -143,9 +146,7 @@ public class PawnBuilder
             if (passionateRange.max <= thisSkillRange.min)
             {
                 if (TryLockInPassion(skill, requirement))
-                {
                     skillsWithPassion.Add(skill);
-                }
                 else
                     return false;
             }
