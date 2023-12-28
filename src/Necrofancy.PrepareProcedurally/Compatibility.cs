@@ -13,14 +13,10 @@ public class Compatibility
     public static Compatibility Layer { get; protected set; } = new Compatibility();
         
     public virtual int GetMaximumGeneratedTraits(Pawn pawn) => 3;
-        
-    public virtual IEnumerable<TraitRequirement> GetExtraTraitRequirements(Pawn pawn) => Enumerable.Empty<TraitRequirement>();
-        
+    
     public virtual int GetMinimumAgeForAdulthood(PawnKindDef kind) => 20;
         
     public virtual IEnumerable<PawnKindDef> GetPawnKindsThatCanAlsoGenerateFor(FactionDef def) => Enumerable.Empty<PawnKindDef>();
-        
-    public virtual bool AllowEditingBodyType(Pawn pawn) => true;
 
     public virtual void RandomizeForTeam(BalancingSituation situation)
     {

@@ -19,6 +19,11 @@ public static class AlienProcGen
     public static Pawn RandomizeSingularPawn(Pawn pawn, CollectSpecificPassions collector,
         List<(SkillDef Skill, UsabilityRequirement Usability)> reqs)
     {
+        if (Editor.RaceAgeRanges.Count == 1 && Editor.SelectedRace.IsHuman())
+        {
+            return ProcGen.RandomizeSingularPawn(pawn, collector, reqs);
+        }
+        
         var index = StartingPawnUtility.PawnIndex(pawn);
 
         var addBackToLocked = false;
@@ -61,7 +66,7 @@ public static class AlienProcGen
                 builder.TryLockInPassion(skill, Passion.Minor);
         }
 
-        bio.ApplyBackstoryTo(pawn);
+        AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
         builder.Build().ApplySimulatedSkillsTo(pawn);
         traits.ApplyRequestedTraitsTo(pawn);
 
@@ -75,6 +80,12 @@ public static class AlienProcGen
 
     public static void RandomizeTeam(BalancingSituation situation)
     {
+        if (Editor.RaceAgeRanges.Count == 1 && Editor.SelectedRace.IsHuman())
+        {
+            ProcGen.RandomizeForTeam(situation);
+            return;
+        }
+        
         // it's actually impossible to try balancing up-front because I don't know what backstories are available
         // so at each step let's try grabbing some passions and go through each unlocked pawn.
 

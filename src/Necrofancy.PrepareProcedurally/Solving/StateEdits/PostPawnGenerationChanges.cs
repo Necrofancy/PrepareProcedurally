@@ -19,9 +19,55 @@ public static class PostPawnGenerationChanges
     /// Fix up possessions, story, and - for humans only - pawn bodytype to match the relevant backstory
     /// of the given <see cref="BioPossibility"/>.
     /// </summary>
-    public static void ApplyBackstoryTo(this BioPossibility bio, Pawn pawn)
+    public static void ApplyBackstoryTo(BioPossibility bio, Pawn pawn)
     {
+        pawn.story.Childhood = bio.Childhood;
+        
         var possessions = Find.GameInitData.startingPossessions[pawn];
+        RemoveBackstoryPossessions(pawn, possessions);
+        pawn.story.Adulthood = bio.Adulthood;
+        AddBackstoryPossessions(bio, possessions);
+        
+        // Respect a Kickstarter NameTriple or just re-generate the name.
+        pawn.Name = bio.Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
+            
+        ApplyBodyTypeFromBackstory(bio, pawn);
+
+        pawn.Notify_DisabledWorkTypesChanged();
+    }
+
+    internal static void ApplyBodyTypeFromBackstory(BioPossibility bio, Pawn pawn)
+    {
+        var bodyTypeSetByBiotech = false;
+        
+        if (ModsConfig.BiotechActive)
+        {
+            var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)
+                .Select(g => g.def.bodyType.Value).Distinct().ToList();
+
+            if (bodyTypes.Any())
+            {
+                pawn.story.bodyType = GeneUtility.ToBodyType(bodyTypes.RandomElement(), pawn);
+                bodyTypeSetByBiotech = true;
+            }
+        }
+
+        if (!bodyTypeSetByBiotech && bio.Adulthood.BodyTypeFor(pawn.gender) is { } bodyType)
+        {
+            pawn.story.bodyType = bodyType;
+        }
+    }
+
+    internal static void AddBackstoryPossessions(BioPossibility bio, List<ThingDefCount> possessions)
+    {
+        foreach (var item in bio.Adulthood.possessions)
+        {
+            possessions.Add(new ThingDefCount(item.key, Math.Min(item.value, item.key.stackLimit)));
+        }
+    }
+
+    internal static void RemoveBackstoryPossessions(Pawn pawn, List<ThingDefCount> possessions)
+    {
         if (pawn.story.Adulthood != null)
         {
             var possessionsToRemove = pawn.story.Adulthood.possessions;
@@ -37,44 +83,8 @@ public static class PostPawnGenerationChanges
                 }
             }
         }
-
-        foreach (var item in bio.Adulthood.possessions)
-        {
-            possessions.Add(new ThingDefCount(item.key, Math.Min(item.value, item.key.stackLimit)));
-        }
-            
-        pawn.story.Adulthood = bio.Adulthood;
-        pawn.story.Childhood = bio.Childhood;
-            
-        // Respect a Kickstarter NameTriple or just re-generate the name.
-        pawn.Name = bio.Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
-            
-        var bodyTypeSetByBiotech = false;
-            
-        if (Compatibility.Layer.AllowEditingBodyType(pawn))
-        {
-            if (ModsConfig.BiotechActive)
-            {
-                var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)
-                    .Select(g => g.def.bodyType.Value).Distinct().ToList();
-
-                if (bodyTypes.Any())
-                {
-                    pawn.story.bodyType = GeneUtility.ToBodyType(bodyTypes.RandomElement(), pawn);
-                    bodyTypeSetByBiotech = true;
-                }
-            }
-                
-            if (!bodyTypeSetByBiotech && bio.Adulthood.BodyTypeFor(pawn.gender) is {} bodyType)
-            {
-                pawn.story.bodyType = bodyType;
-            }
-        }
-
-        TraitUtilities.FixTraitOverflow(pawn);
-        pawn.Notify_DisabledWorkTypesChanged();
     }
-        
+
     /// <summary>
     /// Apply simulated skill ranges to the pawn's given stats.
     /// </summary>
@@ -120,8 +130,6 @@ public static class PostPawnGenerationChanges
     /// </summary>
     public static void ApplyRequestedTraitsTo(this List<TraitRequirement> traits, Pawn pawn)
     {
-        traits = traits.Concat(Compatibility.Layer.GetExtraTraitRequirements(pawn)).ToList();
-            
         foreach (var trait in traits)
         {
             if (pawn.story?.traits == null 

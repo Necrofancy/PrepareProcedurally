@@ -13,8 +13,6 @@
       <li>StoryChild</li>
       <li>StoryAdult</li>
       <li>Age</li>
-
-      <!-- <li>WorkPotential</li> -->
       <li>Traits</li>
       <li>RemainingSpace</li>
     </columns>

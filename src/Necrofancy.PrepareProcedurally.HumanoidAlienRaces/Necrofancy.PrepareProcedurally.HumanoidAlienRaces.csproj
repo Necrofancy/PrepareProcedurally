@@ -68,10 +68,13 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="AlienExtensions.cs" />
         <Compile Include="AlienProcGen.cs" />
         <Compile Include="HumanoidAlienRaceCompatibility.cs" />
         <Compile Include="LogAssembly.cs" />
+        <Compile Include="AlienSpecificPostPawnGenerationChanges.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="SpecialTraitHandling.cs" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Necrofancy.PrepareProcedurally\Necrofancy.PrepareProcedurally.csproj">

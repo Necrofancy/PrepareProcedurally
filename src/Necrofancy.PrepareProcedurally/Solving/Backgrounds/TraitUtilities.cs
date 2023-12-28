@@ -11,9 +11,7 @@ internal static class TraitUtilities
     internal static List<TraitRequirement> RequiredTraitsForUnlockedPawn(Pawn pawn)
     {
         var requiredTraits = new List<TraitRequirement>();
-            
-        requiredTraits.AddRange(Compatibility.Layer.GetExtraTraitRequirements(pawn));
-
+        
         var index = StartingPawnUtility.PawnIndex(pawn);
         if (index < Editor.TraitRequirements.Count && Editor.TraitRequirements[index] is { } traits)
         {
@@ -26,9 +24,7 @@ internal static class TraitUtilities
     internal static List<TraitRequirement> RequiredTraitsForLockedPawn(Pawn pawn)
     {
         var requiredTraits = new List<TraitRequirement>();
-
-        requiredTraits.AddRange(Compatibility.Layer.GetExtraTraitRequirements(pawn));
-            
+        
         foreach (var trait in pawn.story.traits.allTraits)
         {
             if (IsBackstoryTraitOfPawn(trait, pawn))
@@ -108,7 +104,7 @@ internal static class TraitUtilities
         }
     }
 
-    internal static int MaxAllowedTraits(Pawn pawn)
+    private static int MaxAllowedTraits(Pawn pawn)
     {
         return Compatibility.Layer.GetMaximumGeneratedTraits(pawn);
     }

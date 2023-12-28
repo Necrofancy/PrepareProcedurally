@@ -24,7 +24,7 @@ public static class ProcGen
 
         var empty = new List<TraitDef>();
 
-        var variation = new IntRange(10, (int)(Editor.SkillWeightVariation * 10));
+        var variation = new IntRange(10, (int)(SkillWeightVariation * 10));
         var backgrounds = BackstorySolver.TryToSolveWith(situation, variation);
         var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
             
@@ -37,15 +37,15 @@ public static class ProcGen
                 continue;
                 
             using (TemporarilyChange.ScenarioBannedTraits(empty))
-            using (TemporarilyChange.PlayerFactionMelaninRange(Editor.MelaninRange))
-            using (TemporarilyChange.BiologicalAgeRangeInRequest(Editor.AgeRange, i))
+            using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
+            using (TemporarilyChange.BiologicalAgeRangeInRequest(AgeRange, i))
             using (TemporarilyChange.GenderInRequest(backstory.Background.Gender, i))
             {
                 pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
             }
 
+            PostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, pawnList[i]);
             forcedTraits.ApplyRequestedTraitsTo(pawnList[i]);
-            backstory.Background.ApplyBackstoryTo(pawnList[i]);
             finalization.ApplySimulatedSkillsTo(pawnList[i]);
             OnPawnChanged(pawnList[i]);
         }
@@ -57,7 +57,7 @@ public static class ProcGen
         var index = StartingPawnUtility.PawnIndex(pawn);
         var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
         var specifier = new SelectBackstorySpecifically(backstoryCategory);
-        var bio = specifier.GetBestBio(collector.Weight, Editor.TraitRequirements[index]);
+        var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
         var empty = new List<TraitDef>();
 
@@ -86,7 +86,7 @@ public static class ProcGen
             OnPawnChanged(pawn);
         }
             
-        bio.ApplyBackstoryTo(pawn);
+        PostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
         builder.Build().ApplySimulatedSkillsTo(pawn);
         traits.ApplyRequestedTraitsTo(pawn);
 
