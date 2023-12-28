@@ -7,7 +7,6 @@ using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using Verse;
-
 using static Necrofancy.PrepareProcedurally.Editor;
 
 namespace Necrofancy.PrepareProcedurally.Solving;
@@ -27,7 +26,7 @@ public static class ProcGen
         var variation = new IntRange(10, (int)(SkillWeightVariation * 10));
         var backgrounds = BackstorySolver.TryToSolveWith(situation, variation);
         var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
-            
+
         LastResults = finalSkills;
         for (var i = 0; i < pawnCount; i++)
         {
@@ -35,7 +34,7 @@ public static class ProcGen
             var forcedTraits = backstory.Background.Traits;
             if (!(finalSkills[i] is { } finalization))
                 continue;
-                
+
             using (TemporarilyChange.ScenarioBannedTraits(empty))
             using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
             using (TemporarilyChange.BiologicalAgeRangeInRequest(AgeRange, i))
@@ -63,12 +62,10 @@ public static class ProcGen
 
         var builder = new PawnBuilder(bio);
         foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
-        {
             if (usability == UsabilityRequirement.Major)
                 builder.TryLockInPassion(skill, Passion.Major);
             else if (usability == UsabilityRequirement.Minor)
                 builder.TryLockInPassion(skill, Passion.Minor);
-        }
 
         var addBackToLocked = false;
         if (LockedPawns.Contains(pawn))
@@ -78,22 +75,19 @@ public static class ProcGen
         }
 
         using (TemporarilyChange.ScenarioBannedTraits(empty))
-        using (TemporarilyChange.PlayerFactionMelaninRange(Editor.MelaninRange))
-        using (TemporarilyChange.BiologicalAgeRangeInRequest(Editor.AgeRange, index))
+        using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
+        using (TemporarilyChange.BiologicalAgeRangeInRequest(AgeRange, index))
         using (TemporarilyChange.GenderInRequest(bio.Gender, index))
         {
             pawn = StartingPawnUtility.RandomizeInPlace(pawn);
             OnPawnChanged(pawn);
         }
-            
+
         PostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
         builder.Build().ApplySimulatedSkillsTo(pawn);
         traits.ApplyRequestedTraitsTo(pawn);
 
-        if (addBackToLocked)
-        {
-            LockedPawns.Add(pawn);
-        }
+        if (addBackToLocked) LockedPawns.Add(pawn);
 
         return pawn;
     }
@@ -101,7 +95,6 @@ public static class ProcGen
     public static void OnPawnChanged(Pawn pawn)
     {
         foreach (var window in Find.WindowStack.Windows)
-        {
             switch (window)
             {
                 case Page_ConfigureStartingPawns startingPage:
@@ -112,7 +105,6 @@ public static class ProcGen
                     StartingPawns[index] = pawn;
                     break;
             }
-        }
     }
 
     public static void CleanUpOnError()
