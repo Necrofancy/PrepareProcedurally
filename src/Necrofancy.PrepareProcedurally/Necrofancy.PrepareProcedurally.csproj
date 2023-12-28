@@ -72,15 +72,12 @@
     <Compile Include="Defs\BySetupOf.cs" />
     <Compile Include="Defs\SkillRequirementDef.cs" />
     <Compile Include="Editor.cs" />
-    <Compile Include="HarmonyPatcher.cs" />
+    <Compile Include="HarmonyPatches.cs" />
     <Compile Include="Interface\LazyTexture.cs" />
     <Compile Include="Interface\MaplessPawnTable.cs" />
     <Compile Include="Interface\PawnColumnWorkers\FavoriteColor.cs" />
     <Compile Include="Interface\PawnColumnWorkers\Race.cs" />
     <Compile Include="LogAssembly.cs" />
-    <Compile Include="Patches\AddButtonToStartingPawnsPage.cs" />
-    <Compile Include="Patches\ClearStateOnStartingPawnsClose.cs" />
-    <Compile Include="Patches\InitializeStateOnStartingPawnsOpen.cs" />
     <Compile Include="Solving\Backgrounds\BackgroundPossibility.cs" />
     <Compile Include="Solving\Backgrounds\BackstorySolver.cs" />
     <Compile Include="Solving\Backgrounds\PawnBioPossibility.cs" />
