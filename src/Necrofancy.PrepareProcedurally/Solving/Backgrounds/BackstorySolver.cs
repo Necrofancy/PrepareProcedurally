@@ -10,9 +10,9 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 public static class BackstorySolver
 {
-    public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(BalancingSituation situation, IntRange variation)
+    public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(BalancingSituation situation,
+        SimpleCurve ageRange, IntRange variation)
     {
-        const int age = 35;
         var specifier = new SelectBackstorySpecifically(situation.CategoryName);
         var currentBackgrounds = new List<BackgroundPossibility>(situation.Pawns);
 
@@ -33,10 +33,12 @@ public static class BackstorySolver
                 weights[requirement] = moddedByVariation;
             }
 
+            var age = Rand.ByCurve(ageRange);
+
             var skillWeightingSystem = new SpecificSkillWeights(weights);
             var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
             var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
-            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, true));
+            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, age, true));
         }
 
         return currentBackgrounds;
@@ -48,7 +50,7 @@ public static class BackstorySolver
         var dict = new Dictionary<SkillDef, IntRange>();
         foreach (var skill in pawn.skills.skills) dict[skill.def] = new IntRange(skill.levelInt, skill.levelInt);
 
-        return new BackgroundPossibility(bio, dict, false);
+        return new BackgroundPossibility(bio, dict, pawn.ageTracker.AgeBiologicalYearsFloat, false);
     }
 
     public static IReadOnlyList<SkillFinalizationResult?> FigureOutPassions(

@@ -15,6 +15,12 @@ public class PrepareProcedurally : Page
 {
     public override string PageTitle => "SkillPassionPageTitle".Translate();
 
+    public PrepareProcedurally()
+    {
+        // Just in case pawns were randomized outside of the editor, refresh pawn editor.
+        Editor.RefreshPawnList();
+    }
+
     public override void DoWindowContents(Rect rect)
     {
         try

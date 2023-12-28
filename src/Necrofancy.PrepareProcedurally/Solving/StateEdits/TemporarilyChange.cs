@@ -21,48 +21,44 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 /// </summary>
 public static class TemporarilyChange
 {
-    public static IDisposable BiologicalAgeRangeInRequest(IntRange ageRange, int pawnIndex)
+    public static IDisposable SetAgeInRequest(float age, int pawnIndex)
     {
         if (!(StartingPawnUtilityState.GetStartingPawnRequestList() is { } startingPawnRequests)
             || startingPawnRequests.Count <= pawnIndex)
-        {
             return TemporaryEdit.NullEdit;
-        }
-            
-        var pawnKind = Faction.OfPlayer.def.basicMemberKind;
-        SimpleCurve generationCurve = pawnKind.race.race.ageGenerationCurve;
-            
-        var temporaryCurve = EstimateRolling.SubSampleCurve(generationCurve, ageRange);
 
         var currentRequest = startingPawnRequests[pawnIndex];
         var editedRequest = startingPawnRequests[pawnIndex];
 
-        editedRequest.FixedBiologicalAge = Rand.ByCurve(temporaryCurve);
+        editedRequest.FixedBiologicalAge = age;
         editedRequest.BiologicalAgeRange = null;
         editedRequest.ExcludeBiologicalAgeRange = null;
 
-        void SetRequest(PawnGenerationRequest req) => startingPawnRequests[pawnIndex] = req;
-                
+        void SetRequest(PawnGenerationRequest req)
+        {
+            startingPawnRequests[pawnIndex] = req;
+        }
+
         return new TemporaryEdit<PawnGenerationRequest>(currentRequest, editedRequest, SetRequest);
     }
 
     public static IDisposable AgeOnAllRelevantRaceProperties(Dictionary<ThingDef, RaceAgeData> settings)
     {
-        Stack<TemporaryEdit<SimpleCurve>> temporaryEdits = new Stack<TemporaryEdit<SimpleCurve>>();
+        var temporaryEdits = new Stack<TemporaryEdit<SimpleCurve>>();
 
         foreach (var setting in settings)
         {
             var race = setting.Key.race;
             var ageRange = setting.Value;
-                
-            SimpleCurve generationCurve = race.ageGenerationCurve;
+
+            var generationCurve = race.ageGenerationCurve;
             var temporaryCurve = EstimateRolling.SubSampleCurve(generationCurve, ageRange.AgeRange);
-            
+
             void SetCurve(SimpleCurve curve)
             {
                 race.ageGenerationCurve = curve;
             }
-            
+
             temporaryEdits.Push(new TemporaryEdit<SimpleCurve>(generationCurve, temporaryCurve, SetCurve));
         }
 
@@ -73,10 +69,8 @@ public static class TemporarilyChange
     {
         if (!(StartingPawnUtilityState.GetStartingPawnRequestList() is { } startingPawnRequests)
             || startingPawnRequests.Count <= pawnIndex)
-        {
             return TemporaryEdit.NullEdit;
-        }
-            
+
         var currentRequest = startingPawnRequests[pawnIndex];
         var editedRequest = startingPawnRequests[pawnIndex];
 
@@ -88,8 +82,11 @@ public static class TemporarilyChange
             _ => null
         };
 
-        void SetRequest(PawnGenerationRequest req) => startingPawnRequests[pawnIndex] = req;
-                
+        void SetRequest(PawnGenerationRequest req)
+        {
+            startingPawnRequests[pawnIndex] = req;
+        }
+
         return new TemporaryEdit<PawnGenerationRequest>(currentRequest, editedRequest, SetRequest);
     }
 
@@ -98,7 +95,10 @@ public static class TemporarilyChange
         var factionDef = Faction.OfPlayer.def;
         var currentRange = factionDef.melaninRange;
 
-        void SetMelaninRange(FloatRange range) => factionDef.melaninRange = range;
+        void SetMelaninRange(FloatRange range)
+        {
+            factionDef.melaninRange = range;
+        }
 
         return new TemporaryEdit<FloatRange>(currentRange, temporaryRange, SetMelaninRange);
     }
@@ -107,9 +107,12 @@ public static class TemporarilyChange
     {
         var memberKind = Faction.OfPlayer.def.basicMemberKind;
         var currentList = memberKind.disallowedTraits;
-        var newList = currentList != null ? currentList.Concat(banned).ToList() : banned;  
-            
-        void SetDisallowedTraits(List<TraitDef> traits) => memberKind.disallowedTraits = traits;
+        var newList = currentList != null ? currentList.Concat(banned).ToList() : banned;
+
+        void SetDisallowedTraits(List<TraitDef> traits)
+        {
+            memberKind.disallowedTraits = traits;
+        }
 
         return new TemporaryEdit<List<TraitDef>>(currentList, newList, SetDisallowedTraits);
     }

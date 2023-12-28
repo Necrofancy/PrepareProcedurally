@@ -23,8 +23,11 @@ public static class ProcGen
 
         var empty = new List<TraitDef>();
 
+        var generationCurve = Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve;
+        var ageCurve = EstimateRolling.SubSampleCurve(generationCurve, AgeRange);
+
         var variation = new IntRange(10, (int)(SkillWeightVariation * 10));
-        var backgrounds = BackstorySolver.TryToSolveWith(situation, variation);
+        var backgrounds = BackstorySolver.TryToSolveWith(situation, ageCurve, variation);
         var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
 
         LastResults = finalSkills;
@@ -37,7 +40,7 @@ public static class ProcGen
 
             using (TemporarilyChange.ScenarioBannedTraits(empty))
             using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
-            using (TemporarilyChange.BiologicalAgeRangeInRequest(AgeRange, i))
+            using (TemporarilyChange.SetAgeInRequest(backstory.AssumedAge, i))
             using (TemporarilyChange.GenderInRequest(backstory.Background.Gender, i))
             {
                 pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
@@ -53,6 +56,10 @@ public static class ProcGen
     public static Pawn RandomizeSingularPawn(Pawn pawn, CollectSpecificPassions collector,
         List<(SkillDef Skill, UsabilityRequirement Usability)> reqs)
     {
+        var generationCurve = Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve;
+        var ageCurve = EstimateRolling.SubSampleCurve(generationCurve, AgeRange);
+        var age = Rand.ByCurve(ageCurve);
+
         var index = StartingPawnUtility.PawnIndex(pawn);
         var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
         var specifier = new SelectBackstorySpecifically(backstoryCategory);
@@ -76,7 +83,7 @@ public static class ProcGen
 
         using (TemporarilyChange.ScenarioBannedTraits(empty))
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
-        using (TemporarilyChange.BiologicalAgeRangeInRequest(AgeRange, index))
+        using (TemporarilyChange.SetAgeInRequest(age, index))
         using (TemporarilyChange.GenderInRequest(bio.Gender, index))
         {
             pawn = StartingPawnUtility.RandomizeInPlace(pawn);

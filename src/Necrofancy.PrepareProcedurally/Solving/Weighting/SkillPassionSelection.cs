@@ -15,7 +15,7 @@ public class SkillPassionSelection
     public int major;
     public int minor;
     public int usable;
-        
+
     public SkillPassionSelection(SkillDef def)
     {
         Skill = def;
@@ -57,10 +57,10 @@ public class SkillPassionSelection
                 usableLeft--;
             }
         }
-            
+
         return majorLeft * majorPassionWeight + minorLeft * minorPassionWeight + usableLeft * usableWeight;
     }
-        
+
     public static SkillPassionSelection CreateFromSkill(SkillDef def)
     {
         var situation = SituationFactory.FromPlayerData();
@@ -81,17 +81,11 @@ public class SkillPassionSelection
             }
 
             if (requirement.passion == Passion.Major)
-            {
                 selection.major = Math.Max(selection.major, requirement.Count(pawnCount));
-            }
             else if (requirement.passion == Passion.Minor)
-            {
                 selection.minor = Math.Max(selection.minor, requirement.Count(pawnCount));
-            }
             else
-            {
                 selection.usable = Math.Max(selection.usable, requirement.Count(pawnCount));
-            }
         }
 
         var selectionsList = new List<SkillPassionSelection>(selections.Count);
@@ -116,12 +110,12 @@ public class SkillPassionSelection
             var skillRecord = pawn.skills.skills.First(x => x.def == Skill);
             if (skillRecord.passion == Passion.Major && majorLeft > 0)
                 majorLeft--;
-            else if (skillRecord.passion >= Passion.Minor)
+            else if (skillRecord.passion >= Passion.Minor && minorLeft >= 0)
                 minorLeft--;
             else if (!skillRecord.TotallyDisabled)
                 usableLeft--;
         }
-            
+
         return majorLeft <= 0 && minorLeft <= 0 && usableLeft <= 0;
     }
 }

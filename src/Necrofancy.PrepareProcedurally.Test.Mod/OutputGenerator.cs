@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
+using Necrofancy.PrepareProcedurally.Solving.Skills;
+using RimWorld;
 using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Test.Mod
@@ -12,7 +14,11 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
         public static void GenerateOutput(Situation situationWithFileName)
         {
             var situation = situationWithFileName.ToBalance;
-            var possibilities = BackstorySolver.TryToSolveWith(situation, new IntRange(1,1));
+            var ageRange = new IntRange(21, 25);
+            var ageGenerationCurve = Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve;
+            var subsample = EstimateRolling.SubSampleCurve(ageGenerationCurve, ageRange);
+
+            var possibilities = BackstorySolver.TryToSolveWith(situation, subsample, new IntRange(1, 1));
             var passionRanges = BackstorySolver.FigureOutPassions(possibilities, situation);
             using (var writer = CreateWriter(situationWithFileName.FileName))
             {
@@ -22,34 +28,28 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
                 NewSection(writer);
 
                 foreach (var req in situation.SkillRequirements)
-                {
                     writer.WriteLine($"    {req.Skill}: 🔥🔥:{req.major} 🔥:{req.minor} Usable:{req.usable}");
-                }
-                
-                NewSection(writer);
 
                 NewSection(writer);
 
-                for (int i = 0; i < possibilities.Count; i++)
+                NewSection(writer);
+
+                for (var i = 0; i < possibilities.Count; i++)
                 {
                     var possibility = possibilities[i];
                     var passionRanged = passionRanges[i];
-                    
+
                     if (passionRanged != null && !passionRanged.Value.ValidVanillaPawn)
                         writer.WriteLine($"!!!!COULD NOT FINALIZE THIS PAWN!!!!");
                     writer.WriteLine($"Childhood: {possibility.Background.Childhood.title}");
                     foreach (var skillLevel in possibility.Background.Childhood.skillGains)
-                    {
                         writer.WriteLine($"    {skillLevel.Key.skillLabel}: {skillLevel.Value}");
-                    }
 
                     writer.WriteLine($"    Disabled Work: {possibility.Background.Childhood.workDisables}");
 
                     writer.WriteLine($"Adulthood: {possibility.Background.Adulthood.title}");
                     foreach (var skillLevel in possibility.Background.Adulthood.skillGains)
-                    {
                         writer.WriteLine($"    {skillLevel.Key.skillLabel}: {skillLevel.Value}");
-                    }
 
                     writer.WriteLine($"    Disabled Work: {possibility.Background.Adulthood.workDisables}");
                     writer.WriteLine($"Skills at Age 35:");
@@ -65,6 +65,7 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
                                 : $"    {def}: {fullRange.min}-{fullRange.max} solved to {solved}");
                         }
                     }
+
                     writer.WriteLine();
                 }
             }
@@ -79,17 +80,17 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
 
         public static void ClearFiles([CallerFilePath] string filePath = null)
         {
-            string directory = Path.GetDirectoryName(filePath) 
-                               ?? throw new InvalidOperationException("Could not find source folder");
-            foreach (string file in Directory.EnumerateFiles(directory, "*.txt"))
+            var directory = Path.GetDirectoryName(filePath)
+                            ?? throw new InvalidOperationException("Could not find source folder");
+            foreach (var file in Directory.EnumerateFiles(directory, "*.txt"))
                 File.Delete(file);
         }
 
         private static TextWriter CreateWriter(string scenarioName, [CallerFilePath] string filePath = null)
         {
-            string directory = Path.GetDirectoryName(filePath)
-                ?? throw new InvalidOperationException("Could not find source folder");
-            string receivedFilePath = Path.Combine(directory, $"{scenarioName}.txt");
+            var directory = Path.GetDirectoryName(filePath)
+                            ?? throw new InvalidOperationException("Could not find source folder");
+            var receivedFilePath = Path.Combine(directory, $"{scenarioName}.txt");
 
             return new StreamWriter(receivedFilePath);
         }

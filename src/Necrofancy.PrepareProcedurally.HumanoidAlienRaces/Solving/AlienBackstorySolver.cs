@@ -13,7 +13,6 @@ public class AlienBackstorySolver
     public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(AlienBalancingSituation situation,
         IntRange variation)
     {
-        const int age = 35;
         var currentBackgrounds = new List<BackgroundPossibility>(situation.Pawns);
         var categories = new List<string>(2);
 
@@ -34,6 +33,7 @@ public class AlienBackstorySolver
                 weights[requirement] = moddedByVariation;
             }
 
+            var age = Editor.StartingPawns[i].ageTracker.AgeBiologicalYearsFloat;
             categories.Clear();
             var category = situation.BackstoryCategories[i];
             categories.Add(category.ChildhoodCategory);
@@ -43,7 +43,7 @@ public class AlienBackstorySolver
             var specifier = new SelectBackstorySpecifically(categories);
             var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
             var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
-            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, true));
+            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, age, true));
         }
 
         return currentBackgrounds;
