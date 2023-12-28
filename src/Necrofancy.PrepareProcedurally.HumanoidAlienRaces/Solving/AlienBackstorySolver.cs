@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using Verse;
 
-namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces;
+namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
 
 using static BackstorySolver;
 

@@ -33,6 +33,9 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
+    <PropertyGroup>
+        <Deterministic>false</Deterministic>
+    </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>..\packages\Lib.Harmony.2.2.1\lib\net45\0Harmony.dll</HintPath>
@@ -68,16 +71,16 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="AlienBackstorySolver.cs"/>
-        <Compile Include="AlienBalancingSituation.cs"/>
-        <Compile Include="AlienCategories.cs"/>
         <Compile Include="AlienExtensions.cs"/>
-        <Compile Include="AlienProcGen.cs"/>
+        <Compile Include="Solving\AlienBackstorySolver.cs"/>
+        <Compile Include="Solving\AlienBalancingSituation.cs"/>
+        <Compile Include="Solving\AlienCategories.cs"/>
+        <Compile Include="Solving\AlienProcGen.cs"/>
+        <Compile Include="Solving\AlienSpecificPostPawnGenerationChanges.cs"/>
         <Compile Include="HumanoidAlienRaceCompatibility.cs"/>
         <Compile Include="LogAssembly.cs"/>
-        <Compile Include="AlienSpecificPostPawnGenerationChanges.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
-        <Compile Include="SpecialTraitHandling.cs"/>
+        <Compile Include="Solving\SpecialTraitHandling.cs"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Necrofancy.PrepareProcedurally\Necrofancy.PrepareProcedurally.csproj">

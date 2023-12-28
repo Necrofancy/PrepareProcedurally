@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 
-namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces;
+namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
 
 public class AlienBalancingSituation
 {

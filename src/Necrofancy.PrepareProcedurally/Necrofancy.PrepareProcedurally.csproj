@@ -1,133 +1,136 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5DE2AAF4-9AB9-4888-B87C-2EB9C7E250BF}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Necrofancy.PrepareProcedurally</RootNamespace>
-    <AssemblyName>Necrofancy.PrepareProcedurally</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\1.4\Assemblies</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\1.4\Assemblies</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Lib.Harmony.2.2.1\lib\net45\0Harmony.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.TextCoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextCoreModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Compatibility.cs" />
-    <Compile Include="Defs\ByBiome.cs" />
-    <Compile Include="Defs\ByPrecept.cs" />
-    <Compile Include="Defs\ForSpecialist.cs" />
-    <Compile Include="Defs\PawnTableDefOf.cs" />
-    <Compile Include="Defs\RequirementSetDef.cs" />
-    <Compile Include="Defs\BySetup.cs" />
-    <Compile Include="Defs\BySetupOf.cs" />
-    <Compile Include="Defs\SkillRequirementDef.cs" />
-    <Compile Include="Editor.cs" />
-    <Compile Include="HarmonyPatches.cs" />
-    <Compile Include="Interface\LazyTexture.cs" />
-    <Compile Include="Interface\MaplessPawnTable.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\FavoriteColor.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\Race.cs" />
-    <Compile Include="LogAssembly.cs" />
-    <Compile Include="Solving\Backgrounds\BackgroundPossibility.cs" />
-    <Compile Include="Solving\Backgrounds\BackstorySolver.cs" />
-    <Compile Include="Solving\Backgrounds\PawnBioPossibility.cs" />
-    <Compile Include="Solving\Backgrounds\PossibleBios.cs" />
-    <Compile Include="Solving\Backgrounds\SelectBackstorySpecifically.cs" />
-    <Compile Include="Solving\Backgrounds\TraitUtilities.cs" />
-    <Compile Include="Solving\BalancingSituation.cs" />
-    <Compile Include="Solving\RaceAgeData.cs" />
-    <Compile Include="Solving\ProcGen.cs" />
-    <Compile Include="Solving\SituationFactory.cs" />
-    <Compile Include="Interface\Dialogs\EditSpecificPawn.cs" />
-    <Compile Include="Interface\Pages\PrepareProcedurally.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\Adulthood.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\Backstory.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\Childhood.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\IdeologicalRole.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\LockForSelection.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\PawnCanBePrepared.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\Traits.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\WorkPotential.cs" />
-    <Compile Include="Interface\PawnColumnWorkers\XenotypeSelection.cs" />
-    <Compile Include="Interface\SkillPassionSelectionUiUtility.cs" />
-    <Compile Include="Interface\UiAdjustmentScope.cs" />
-    <Compile Include="Solving\Skills\EstimateRolling.cs" />
-    <Compile Include="Solving\Skills\PassionAndLevel.cs" />
-    <Compile Include="Solving\Skills\PawnBuilder.cs" />
-    <Compile Include="Solving\Skills\SkillFinalizationResult.cs" />
-    <Compile Include="Solving\StateEdits\PostPawnGenerationChanges.cs" />
-    <Compile Include="Solving\StateEdits\StartingPawnUtilityState.cs" />
-    <Compile Include="Solving\StateEdits\TemporarilyChange.cs" />
-    <Compile Include="Solving\StateEdits\TemporaryEdit.cs" />
-    <Compile Include="Solving\Weighting\CollectSpecificPassions.cs" />
-    <Compile Include="Solving\Weighting\SkillPassionSelection.cs" />
-    <Compile Include="Solving\Weighting\SpecificSkillWeights.cs" />
-    <Compile Include="Solving\Weighting\WeightBackgroundAlgorithm.cs" />
-    <Compile Include="VerseExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Defs\ReadMe.md" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-         Other similar extension points exist, see Microsoft.Common.targets.
-    <Target Name="BeforeBuild">
-    </Target>
-    <Target Name="AfterBuild">
-    </Target>
-    -->
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{5DE2AAF4-9AB9-4888-B87C-2EB9C7E250BF}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>Necrofancy.PrepareProcedurally</RootNamespace>
+        <AssemblyName>Necrofancy.PrepareProcedurally</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>..\..\1.4\Assemblies</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>..\..\1.4\Assemblies</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup>
+        <Deterministic>false</Deterministic>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>..\packages\Lib.Harmony.2.2.1\lib\net45\0Harmony.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="System"/>
+        <Reference Include="System.Core"/>
+        <Reference Include="System.Xml"/>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TextCoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextCoreModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Compatibility.cs"/>
+        <Compile Include="Defs\ByBiome.cs"/>
+        <Compile Include="Defs\ByPrecept.cs"/>
+        <Compile Include="Defs\ForSpecialist.cs"/>
+        <Compile Include="Defs\PawnTableDefOf.cs"/>
+        <Compile Include="Defs\RequirementSetDef.cs"/>
+        <Compile Include="Defs\BySetup.cs"/>
+        <Compile Include="Defs\BySetupOf.cs"/>
+        <Compile Include="Defs\SkillRequirementDef.cs"/>
+        <Compile Include="Editor.cs"/>
+        <Compile Include="HarmonyPatches.cs"/>
+        <Compile Include="Interface\LazyTexture.cs"/>
+        <Compile Include="Interface\MaplessPawnTable.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\FavoriteColor.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\Race.cs"/>
+        <Compile Include="LogAssembly.cs"/>
+        <Compile Include="Solving\Backgrounds\BackgroundPossibility.cs"/>
+        <Compile Include="Solving\Backgrounds\BackstorySolver.cs"/>
+        <Compile Include="Solving\Backgrounds\PawnBioPossibility.cs"/>
+        <Compile Include="Solving\Backgrounds\PossibleBios.cs"/>
+        <Compile Include="Solving\Backgrounds\SelectBackstorySpecifically.cs"/>
+        <Compile Include="Solving\Backgrounds\TraitUtilities.cs"/>
+        <Compile Include="Solving\BalancingSituation.cs"/>
+        <Compile Include="Solving\RaceAgeData.cs"/>
+        <Compile Include="Solving\ProcGen.cs"/>
+        <Compile Include="Solving\SituationFactory.cs"/>
+        <Compile Include="Interface\Dialogs\EditSpecificPawn.cs"/>
+        <Compile Include="Interface\Pages\PrepareProcedurally.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\Adulthood.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\Backstory.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\Childhood.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\IdeologicalRole.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\LockForSelection.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\PawnCanBePrepared.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\Traits.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\WorkPotential.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\XenotypeSelection.cs"/>
+        <Compile Include="Interface\SkillPassionSelectionUiUtility.cs"/>
+        <Compile Include="Interface\UiAdjustmentScope.cs"/>
+        <Compile Include="Solving\Skills\EstimateRolling.cs"/>
+        <Compile Include="Solving\Skills\PassionAndLevel.cs"/>
+        <Compile Include="Solving\Skills\PawnBuilder.cs"/>
+        <Compile Include="Solving\Skills\SkillFinalizationResult.cs"/>
+        <Compile Include="Solving\StateEdits\PostPawnGenerationChanges.cs"/>
+        <Compile Include="Solving\StateEdits\StartingPawnUtilityState.cs"/>
+        <Compile Include="Solving\StateEdits\TemporarilyChange.cs"/>
+        <Compile Include="Solving\StateEdits\TemporaryEdit.cs"/>
+        <Compile Include="Solving\Weighting\CollectSpecificPassions.cs"/>
+        <Compile Include="Solving\Weighting\SkillPassionSelection.cs"/>
+        <Compile Include="Solving\Weighting\SpecificSkillWeights.cs"/>
+        <Compile Include="Solving\Weighting\WeightBackgroundAlgorithm.cs"/>
+        <Compile Include="VerseExtensions.cs"/>
+        <Compile Include="Properties\AssemblyInfo.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="packages.config"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="Defs\ReadMe.md"/>
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+           Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+      -->
 </Project>

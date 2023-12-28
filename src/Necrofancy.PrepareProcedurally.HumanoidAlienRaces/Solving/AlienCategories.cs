@@ -1,4 +1,4 @@
-﻿namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces;
+﻿namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
 
 public readonly struct AlienCategories
 {

@@ -3,7 +3,7 @@ using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 using RimWorld;
 using Verse;
 
-namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces;
+namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
 
 using static PostPawnGenerationChanges;
 
@@ -20,22 +20,22 @@ public static class AlienSpecificPostPawnGenerationChanges
             PostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
             return;
         }
-        
+
         SpecialTraitHandling.RemoveBackstoryRelatedTraits(pawn);
-        
+
         pawn.story.Childhood = bio.Childhood;
         var possessions = Find.GameInitData.startingPossessions[pawn];
         RemoveBackstoryPossessions(pawn, possessions);
         pawn.story.Adulthood = bio.Adulthood;
         AddBackstoryPossessions(bio, possessions);
-        
+
         SpecialTraitHandling.RerollForBackstoryForcedTraits(pawn);
-        
+
         // Respect a Kickstarter NameTriple or just re-generate the name.
         pawn.Name = bio.Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
-        
+
         // do NOT change the bodytype of a HAR pawn.
-        
+
         pawn.Notify_DisabledWorkTypesChanged();
     }
 }

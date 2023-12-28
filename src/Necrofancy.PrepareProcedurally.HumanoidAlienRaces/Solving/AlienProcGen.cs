@@ -9,7 +9,7 @@ using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using Verse;
 
-namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces;
+namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
 
 using static Editor;
 

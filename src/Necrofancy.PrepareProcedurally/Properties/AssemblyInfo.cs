@@ -6,7 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Necrofancy.PrepareProcedurally")]
-[assembly: AssemblyDescription("Prepare Procedurally is a mod that enables quick automation to colony and tribal starts in the game Rimworld by Ludeon Studios")]
+[assembly:
+    AssemblyDescription(
+        "Prepare Procedurally is a mod that enables quick automation to colony and tribal starts in the game Rimworld by Ludeon Studios")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Necrofancy.PrepareProcedurally")]
@@ -34,4 +36,3 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: InternalsVisibleTo("Necrofancy.PrepareProcedurally.HumanoidAlienRaces")]
 [assembly: AssemblyVersion("1.0.0.*")]
-[assembly: AssemblyFileVersion("1.0.0.*")]
