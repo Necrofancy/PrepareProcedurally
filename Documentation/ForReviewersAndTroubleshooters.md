@@ -1,12 +1,16 @@
-The space that this mod is working in are, to say the least, fraught.
+This writeup contains relevant information for troubleshooters and other modders that might be interested in what Prepare Procedurally might be doing under the hood. I'm highly aware that mods in this space are pretty fraught for stability, so I've put some meticulous work into patching and working in the minimum area needed specifically for affecting starting characters, and avoiding any changes that could affect the game after creation.
+
+Despite first hitting the workshop in late December of 2023, this mod has been on-and-off development since well before Biotech DLC was released. I figured releasing something publicly in this space needed to be done right if it was done at all.
 
 # Patches and State Edits
 
 There's a couple areas that are worth noting for other modders or developers.
 * [Harmony Patches](../src/Necrofancy.PrepareProcedurally/HarmonyPatches.cs) are limited to just changes adjacent to the Create Character page (`Page_ConfigureStartingPawns`). It sets some initial state when that page opens, clears that state when the player proceeds from the dialog, and as far as behavioral changes just adds a button to open the prepare procedurally page. All pawn changes are limited to that window.
-* Procedural Generation will make a few edits to defs, or `PawnGenerationRequests`, to force pawn generation to be biased for the duration of pawn randomization. These changes are immediately reverted after procedural generation is done editing.
-    * The class responsible for those kinds of edits is in [the TemporarilyChange class](../src/Necrofancy.PrepareProcedurally/Solving/StateEdits/TemporarilyChange.cs). You can confirm that these changes don't persist after procedural generation by hitting "Randomize" at the Create Characters page - this mod does not patch any behavior on that.
-* After the pawn is generated, procgen's further state edits are limited to skills, traits, and passions. We don't try to change the `ThingDef` of the pawn or any other complex operation.
+* Procedural Generation will make a few edits to defs, or `PawnGenerationRequests`, to force pawn generation to be biased for the duration of pawn randomization. These changes are immediately reverted after procedural generation is done randomizing pawns in-place.
+    * The class responsible for those kinds of edits is in [the TemporarilyChange class](../src/Necrofancy.PrepareProcedurally/Solving/StateEdits/TemporarilyChange.cs). 
+    * Troubleshooters and testers can confirm that these changes don't persist after procedural generation by hitting "Randomize" at the Create Characters page - this mod does not patch any behavior on the randomize button in `Page_ConfigureStartingPawns`.
+* After the pawn is generated, procgen's further state edits are limited to skills, traits, and passions. 
+    * This mod will not try to change the `ThingDef` of the pawn or any other complex operation. Backstory-solving in [AlienProcGen](../src/Necrofancy.PrepareProcedurally.HumanoidAlienRaces/Solving/AlienProcGen.cs) specifically generates pawns first, and then tries to solve for backstories to prevent having to deal with this.
     * [PostPawnGenerationChanges](../src/Necrofancy.PrepareProcedurally/Solving/StateEdits/PostPawnGenerationChanges.cs) is used for Vanilla.
     * [AlienSpecificPostPawnGenerationChanges](../src/Necrofancy.PrepareProcedurally.HumanoidAlienRaces/Solving/AlienSpecificPostPawnGenerationChanges.cs) is used for Alien Races.
-* If, for any reason, procedural generation controlled by the UI throws an exception, we fail loudly and try to rectify/resolve state by running normal pawn randomization on the existing pawns. This is a further safeguard against accidentally corrupting pawns that would lead to a save-ending problem or troubleshooting problem specific to a save later.
+* If, for any reason, procedural generation controlled by the UI throws an exception, we fail loudly and try to rectify/resolve state by running normal pawn randomization on all starting pawns. This is a further safeguard against accidentally corrupting pawns that would lead to a save-ending problem or troubleshooting problem specific to a save later.
