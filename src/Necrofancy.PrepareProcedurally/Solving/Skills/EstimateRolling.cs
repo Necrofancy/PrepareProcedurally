@@ -131,6 +131,45 @@ public static class EstimateRolling
         return Mathf.Clamp(Mathf.RoundToInt(fromAdjustmentCurve), 0, 20);
     }
 
+    public static int StaticRoll(Pawn pawn, SkillDef skill, float roll)
+    {
+        var start = skill.usuallyDefinedInBackstories
+            ? StartingValue.AssumingPercentRoll(roll)
+            : NonBackstoryStartingValueCurve.AssumingPercentRoll(roll);
+
+        float story = 0;
+        var backstoryMultiplier = BackstoryMultiplier.AssumingPercentRoll(roll);
+
+        // if we wanted to "positively" roll on a bad backstory, we want the _inverse_.
+        var backstoryNegativeMultiplier = BackstoryMultiplier.AssumingPercentRoll(1 - roll);
+
+        void AddBackstory(BackstoryDef backstory)
+        {
+            if (!backstory.skillGains.TryGetValue(skill, out var value))
+                return;
+
+            var multiplied = value > 0
+                ? backstoryMultiplier * value
+                : backstoryNegativeMultiplier * value;
+            story += multiplied;
+        }
+
+        AddBackstory(pawn.story.Childhood);
+        AddBackstory(pawn.story.Adulthood);
+
+        foreach (var trait in pawn.story.traits.allTraits)
+            if (trait.CurrentData.skillGains is { } gains && gains.TryGetValue(skill, out var gain))
+                story += gain;
+
+        var ageMax = AgeSkillMaxFactorCurve.Evaluate(pawn.ageTracker.AgeBiologicalYearsFloat);
+        var ageMultiplierRange = new FloatRange(1.0f, ageMax);
+        var ageMultiplier = ageMultiplierRange.AssumingPercentRoll(roll);
+        var curveValue = (start + story) * ageMultiplier;
+        var fromAdjustmentCurve = LevelFinalAdjustmentCurve.Evaluate(curveValue);
+
+        return Mathf.Clamp(Mathf.RoundToInt(fromAdjustmentCurve), 0, 20);
+    }
+
     public static IReadOnlyDictionary<SkillDef, IntRange> PossibleSkillRangesOf(float age,
         in BioPossibility possibility)
     {

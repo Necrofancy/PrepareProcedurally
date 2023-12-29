@@ -10,14 +10,33 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills;
 
 public class PawnBuilder
 {
-    private readonly BioPossibility bioPossibility;
     private readonly Dictionary<SkillDef, IntRange> skillRanges = new();
+    private readonly Dictionary<SkillDef, IntRange> targetRanges = new();
     private readonly Dictionary<SkillDef, Passion> passions = new();
 
-    public PawnBuilder(BioPossibility bioPossibility, float age)
+    private readonly HashSet<SkillDef> forcedPassions = new();
+    private readonly HashSet<SkillDef> disallowedPassions = new();
+    private Passion highestPassion = Passion.Minor;
+
+    public PawnBuilder(BioPossibility bio, float age)
     {
-        this.bioPossibility = bioPossibility;
-        GetInitialSkillRanges(age);
+        disallowedPassions.AddRange(SkillDisables.GetSkillsDisabled(bio.Childhood, bio.Adulthood));
+
+        GetInitialSkillRanges(bio, age);
+    }
+
+    public PawnBuilder(Pawn pawn)
+    {
+        disallowedPassions.AddRange(SkillDisables.GetSkillsDisabled(pawn.story.Childhood, pawn.story.Adulthood));
+        foreach (var trait in pawn.story.traits.allTraits)
+        {
+            if (trait.def.forcedPassions is { } forced)
+                forcedPassions.AddRange(forced);
+            if (trait.def.conflictingPassions is { } conflicting)
+                disallowedPassions.AddRange(conflicting);
+        }
+
+        GetInitialSkillRanges(pawn);
     }
 
     public float PassionPoints { get; private set; }
@@ -29,6 +48,9 @@ public class PawnBuilder
 
     public bool LockIn(SkillPassionSelection req, int remaining)
     {
+        if (disallowedPassions.Contains(req.Skill))
+            return false;
+
         var used = req.Total - remaining;
         var currentPassionNeeded =
             used < req.major
@@ -46,6 +68,8 @@ public class PawnBuilder
         var newMin = NewMin(range, currentPassionNeeded);
 
         skillRanges[def] = new IntRange(newMin, range.max);
+        if (highestPassion < currentPassionNeeded)
+            highestPassion = currentPassionNeeded;
         return true;
     }
 
@@ -75,6 +99,9 @@ public class PawnBuilder
 
     public bool TryLockInPassion(SkillDef def, Passion passion)
     {
+        if (disallowedPassions.Contains(def))
+            return false;
+
         var currentPassion = passions[def];
         if (currentPassion >= passion)
             return true;
@@ -121,10 +148,26 @@ public class PawnBuilder
 
         foreach (var skill in skills)
         {
+            if (forcedPassions.Contains(skill))
+            {
+                majorPassionedSkills.Remove(skill);
+                minorPassionedSkills.Remove(skill);
+                passions[skill] = highestPassion;
+            }
+
             exhaustedPoints |= !CanBalanceAroundPassion(skill, Passion.Minor, minorPassionedSkills);
             exhaustedPoints |= !CanBalanceAroundPassion(skill, Passion.Major, majorPassionedSkills);
         }
 
+        List<SkillDef> skillsDefs = DefDatabase<SkillDef>.AllDefsListForReading;
+        for (int i = skillsDefs.Count - 1; i >= 0; i--)
+        {
+            var skillNeedingOtherPassionsClipped = skillsDefs[i];
+            var passion = passions[skillNeedingOtherPassionsClipped];
+            var range = skillRanges[skillNeedingOtherPassionsClipped];
+            ClipMax(skillNeedingOtherPassionsClipped, range.min, passion);
+        }
+        
         var levels = new Dictionary<SkillDef, PassionAndLevel>();
         foreach (var skill in skills)
         {
@@ -184,13 +227,49 @@ public class PawnBuilder
         }
     }
 
-    private void GetInitialSkillRanges(float age)
+    private void ClipMax(SkillDef skillToClip, int max, Passion passion)
+    {
+        List<SkillDef> defs = DefDatabase<SkillDef>.AllDefsListForReading;
+        
+        var actualCap = max-1;
+        foreach (var skill in defs)
+        {
+            if (skill == skillToClip)
+            {
+                actualCap = max;
+                continue;
+            }
+            
+            var passionOfSkill = passions[skill];
+            if (passionOfSkill >= passion)
+                continue;
+            
+            var skillRange = skillRanges[skill];
+            var newMax = Math.Max(skillRange.min, Math.Min(actualCap, skillRange.max));
+            skillRanges[skill] = new IntRange(skillRange.min, newMax);
+        }
+    }
+
+    private void GetInitialSkillRanges(BioPossibility bio, float age)
     {
         foreach (var skill in DefDatabase<SkillDef>.AllDefs)
         {
-            var min = EstimateRolling.StaticRoll(in bioPossibility, age, skill, 0f);
-            var max = EstimateRolling.StaticRoll(in bioPossibility, age, skill, .98f);
+            var min = EstimateRolling.StaticRoll(in bio, age, skill, 0f);
+            var max = EstimateRolling.StaticRoll(in bio, age, skill, .98f);
             skillRanges[skill] = new IntRange(min, max);
+            targetRanges[skill] = new IntRange(min, max);
+            passions[skill] = Passion.None;
+        }
+    }
+
+    private void GetInitialSkillRanges(Pawn pawn)
+    {
+        foreach (var skill in DefDatabase<SkillDef>.AllDefs)
+        {
+            var min = EstimateRolling.StaticRoll(pawn, skill, 0f);
+            var max = EstimateRolling.StaticRoll(pawn, skill, .98f);
+            skillRanges[skill] = new IntRange(min, max);
+            targetRanges[skill] = new IntRange(min, max);
             passions[skill] = Passion.None;
         }
     }

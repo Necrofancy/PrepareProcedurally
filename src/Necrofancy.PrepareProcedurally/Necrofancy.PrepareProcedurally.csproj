@@ -106,6 +106,7 @@
         <Compile Include="Solving\Skills\EstimateRolling.cs"/>
         <Compile Include="Solving\Skills\PassionAndLevel.cs"/>
         <Compile Include="Solving\Skills\PawnBuilder.cs"/>
+        <Compile Include="Solving\Skills\SkillDisables.cs"/>
         <Compile Include="Solving\Skills\SkillFinalizationResult.cs"/>
         <Compile Include="Solving\StateEdits\PostPawnGenerationChanges.cs"/>
         <Compile Include="Solving\StateEdits\StartingPawnUtilityState.cs"/>

@@ -35,6 +35,7 @@ public static class Editor
         }
     }
 
+    public static HashSet<TraitDef> TraitsThatDisablePassions { get; } = new();
     public static List<List<TraitRequirement>> TraitRequirements { get; private set; }
     public static List<SkillPassionSelection> SkillPassions { get; private set; }
     public static List<Pawn> StartingPawns { get; set; }
@@ -90,6 +91,10 @@ public static class Editor
 
         ClearState();
 
+        foreach (var trait in DefDatabase<TraitDef>.AllDefsListForReading)
+            if (trait.conflictingPassions?.Any() == true)
+                TraitsThatDisablePassions.Add(trait);
+
         SkillPassions = DefDatabase<SkillDef>.AllDefsListForReading
             .Select(SkillPassionSelection.CreateFromSkill).ToList();
         var pawnCount = Find.GameInitData.startingPawnCount;
@@ -141,6 +146,7 @@ public static class Editor
         LastResults = null;
         StartingPawns = null;
         LockedPawns.Clear();
+        TraitsThatDisablePassions.Clear();
     }
 
     // ReSharper disable once UnusedParameter.Local

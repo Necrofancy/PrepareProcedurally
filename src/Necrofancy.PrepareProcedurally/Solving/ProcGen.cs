@@ -21,8 +21,6 @@ public static class ProcGen
         var pawnList = Find.GameInitData.startingAndOptionalPawns;
         var pawnCount = Find.GameInitData.startingPawnCount;
 
-        var empty = new List<TraitDef>();
-
         var generationCurve = Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve;
         var ageCurve = EstimateRolling.SubSampleCurve(generationCurve, AgeRange);
 
@@ -35,20 +33,32 @@ public static class ProcGen
         {
             var backstory = backgrounds[i];
             var traits = backstory.Background.Traits;
+            List<TraitDef> traitsToBan = new();
             if (!(finalSkills[i] is { } finalization))
                 continue;
 
-            using (TemporarilyChange.ScenarioBannedTraits(empty))
+            foreach (var trait in TraitsThatDisablePassions)
+                if (trait.conflictingPassions.Any(x => finalization.FinalRanges[x].Passion > Passion.None))
+                    traitsToBan.Add(trait);
+
+            Pawn pawn;
+            using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
             using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
             using (TemporarilyChange.SetAgeInRequest(backstory.AssumedAge, i))
             using (TemporarilyChange.GenderInRequest(backstory.Background.Gender, i))
             {
-                pawnList[i] = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
+                pawn = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
             }
 
-            PostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, pawnList[i]);
-            traits.ApplyRequestedTraitsTo(pawnList[i]);
-            finalization.ApplySimulatedSkillsTo(pawnList[i]);
+            PostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, pawn);
+            traits.ApplyRequestedTraitsTo(pawn);
+
+            var finalizationWithTraits = new PawnBuilder(pawn);
+            foreach (var (skill, requirement) in finalization.FinalRanges)
+                finalizationWithTraits.TryLockInPassion(skill, requirement.Passion);
+
+            finalizationWithTraits.Build().ApplySimulatedSkillsTo(pawn);
+
             OnPawnChanged(pawnList[i]);
         }
     }
@@ -65,14 +75,12 @@ public static class ProcGen
         var specifier = new SelectBackstorySpecifically(backstoryCategory);
         var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
-        var empty = new List<TraitDef>();
 
-        var builder = new PawnBuilder(bio, age);
-        foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
-            if (usability == UsabilityRequirement.Major)
-                builder.TryLockInPassion(skill, Passion.Major);
-            else if (usability == UsabilityRequirement.Minor)
-                builder.TryLockInPassion(skill, Passion.Minor);
+        List<TraitDef> traitsToBan = new();
+        foreach (var trait in TraitsThatDisablePassions)
+        foreach (var (skill, _) in reqs.Where(x => x.Usability >= UsabilityRequirement.Minor))
+            if (trait.conflictingPassions.Contains(skill))
+                traitsToBan.Add(trait);
 
         var addBackToLocked = false;
         if (LockedPawns.Contains(pawn))
@@ -81,7 +89,7 @@ public static class ProcGen
             addBackToLocked = true;
         }
 
-        using (TemporarilyChange.ScenarioBannedTraits(empty))
+        using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.SetAgeInRequest(age, index))
         using (TemporarilyChange.GenderInRequest(bio.Gender, index))
@@ -91,8 +99,22 @@ public static class ProcGen
         }
 
         PostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
-        builder.Build().ApplySimulatedSkillsTo(pawn);
         traits.ApplyRequestedTraitsTo(pawn);
+
+        var finalPawnBuild = new PawnBuilder(pawn);
+        foreach (var (skill, requirement) in reqs)
+        {
+            var passion = requirement switch
+            {
+                UsabilityRequirement.Major => Passion.Major,
+                UsabilityRequirement.Minor => Passion.Minor,
+                _ => Passion.None
+            };
+
+            finalPawnBuild.TryLockInPassion(skill, passion);
+        }
+
+        finalPawnBuild.Build().ApplySimulatedSkillsTo(pawn);
 
         if (addBackToLocked) LockedPawns.Add(pawn);
 

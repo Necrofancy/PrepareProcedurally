@@ -53,17 +53,17 @@ public static class AlienProcGen
         var specifier = new SelectBackstorySpecifically(new List<string> { pawnChildhoods, pawnAdulthoods });
         var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
+        AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
+        traits.ApplyRequestedTraitsTo(pawn);
 
-        var builder = new PawnBuilder(bio, pawn.ageTracker.AgeBiologicalYearsFloat);
+        var builder = new PawnBuilder(pawn);
         foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
             if (usability == UsabilityRequirement.Major)
                 builder.TryLockInPassion(skill, Passion.Major);
             else if (usability == UsabilityRequirement.Minor)
                 builder.TryLockInPassion(skill, Passion.Minor);
 
-        AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
         builder.Build().ApplySimulatedSkillsTo(pawn);
-        traits.ApplyRequestedTraitsTo(pawn);
 
         if (addBackToLocked) LockedPawns.Add(pawn);
 
@@ -120,10 +120,18 @@ public static class AlienProcGen
             if (finalSkills[pawnIndex] is not { } finalization)
                 continue;
 
-            AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, StartingPawns[pawnIndex]);
-            traits.ApplyRequestedTraitsTo(StartingPawns[pawnIndex]);
-            finalization.ApplySimulatedSkillsTo(StartingPawns[pawnIndex]);
-            ProcGen.OnPawnChanged(StartingPawns[pawnIndex]);
+            var pawn = StartingPawns[pawnIndex];
+
+            AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, pawn);
+            traits.ApplyRequestedTraitsTo(pawn);
+
+            var finalizationWithTraits = new PawnBuilder(pawn);
+            foreach (var (skill, requirement) in finalization.FinalRanges)
+                finalizationWithTraits.TryLockInPassion(skill, requirement.Passion);
+
+            finalizationWithTraits.Build().ApplySimulatedSkillsTo(pawn);
+
+            ProcGen.OnPawnChanged(pawn);
         }
     }
 }

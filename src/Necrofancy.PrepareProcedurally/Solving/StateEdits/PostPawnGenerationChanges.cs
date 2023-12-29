@@ -22,15 +22,15 @@ public static class PostPawnGenerationChanges
     public static void ApplyBackstoryTo(BioPossibility bio, Pawn pawn)
     {
         pawn.story.Childhood = bio.Childhood;
-        
+
         var possessions = Find.GameInitData.startingPossessions[pawn];
         RemoveBackstoryPossessions(pawn, possessions);
         pawn.story.Adulthood = bio.Adulthood;
         AddBackstoryPossessions(bio, possessions);
-        
+
         // Respect a Kickstarter NameTriple or just re-generate the name.
         pawn.Name = bio.Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
-            
+
         ApplyBodyTypeFromBackstory(bio, pawn);
 
         pawn.Notify_DisabledWorkTypesChanged();
@@ -39,7 +39,7 @@ public static class PostPawnGenerationChanges
     internal static void ApplyBodyTypeFromBackstory(BioPossibility bio, Pawn pawn)
     {
         var bodyTypeSetByBiotech = false;
-        
+
         if (ModsConfig.BiotechActive)
         {
             var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)
@@ -53,17 +53,13 @@ public static class PostPawnGenerationChanges
         }
 
         if (!bodyTypeSetByBiotech && bio.Adulthood.BodyTypeFor(pawn.gender) is { } bodyType)
-        {
             pawn.story.bodyType = bodyType;
-        }
     }
 
     internal static void AddBackstoryPossessions(BioPossibility bio, List<ThingDefCount> possessions)
     {
         foreach (var item in bio.Adulthood.possessions)
-        {
             possessions.Add(new ThingDefCount(item.key, Math.Min(item.value, item.key.stackLimit)));
-        }
     }
 
     internal static void RemoveBackstoryPossessions(Pawn pawn, List<ThingDefCount> possessions)
@@ -72,16 +68,11 @@ public static class PostPawnGenerationChanges
         {
             var possessionsToRemove = pawn.story.Adulthood.possessions;
             foreach (var itemToRemove in possessionsToRemove)
-            {
                 for (var i = possessions.Count - 1; i >= 0; i--)
                 {
                     var item = possessions[i];
-                    if (item.ThingDef == itemToRemove.key)
-                    {
-                        possessions.RemoveAt(i);
-                    }
+                    if (item.ThingDef == itemToRemove.key) possessions.RemoveAt(i);
                 }
-            }
         }
     }
 
@@ -92,15 +83,12 @@ public static class PostPawnGenerationChanges
     {
         var passionsModdedByGenes = new Dictionary<SkillDef, PassionMod.PassionModType>();
         foreach (var gene in pawn.genes.GenesListForReading.Where(x => x.Active && x.def.passionMod != null))
-        {
             passionsModdedByGenes[gene.def.passionMod.skill] = gene.def.passionMod.modType;
-        }
         foreach (var skillRecord in pawn.skills.skills)
         {
             var passionAndLevel = result.FinalRanges[skillRecord.def];
             skillRecord.levelInt = Rand.RangeInclusive(passionAndLevel.Min, passionAndLevel.Max);
             if (passionsModdedByGenes.TryGetValue(skillRecord.def, out var mod))
-            {
                 switch (mod)
                 {
                     case PassionMod.PassionModType.AddOneLevel:
@@ -115,14 +103,13 @@ public static class PostPawnGenerationChanges
                         skillRecord.passion = passionAndLevel.Passion;
                         break;
                 }
-            }
             else
-            {
                 skillRecord.passion = passionAndLevel.Passion;
-            }
+
+            skillRecord.Notify_SkillDisablesChanged();
         }
     }
-        
+
     /// <summary>
     /// Apply requested traits to the pawn. "Requested" is limited to what pawn generation would be capable
     /// of rolling for that given pawn (i.e. it has to respect backstory-forced traits and that said trait is
@@ -132,20 +119,15 @@ public static class PostPawnGenerationChanges
     {
         foreach (var trait in traits)
         {
-            if (pawn.story?.traits == null 
-                || pawn.story.traits.HasTrait(trait.def) 
-                && pawn.story.traits.DegreeOfTrait(trait.def) == trait.degree)
-            {
+            if (pawn.story?.traits == null
+                || (pawn.story.traits.HasTrait(trait.def)
+                    && pawn.story.traits.DegreeOfTrait(trait.def) == trait.degree))
                 continue;
-            }
-            if (pawn.story.traits.HasTrait(trait.def))
-            {
-                pawn.story.traits.allTraits.RemoveAll(tr => tr.def == trait.def);
-            }
-                
+            if (pawn.story.traits.HasTrait(trait.def)) pawn.story.traits.allTraits.RemoveAll(tr => tr.def == trait.def);
+
             pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree ?? 0));
         }
-            
+
         TraitUtilities.FixTraitOverflow(pawn);
     }
 }
