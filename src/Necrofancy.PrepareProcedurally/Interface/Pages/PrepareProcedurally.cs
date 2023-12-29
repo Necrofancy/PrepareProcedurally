@@ -16,6 +16,8 @@ public class PrepareProcedurally : Page
 {
     public override string PageTitle => "SkillPassionPageTitle".Translate();
 
+    private static Vector2 scrollPosition;
+
     public PrepareProcedurally()
     {
         // Just in case pawns were randomized outside of the editor, refresh pawn editor.
@@ -29,17 +31,25 @@ public class PrepareProcedurally : Page
             DrawPageTitle(rect);
 
             var uiPadding = rect.GetInnerRect();
-            uiPadding.SplitHorizontally(480, out var upper, out var lower);
+            uiPadding.SplitHorizontally(400, out var upper, out var lower);
 
             SkillPassionSelectionUiUtility.DoWindowContents(upper, Editor.SkillPassions);
 
-            var pawnTable = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400,
-                800);
-            pawnTable.SetMinMaxSize(400, (int)lower.width, 700, (int)lower.height + 200);
-            lower.y -= 8.6f * Find.GameInitData.startingPawnCount;
             Text.Font = GameFont.Tiny;
             Widgets.Label(lower, "ClickOnPawnToCustomizeSkills".Translate());
-            pawnTable.PawnTableOnGUI(lower.min);
+
+            var table = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400,
+                800);
+            lower.y += 15;
+            var viewSize = new Rect(lower.position, table.Size)
+            {
+                width = lower.width - 50
+            };
+            lower.height -= 45;
+
+            Widgets.BeginScrollView(lower, ref scrollPosition, viewSize);
+            table.PawnTableOnGUI(lower.min);
+            Widgets.EndScrollView();
 
             PropagateToEditor();
 

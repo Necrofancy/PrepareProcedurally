@@ -37,7 +37,6 @@ public static class SkillPassionSelectionUiUtility
     private const string Plus = "+";
     private const string Minus = "-";
 
-    private static Vector2 scrollPosition;
     private static float listingHeight;
 
     private const float RowHeight = 24f;
@@ -173,7 +172,6 @@ public static class SkillPassionSelectionUiUtility
             (float)(skillSelectRect.height - (double)num1 - Text.LineHeight - 28.0));
         var outRect = rect2.ContractedBy(4f);
         var rect3 = new Rect(outRect.x, outRect.y, outRect.width, listingHeight);
-        Widgets.BeginScrollView(outRect, ref scrollPosition, rect3);
         listingHeight = 0.0f;
 
         var listingStandard = new Listing_Standard { ColumnWidth = rect3.width };
@@ -188,8 +186,6 @@ public static class SkillPassionSelectionUiUtility
         }
 
         listingStandard.End();
-
-        Widgets.EndScrollView();
 
         //now we add the buttons
 
