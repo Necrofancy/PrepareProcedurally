@@ -1,46 +1,48 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <LanguageData>
-	<PrepareProcedurallyButton>Prepare Procedurally</PrepareProcedurallyButton>
-	<!-- Initial Page UI -->
-	<SkillPassionPageTitle>Determine Backstories and Traits</SkillPassionPageTitle>
-	<SkillPassionSkillSelectWidgetLabel>Group Passions For Each Skill</SkillPassionSkillSelectWidgetLabel>
-	<SkillPassionPawnBiology>Biological Settings</SkillPassionPawnBiology>
-	<SkillPassionUsable>Useable:</SkillPassionUsable>
-	<SkillPassionTooltip>Generation will try to create pawns such that there are:\n - {0} with a major passion.\n - {1} more with a minor passion.\n - {2} more capable of {3}.</SkillPassionTooltip>
+	<Necrofancy.PrepareProcedurally.Button>Prepare Procedurally</Necrofancy.PrepareProcedurally.Button>
 
-	<SkillPassionAgeRangeLabel>Adults Will Have an Age Between {0} Years</SkillPassionAgeRangeLabel>
-	<SkillPassionMelaninRangeLabel>Skin Color Variation</SkillPassionMelaninRangeLabel>
-	<SkillPassionSkillControls>Backstory and Passion Settings</SkillPassionSkillControls>
-	<SkillPassionSkillVariationLevel>Vary Skill Weights By 100%-{0} For Backstory Variety</SkillPassionSkillVariationLevel>
-	<SkillPassionPassionMaxLabel>Max "Passion Points" in Generating Pawns {0}</SkillPassionPassionMaxLabel>
-	<SkillPassionGroupwideLabel>The groupwide skill requirements make up {0} of possible passion points.</SkillPassionGroupwideLabel>
+	<Necrofancy.PrepareProcedurally.PageTitle>Determine Backstories and Traits</Necrofancy.PrepareProcedurally.PageTitle>
 
-	<SkillPassionReRollButton>Reroll</SkillPassionReRollButton>
+	<Necrofancy.PrepareProcedurally.SkillsGroupLabel>Group Passions For Each Skill</Necrofancy.PrepareProcedurally.SkillsGroupLabel>
+	<Necrofancy.PrepareProcedurally.CapableOf>Capable:</Necrofancy.PrepareProcedurally.CapableOf>
+	<Necrofancy.PrepareProcedurally.SkillSettingsTooltip>Generation will try to create pawns such that there are:\n - {0} with a major passion.\n - {1} more with a minor passion.\n - {2} more capable of {3}.</Necrofancy.PrepareProcedurally.SkillSettingsTooltip>
+
+	<Necrofancy.PrepareProcedurally.BiologicalSettingsLabel>Biological Settings</Necrofancy.PrepareProcedurally.BiologicalSettingsLabel>
+	<Necrofancy.PrepareProcedurally.BiologicalAgeRange>Adults Will Have an Age Between {0} Years</Necrofancy.PrepareProcedurally.BiologicalAgeRange>
+	<Necrofancy.PrepareProcedurally.BiologicalMelaninRange>Skin Color Variation</Necrofancy.PrepareProcedurally.BiologicalMelaninRange>
+	
+	<Necrofancy.PrepareProcedurally.BackstoryPassionLabel>Backstory and Passion Settings</Necrofancy.PrepareProcedurally.BackstoryPassionLabel>
+	<Necrofancy.PrepareProcedurally.VariationLabel>Vary Skill Weights By 100%-{0} For Backstory Variety</Necrofancy.PrepareProcedurally.VariationLabel>
+	<Necrofancy.PrepareProcedurally.SkillVariationTooltip>Procedural generation will try to pick pawn backstories and simulate randomization to quickly arrive at a certain loadout of passions. It does so by attaching a weight for each skill and picking stories by the best weight.\n\nVarying this weight by a random amount on generation gives more backstory variety and can help get out of ruts without having to specify each weight to get a specific story combination.</Necrofancy.PrepareProcedurally.SkillVariationTooltip>
+	<Necrofancy.PrepareProcedurally.SkillVariationLeft>Unvarying</Necrofancy.PrepareProcedurally.SkillVariationLeft>
+	<Necrofancy.PrepareProcedurally.SkillVariationRight>1-5x Variation</Necrofancy.PrepareProcedurally.SkillVariationRight>
+	<Necrofancy.PrepareProcedurally.PassionPointsLabel>Max "Passion Points" in Generating Pawns {0}</Necrofancy.PrepareProcedurally.PassionPointsLabel>
+	<Necrofancy.PrepareProcedurally.PassionPointsTooltip>When characters are generated, they are given a range of points between 0-9, based on a normal distribution centered at five points. Outliers on the far ends (i.e. exactly 0 or 9) are exceedingly unlikely.\n\n    - Minor passions take 1 point\n    - Major passions take 1.5 points\n\nCertain traits can force or prevent passions, but otherwise a set amount of major and minor passions are given based on the skill level for the pawn generated.</Necrofancy.PrepareProcedurally.PassionPointsTooltip>
+	<Necrofancy.PrepareProcedurally.GroupwideUsageIndicator>The groupwide skill requirements make up {0} of possible passion points.</Necrofancy.PrepareProcedurally.GroupwideUsageIndicator>
 
 	<!-- Scale these up or down according to the how long your language is -->
 	<!-- For English, this is scaled so that "Construction" is one line for the former and there is a comfy even margin for the row length. -->
-	<SkillPassionSkillTextLength>85</SkillPassionSkillTextLength>
-	<SkillPassionSkillSelectWidgetOverallLength>490</SkillPassionSkillSelectWidgetOverallLength>
+	<Necrofancy.PrepareProcedurally.SkillTextLength>85</Necrofancy.PrepareProcedurally.SkillTextLength>
+	<Necrofancy.PrepareProcedurally.SelectSkillWidgetLength>490</Necrofancy.PrepareProcedurally.SelectSkillWidgetLength>
 
-	<SkillPassionTraitBackstory>This trait is forced by the given backstory of the pawn. Locked pawns will not have this trait removed for trait options, and unlocked pawns may reroll a different backstory to avoid this trait if chosen traits conflict with it.</SkillPassionTraitBackstory>
-	<SkillPassionTraitPlayerChosen>This trait is being locked in on request. Click this trait to remove the lock in for this pawn slot.</SkillPassionTraitPlayerChosen>
-	<SkillPassionTraitForced>This trait is being forced by scenario or mod-based character generation. It cannot be removed.</SkillPassionTraitForced>
+	<Necrofancy.PrepareProcedurally.WarnUnsatisfiedSkillsMessage>Pawn generation was not able to satisfy the following requirements with the given passions per pawn:\n\n{0}\nThis can be fixed by lowering some skill/passion requirements or increasing the passions each pawn can have.\n\nDo you wish to continue anyways?</Necrofancy.PrepareProcedurally.WarnUnsatisfiedSkillsMessage>
+	<Necrofancy.PrepareProcedurally.PrepareProcedurallyErrorMessage>Prepare Procedurally has had an error trying to randomize pawns.\n\n{0}\n\nTo prevent catastrophic error state, all starting characters have been rerolled.</Necrofancy.PrepareProcedurally.PrepareProcedurallyErrorMessage>
+	<Necrofancy.PrepareProcedurally.LockedPawnTooltip>This pawn is locked in and will not be randomized or changed in any way by the procedural editor.\n\nClick to unlock.</Necrofancy.PrepareProcedurally.LockedPawnTooltip>
+	<Necrofancy.PrepareProcedurally.UnlockedPawnTooltip>This pawn is not locked in and will be randomized as needed by the procedural editor to fit other requests.\n\nClick to lock.</Necrofancy.PrepareProcedurally.UnlockedPawnTooltip>
+	<Necrofancy.PrepareProcedurally.ClickToCustomizePawnTooltip>Click to customize this pawn slot a bit more.</Necrofancy.PrepareProcedurally.ClickToCustomizePawnTooltip>
 
-	<ClickOnPawnToCustomizeSkills>Click For Skill Loadout UI</ClickOnPawnToCustomizeSkills>
-	<CustomizePawnTitle>Customize Specific Pawn:</CustomizePawnTitle>
-	<CustomizePawnMajorPassion>Try to make this pawn randomize with a major passion in {0}.</CustomizePawnMajorPassion>
-	<CustomizePawnMinorPassion>Try to make this pawn randomize with a minor passion or better in {0}.</CustomizePawnMinorPassion>
-	<CustomizePawnUsable>Try to make this pawn randomize so that it is capable of {0}.</CustomizePawnUsable>
-	<CustomizePawnNoWeight>Put no weight or emphasis on {0}.</CustomizePawnNoWeight>
+	<Necrofancy.PrepareProcedurally.TraitIsBackstoryTooltip>This trait is forced by the given backstory of the pawn. Locked pawns will not have this trait removed for trait options, and unlocked pawns may reroll a different backstory to avoid this trait if chosen traits conflict with it.</Necrofancy.PrepareProcedurally.TraitIsBackstoryTooltip>
+	<Necrofancy.PrepareProcedurally.PlayerRequestedTraitLabel>This trait is being locked in on request. Click this trait to remove the lock in for this pawn slot.</Necrofancy.PrepareProcedurally.PlayerRequestedTraitLabel>
+	<Necrofancy.PrepareProcedurally.TraitScenarioForcedLabel>This trait is being forced by scenario or mod-based character generation. It cannot be removed.</Necrofancy.PrepareProcedurally.TraitScenarioForcedLabel>
 
-	<VariationTooltip>Procedural generation will try to pick pawn backstories and simulate randomization to quickly arrive at a certain loadout of passions. It does so by attaching a weight for each skill and picking stories by the best weight.\n\nVarying this weight by a random amount on generation gives more backstory variety and can help get out of ruts without having to specify each weight to get a specific story combination.</VariationTooltip>
+	<Necrofancy.PrepareProcedurally.CustomizePawnSkillsLabel>Click For Skill Loadout UI</Necrofancy.PrepareProcedurally.CustomizePawnSkillsLabel>
+	<Necrofancy.PrepareProcedurally.EditSpecificPawnTitle>Customize Specific Pawn:</Necrofancy.PrepareProcedurally.EditSpecificPawnTitle>
+	<Necrofancy.PrepareProcedurally.MajorPassionTooltip>Try to make this pawn randomize with a major passion in {0}.</Necrofancy.PrepareProcedurally.MajorPassionTooltip>
+	<Necrofancy.PrepareProcedurally.MinorPassionTooltip>Try to make this pawn randomize with a minor passion or better in {0}.</Necrofancy.PrepareProcedurally.MinorPassionTooltip>
+	<Necrofancy.PrepareProcedurally.UsableTooltip>Try to make this pawn randomize so that it is capable of {0}.</Necrofancy.PrepareProcedurally.UsableTooltip>
+	<Necrofancy.PrepareProcedurally.NoEmphasisTooltip>Put no weight or emphasis on {0}.</Necrofancy.PrepareProcedurally.NoEmphasisTooltip>
 
-	<PassionPointsDescriptionTooltip>When characters are generated, they are given a range of points between 0-9, based on a normal distribution centered at five points. Outliers on the far ends (i.e. exactly 0 or 9) are exceedingly unlikely.\n\n    - Minor passions take 1 point\n    - Major passions take 1.5 points\n\nCertain traits can force or prevent passions, but otherwise a set amount of major and minor passions are given based on the skill level for the pawn generated.</PassionPointsDescriptionTooltip>
-
-	<WarnUnsatisfiedSkills>Pawn generation was not able to satisfy the following requirements with the given passions per pawn:\n\n{0}\nThis can be fixed by lowering some skill/passion requirements or increasing the passions each pawn can have.\n\nDo you wish to continue anyways?</WarnUnsatisfiedSkills>
-	<PrepareProcedurallyErrorMessage>Prepare Procedurally has had an error trying to randomize pawns.\n\n{0}\n\nTo prevent catastrophic error state, all starting characters have been rerolled.</PrepareProcedurallyErrorMessage>
-	<LockedPawnButtonDescription>This pawn is locked in and will not be randomized or changed in any way by the procedural editor.\n\nClick to unlock.</LockedPawnButtonDescription>
-	<UnlockedPawnButtonDescription>This pawn is not locked in and will be randomized as needed by the procedural editor to fit other requests.\n\nClick to lock.</UnlockedPawnButtonDescription>
-	<ClickToCustomizeGeneration>Click to customize this pawn slot a bit more.</ClickToCustomizeGeneration>
+	<Necrofancy.PrepareProcedurally.RerollButton>Reroll</Necrofancy.PrepareProcedurally.RerollButton>
 </LanguageData>

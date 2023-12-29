@@ -14,7 +14,14 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages;
 
 public class PrepareProcedurally : Page
 {
-    public override string PageTitle => "SkillPassionPageTitle".Translate();
+    private const string CustomizePawnSkillsLabel = "Necrofancy.PrepareProcedurally.CustomizePawnSkillsLabel";
+    private const string RerollButton = "Necrofancy.PrepareProcedurally.RerollButton";
+
+    private const string PrepareProcedurallyErrorMessage =
+        "Necrofancy.PrepareProcedurally.PrepareProcedurallyErrorMessage";
+
+    private const string WarnUnsatisfiedSkillsMessage = "Necrofancy.PrepareProcedurally.WarnUnsatisfiedSkillsMessage";
+    public override string PageTitle => "Necrofancy.PrepareProcedurally.PageTitle".Translate();
 
     private static Vector2 scrollPosition;
 
@@ -36,7 +43,7 @@ public class PrepareProcedurally : Page
             SkillPassionSelectionUiUtility.DoWindowContents(upper, Editor.SkillPassions);
 
             Text.Font = GameFont.Tiny;
-            Widgets.Label(lower, "ClickOnPawnToCustomizeSkills".Translate());
+            Widgets.Label(lower, CustomizePawnSkillsLabel.Translate());
 
             var table = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400,
                 800);
@@ -59,14 +66,14 @@ public class PrepareProcedurally : Page
                 Editor.MakeDirty();
             }
 
-            DoBottomButtons(rect, midLabel: "SkillPassionReRollButton".Translate(), midAct: Reroll);
+            DoBottomButtons(rect, midLabel: RerollButton.Translate(), midAct: Reroll);
         }
         catch (Exception e)
         {
             Close();
             Log.Error($"Exception In Workflow of Prepare Procedurally - Closing Window\n{e}");
             ProcGen.CleanUpOnError();
-            string errorMessage = "PrepareProcedurallyErrorMessage".Translate(e.Message);
+            string errorMessage = PrepareProcedurallyErrorMessage.Translate(e.Message);
             var window = new Dialog_MessageBox(errorMessage);
             Find.WindowStack.Add(window);
         }
@@ -93,7 +100,7 @@ public class PrepareProcedurally : Page
                 builder.AppendLine(unsatisfied.LabelCap);
             }
 
-            var message = "WarnUnsatisfiedSkills".Translate(builder.ToString());
+            var message = WarnUnsatisfiedSkillsMessage.Translate(builder.ToString());
             var window = new Dialog_MessageBox(message, "Yes".Translate(), FullyClose, "No".Translate());
             Find.WindowStack.Add(window);
         }

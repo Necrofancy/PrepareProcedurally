@@ -19,16 +19,20 @@ namespace Necrofancy.PrepareProcedurally.Interface;
 /// </remarks>
 public static class SkillPassionSelectionUiUtility
 {
-    private const string SkillSelectWidgetLabel = "SkillPassionSkillSelectWidgetLabel";
-    private const string UsableText = "SkillPassionUsable";
+    private const string SkillSelectWidgetLabel = "Necrofancy.PrepareProcedurally.SkillsGroupLabel";
+    private const string UsableText = "Necrofancy.PrepareProcedurally.CapableOf";
 
-    private const string PawnBiology = "SkillPassionPawnBiology";
-    private const string AgeRangeText = "SkillPassionAgeRangeLabel";
-    private const string MelaninRangeText = "SkillPassionMelaninRangeLabel";
-    private const string PassionText = "SkillPassionSkillControls";
-    private const string SkillVariationText = "SkillPassionSkillVariationLevel";
-    private const string PassionMaxText = "SkillPassionPassionMaxLabel";
-    private const string PassionGroupText = "SkillPassionGroupwideLabel";
+    private const string PawnBiology = "Necrofancy.PrepareProcedurally.BiologicalSettingsLabel";
+    private const string AgeRangeText = "Necrofancy.PrepareProcedurally.BiologicalAgeRange";
+    private const string MelaninRangeText = "Necrofancy.PrepareProcedurally.BiologicalMelaninRange";
+    private const string PassionText = "Necrofancy.PrepareProcedurally.BackstoryPassionLabel";
+    private const string SkillVariationText = "Necrofancy.PrepareProcedurally.VariationLabel";
+    private const string PassionMaxText = "Necrofancy.PrepareProcedurally.PassionPointsLabel";
+    private const string PassionGroupText = "Necrofancy.PrepareProcedurally.GroupwideUsageIndicator";
+    private const string SkillVariationTooltip = "Necrofancy.PrepareProcedurally.SkillVariationTooltip";
+    private const string PassionPointsTooltip = "Necrofancy.PrepareProcedurally.PassionPointsTooltip";
+    private const string SkillVariationLeft = "Necrofancy.PrepareProcedurally.SkillVariationLeft";
+    private const string SkillVariationRight = "Necrofancy.PrepareProcedurally.SkillVariationRight";
 
     private static readonly Lazy<int> SkillTitleLength = new(GetSkillTitleColumnLength);
     private static readonly Lazy<int> OverallRowLength = new(GetOverallRowUiLength);
@@ -142,9 +146,10 @@ public static class SkillPassionSelectionUiUtility
         // skill weight variation
         var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 11, textRect.width, RowHeight);
         Editor.SkillWeightVariation = Widgets.HorizontalSlider_NewTemp(variationSlider, Editor.SkillWeightVariation, 1f,
-            5.0f, true, SkillVariationText.Translate(Editor.SkillWeightVariation.ToString("P0")), "Unvarying",
-            "1-5x variation", 0.1f);
-        TooltipHandler.TipRegion(variationSlider, "VariationTooltip".Translate());
+            5.0f, true, SkillVariationText.Translate(Editor.SkillWeightVariation.ToString("P0")),
+            SkillVariationLeft.Translate(),
+            SkillVariationRight.Translate(), 0.1f);
+        TooltipHandler.TipRegion(variationSlider, SkillVariationTooltip.Translate());
 
         // max passion slider and explainer
         var passionSlider = new Rect(textRect.x, textRect.y + RowHeight * 13, textRect.width, RowHeight);
@@ -154,7 +159,7 @@ public static class SkillPassionSelectionUiUtility
         var passionPointsNeeded = skillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
         var passionPointsAvailable = Editor.MaxPassionPoints * Find.GameInitData.startingPawnCount;
 
-        TooltipHandler.TipRegion(passionSlider, "PassionPointsDescriptionTooltip".Translate());
+        TooltipHandler.TipRegion(passionSlider, PassionPointsTooltip.Translate());
 
         Text.Font = GameFont.Tiny;
         Text.Anchor = TextAnchor.UpperCenter;
@@ -335,7 +340,8 @@ public static class SkillPassionSelectionUiUtility
         {
             var builder = new StringBuilder();
             builder.AppendLine(selection.Skill.description.AsTipTitle()).AppendLine();
-            builder.AppendLine("SkillPassionTooltip".Translate(selection.major, selection.minor, selection.usable,
+            builder.AppendLine("Necrofancy.PrepareProcedurally.SkillSettingsTooltip".Translate(selection.major,
+                selection.minor, selection.usable,
                 selection.Skill.LabelCap));
             TooltipHandler.TipRegion(rect1, (TipSignal)builder.ToString());
             Widgets.DrawHighlight(rect1);
@@ -370,11 +376,11 @@ public static class SkillPassionSelectionUiUtility
 
     private static int GetSkillTitleColumnLength()
     {
-        return int.Parse("SkillPassionSkillTextLength".Translate());
+        return int.Parse("Necrofancy.PrepareProcedurally.SkillTextLength".Translate());
     }
 
     private static int GetOverallRowUiLength()
     {
-        return int.Parse("SkillPassionSkillSelectWidgetOverallLength".Translate());
+        return int.Parse("Necrofancy.PrepareProcedurally.SelectSkillWidgetLength".Translate());
     }
 }

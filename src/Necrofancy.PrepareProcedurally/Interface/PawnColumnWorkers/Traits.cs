@@ -13,9 +13,9 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
 public class Traits : PawnColumnWorker
 {
-    private const string TraitLockedByBackstoryDescription = "SkillPassionTraitBackstory";
-    private const string TraitLockedByPlayerChoiceDescription = "SkillPassionTraitPlayerChosen";
-    private const string TraitForcedByScenarioOrMod = "SkillPassionTraitForced";
+    private const string TraitLockedByBackstoryDescription = "Necrofancy.PrepareProcedurally.TraitIsBackstoryTooltip";
+    private const string TraitLockedByPlayerChoiceDescription = "Necrofancy.PrepareProcedurally.PlayerRequestedTraitLabel";
+    private const string TraitForcedByScenarioOrMod = "Necrofancy.PrepareProcedurally.TraitScenarioForcedLabel";
         
     private static readonly List<Trait> TraitsToRemove = new List<Trait>();
     private static readonly List<TraitRequirement> TraitOptions = new List<TraitRequirement>();

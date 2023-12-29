@@ -86,7 +86,7 @@ public class EditSpecificPawn : Window
 
         Text.Font = GameFont.Medium;
         var titleRect = new Rect(rect.x, rect.y, rect.width, YPadding);
-        Widgets.Label(titleRect, "CustomizePawnTitle".Translate());
+        Widgets.Label(titleRect, "Necrofancy.PrepareProcedurally.EditSpecificPawnTitle".Translate());
         Text.Font = GameFont.Small;
 
         rect.y += YPadding;
@@ -213,10 +213,10 @@ public class EditSpecificPawn : Window
     {
         return req switch
         {
-            UsabilityRequirement.Major => "CustomizePawnMajorPassion".Translate(def.label),
-            UsabilityRequirement.Minor => "CustomizePawnMinorPassion".Translate(def.label),
-            UsabilityRequirement.Usable => "CustomizePawnUsable".Translate(def.label),
-            _ => "CustomizePawnNoWeight".Translate(def.label)
+            UsabilityRequirement.Major => "Necrofancy.PrepareProcedurally.MajorPassionTooltip".Translate(def.label),
+            UsabilityRequirement.Minor => "Necrofancy.PrepareProcedurally.MinorPassionTooltip".Translate(def.label),
+            UsabilityRequirement.Usable => "Necrofancy.PrepareProcedurally.UsableTooltip".Translate(def.label),
+            _ => "Necrofancy.PrepareProcedurally.NoEmphasisTooltip".Translate(def.label)
         };
     }
 

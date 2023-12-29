@@ -61,7 +61,7 @@ public class HarmonyPatches
 
     private static void AddButtonToDialog(Rect rect, Page_ConfigureStartingPawns __instance)
     {
-        string buttonText = "PrepareProcedurallyButton".Translate();
+        string buttonText = "Necrofancy.PrepareProcedurally.Button".Translate();
         var buttonRect = new Rect
         {
             x = (rect.x + rect.width) / 2 - 75F,

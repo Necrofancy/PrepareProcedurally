@@ -13,8 +13,8 @@ public class LockForSelection : PawnColumnWorker_Icon
     private static readonly Lazy<Texture2D> UnlockedTex = LazyLoad("UI/Overlays/LockedMonochrome");
     private static readonly Lazy<Texture2D> LockedTex = LazyLoad("UI/Overlays/Locked");
 
-    private const string LockedDesc = "LockedPawnButtonDescription";
-    private const string UnlockedDesc = "UnlockedPawnButtonDescription";
+    private const string LockedDesc = "Necrofancy.PrepareProcedurally.LockedPawnTooltip";
+    private const string UnlockedDesc = "Necrofancy.PrepareProcedurally.UnlockedPawnTooltip";
 
     protected override Texture2D GetIconFor(Pawn pawn)
     {
@@ -42,7 +42,10 @@ public class LockForSelection : PawnColumnWorker_Icon
 
     protected override int Width => (int)Text.LineHeight;
 
-    private static bool IsLocked(Pawn pawn) => Editor.LockedPawns.Contains(pawn);
+    private static bool IsLocked(Pawn pawn)
+    {
+        return Editor.LockedPawns.Contains(pawn);
+    }
 
     /// <summary>
     /// Lazy load any related textures to avoid having something try resolving off the UI thread at start.
