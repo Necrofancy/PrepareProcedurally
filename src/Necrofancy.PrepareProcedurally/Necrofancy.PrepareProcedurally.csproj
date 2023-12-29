@@ -84,7 +84,6 @@
         <Compile Include="Solving\Backgrounds\BackgroundPossibility.cs"/>
         <Compile Include="Solving\Backgrounds\BackstorySolver.cs"/>
         <Compile Include="Solving\Backgrounds\PawnBioPossibility.cs"/>
-        <Compile Include="Solving\Backgrounds\PossibleBios.cs"/>
         <Compile Include="Solving\Backgrounds\SelectBackstorySpecifically.cs"/>
         <Compile Include="Solving\Backgrounds\TraitUtilities.cs"/>
         <Compile Include="Solving\BalancingSituation.cs"/>
