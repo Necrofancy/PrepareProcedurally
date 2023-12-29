@@ -4,6 +4,7 @@
     <Necrofancy.PrepareProcedurally.Defs.RequirementSetDef>
         <defName>ReqSet_Mining_Small</defName>
         <requirements>
+            <li>SkillRequirement_Mining_OneMinor</li>
             <li>SkillRequirement_Mining_Minimal</li>
         </requirements>
     </Necrofancy.PrepareProcedurally.Defs.RequirementSetDef>

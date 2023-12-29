@@ -51,8 +51,20 @@
         <populationCurve>
             <points>
                 <li>1, 1</li>
-                <li>3, 1</li>
-                <li>5, 2</li>
+                <li>3, 2</li>
+                <li>5, 3</li>
+            </points>
+        </populationCurve>
+    </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+
+    <Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
+        <defName>SkillRequirement_Mining_OneMinor</defName>
+        <skill>Mining</skill>
+        <level>5</level>
+        <passion>Minor</passion>
+        <populationCurve>
+            <points>
+                <li>1, 1</li>
             </points>
         </populationCurve>
     </Necrofancy.PrepareProcedurally.Defs.SkillRequirementDef>
