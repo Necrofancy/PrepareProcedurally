@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using UnityEngine;
@@ -29,8 +30,8 @@ public static class SkillPassionSelectionUiUtility
     private const string PassionMaxText = "SkillPassionPassionMaxLabel";
     private const string PassionGroupText = "SkillPassionGroupwideLabel";
 
-    private static readonly Lazy<int> SkillTitleLength = new Lazy<int>(GetSkillTitleColumnLength);
-    private static readonly Lazy<int> OverallRowLength = new Lazy<int>(GetOverallRowUiLength);
+    private static readonly Lazy<int> SkillTitleLength = new(GetSkillTitleColumnLength);
+    private static readonly Lazy<int> OverallRowLength = new(GetOverallRowUiLength);
 
     private const int PlusMinusButtonWidth = 5;
     private const string Plus = "+";
@@ -52,17 +53,17 @@ public static class SkillPassionSelectionUiUtility
     // These are different to even balance 
     private const int GapBeforeNumeric = -3;
     private const int GapAfterNumeric = -2;
-        
-    private static IntRange melaninRange = new IntRange(0, PawnSkinColors.SkinColorGenesInOrder.Count - 1);
+
+    private static IntRange melaninRange = new(0, PawnSkinColors.SkinColorGenesInOrder.Count - 1);
 
     public static void DoWindowContents(Rect rect, List<SkillPassionSelection> skillPassions)
     {
         var leftWidth = rect.width - OverallRowLength.Value;
         rect.SplitVertically(leftWidth, out var textRect, out var skillSelectRect);
-            
+
         textRect.y += RowHeight;
         skillSelectRect.y -= 18;
-            
+
         // set up biological page section
         var labelText = new Rect(textRect.x, textRect.y, textRect.width, RowHeight);
         labelText.SplitVertically(200f, out var labelRect, out var right);
@@ -71,40 +72,44 @@ public static class SkillPassionSelectionUiUtility
         if (Editor.RaceAgeRanges.Count > 1 && Widgets.ButtonText(right, Editor.SelectedRace.LabelCap))
         {
             var targets = Editor.RaceAgeRanges.Keys;
-                
+
             var selectPawnKinds = new List<FloatMenuOption>();
             foreach (var option in targets)
             {
                 var str = option.LabelCap;
-                void Select() => Editor.SelectedRace = option;
+
+                void Select()
+                {
+                    Editor.SelectedRace = option;
+                }
 
                 selectPawnKinds.Add(new FloatMenuOption(str, Select));
             }
 
             Find.WindowStack.Add(new FloatMenu(selectPawnKinds));
         }
-            
+
         var bioRect = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight * 5);
         Widgets.DrawMenuSection(bioRect);
         var bioInnerRect = bioRect.GetInnerRect();
-            
+
         // age slider
         var ageSlider = new Rect(bioInnerRect.x, bioInnerRect.y, bioInnerRect.width, RowHeight);
         var ageRange = Editor.AgeRange;
-            
+
         // Age minimum is to force an adulthood backstory.
 
-        int minAge = Editor.AllowedAgeRange.min;
-        int maxAge = Editor.AllowedAgeRange.max;
-            
-        Widgets.IntRange(ageSlider, 1235, ref ageRange, minAge, maxAge, AgeRangeText, minWidth:4);
+        var minAge = Editor.AllowedAgeRange.min;
+        var maxAge = Editor.AllowedAgeRange.max;
+
+        Widgets.IntRange(ageSlider, 1235, ref ageRange, minAge, maxAge, AgeRangeText, 4);
         Editor.AgeRange = ageRange;
-            
+
         // melanin slider
         var melaninSlider = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 1.5f, bioInnerRect.width, RowHeight);
         var genes = PawnSkinColors.SkinColorGenesInOrder;
         var maxMelanin = genes.Count - 1;
-        Widgets.IntRange(melaninSlider, 12345, ref melaninRange, 0, maxMelanin, MelaninRangeText, minWidth:1);
+        Widgets.IntRange(melaninSlider, 12345, ref melaninRange, 0, maxMelanin, MelaninRangeText, 1);
         var minSelectedMelanin = genes[melaninRange.min].minMelanin;
         var maxSelectedMelanin = melaninRange.max >= maxMelanin ? 1 : genes[melaninRange.max + 1].minMelanin;
         Editor.MelaninRange = new FloatRange(minSelectedMelanin, maxSelectedMelanin);
@@ -117,7 +122,7 @@ public static class SkillPassionSelectionUiUtility
         var rectLeft = new Rect(midPoint - size, bioInnerRect.y + RowHeight * 3f, size, size);
         var rectMid = new Rect(midPoint, bioInnerRect.y + RowHeight * 3f, size, size);
         var rectRight = new Rect(midPoint + size, bioInnerRect.y + RowHeight * 3f, size, size);
-            
+
         Widgets.DrawRectFast(rectLeft, minSkinColor);
         Widgets.DrawRectFast(rectRight, maxSkinColor);
         GUI.color = minSkinColor;
@@ -128,46 +133,50 @@ public static class SkillPassionSelectionUiUtility
         Text.Anchor = TextAnchor.UpperCenter;
         Widgets.Label(rectMid, "-");
         Text.Anchor = TextAnchor.UpperLeft;
-            
+
         GUI.color = Color.white;
-            
+
         // label for text
         var skillLabels = new Rect(textRect.x, textRect.y + RowHeight * 10, textRect.width, RowHeight);
         Widgets.Label(skillLabels, PassionText.Translate());
-            
+
         // skill weight variation
         var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 11, textRect.width, RowHeight);
-        Editor.SkillWeightVariation = Widgets.HorizontalSlider_NewTemp(variationSlider, Editor.SkillWeightVariation, 1f, 5.0f, true, SkillVariationText.Translate(Editor.SkillWeightVariation.ToString("P0")), "Unvarying", "1-5x variation", 0.1f);
+        Editor.SkillWeightVariation = Widgets.HorizontalSlider_NewTemp(variationSlider, Editor.SkillWeightVariation, 1f,
+            5.0f, true, SkillVariationText.Translate(Editor.SkillWeightVariation.ToString("P0")), "Unvarying",
+            "1-5x variation", 0.1f);
         TooltipHandler.TipRegion(variationSlider, "VariationTooltip".Translate());
 
         // max passion slider and explainer
         var passionSlider = new Rect(textRect.x, textRect.y + RowHeight * 13, textRect.width, RowHeight);
-        Editor.MaxPassionPoints = Widgets.HorizontalSlider_NewTemp(passionSlider, Editor.MaxPassionPoints, 0, 9.0f, true, PassionMaxText.Translate(Editor.MaxPassionPoints.ToString("N1")), "0", "9", 0.5f);
+        Editor.MaxPassionPoints = Widgets.HorizontalSlider_NewTemp(passionSlider, Editor.MaxPassionPoints, 0, 9.0f,
+            true, PassionMaxText.Translate(Editor.MaxPassionPoints.ToString("N1")), "0", "9", 0.5f);
         var textExplainer = new Rect(textRect.x, textRect.y + RowHeight * 14, textRect.width, RowHeight * 2);
         var passionPointsNeeded = skillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
         var passionPointsAvailable = Editor.MaxPassionPoints * Find.GameInitData.startingPawnCount;
-            
+
         TooltipHandler.TipRegion(passionSlider, "PassionPointsDescriptionTooltip".Translate());
-            
+
         Text.Font = GameFont.Tiny;
         Text.Anchor = TextAnchor.UpperCenter;
-        Widgets.Label(textExplainer, PassionGroupText.Translate($"{passionPointsNeeded:F1}/{passionPointsAvailable:F1}"));
+        Widgets.Label(textExplainer,
+            PassionGroupText.Translate($"{passionPointsNeeded:F1}/{passionPointsAvailable:F1}"));
         Text.Font = GameFont.Small;
         Text.Anchor = TextAnchor.UpperLeft;
-            
+
         var lineHeight = new Rect(skillSelectRect.x + 20f, skillSelectRect.y, skillSelectRect.width, Text.LineHeight);
         Widgets.Label(lineHeight, SkillSelectWidgetLabel.Translate());
-            
+
         var num1 = Text.LineHeight + 4f;
         var num2 = skillSelectRect.width * 0.050000012f;
         var rect2 = new Rect(skillSelectRect.x + num2, skillSelectRect.y + num1, skillSelectRect.width * 0.9f,
-            (float) (skillSelectRect.height - (double) num1 - Text.LineHeight - 28.0));
+            (float)(skillSelectRect.height - (double)num1 - Text.LineHeight - 28.0));
         var outRect = rect2.ContractedBy(4f);
         var rect3 = new Rect(outRect.x, outRect.y, outRect.width, listingHeight);
         Widgets.BeginScrollView(outRect, ref scrollPosition, rect3);
         listingHeight = 0.0f;
 
-        var listingStandard = new Listing_Standard {ColumnWidth = rect3.width};
+        var listingStandard = new Listing_Standard { ColumnWidth = rect3.width };
         listingStandard.Begin(rect3);
         for (var index = 0; index < skillPassions.Count; ++index)
         {
@@ -207,12 +216,10 @@ public static class SkillPassionSelectionUiUtility
         if (options.Any())
         {
             var rect4 = new Rect(outRect.x,
-                Mathf.Min(rect2.yMax, (float) (outRect.y + (double) listingHeight + 4.0)), outRect.width,
+                Mathf.Min(rect2.yMax, (float)(outRect.y + (double)listingHeight + 4.0)), outRect.width,
                 AddButtonHeight);
             if (Widgets.ButtonText(rect4, "Add".Translate().CapitalizeFirst() + "..."))
-            {
                 Find.WindowStack.Add(new FloatMenu(options));
-            }
         }
     }
 
@@ -237,7 +244,7 @@ public static class SkillPassionSelectionUiUtility
         {
             using (TextAnchorOf(TextAnchor.MiddleRight))
             {
-                widgetRow.Label(selection.Skill.LabelCap, width: SkillTitleLength.Value);
+                widgetRow.Label(selection.Skill.LabelCap, SkillTitleLength.Value);
             }
 
             // draw major passions selection section
@@ -252,7 +259,7 @@ public static class SkillPassionSelectionUiUtility
             }
 
             widgetRow.Gap(GapBeforeNumeric);
-            widgetRow.Label(selection.major.ToString(), width: NumericLabelTextLength);
+            widgetRow.Label(selection.major.ToString(), NumericLabelTextLength);
             widgetRow.Gap(GapAfterNumeric);
 
             if (ButtonHit(widgetRow, Plus, pawnCount > selection.major))
@@ -268,10 +275,7 @@ public static class SkillPassionSelectionUiUtility
 
             // draw minor passions selection section if we can give a minor passion role.
             var canAddOrRemovePassions = pawnCount > selection.major;
-            if (!canAddOrRemovePassions)
-            {
-                GUI.color = new Color(0.4f, 0.4f, 0.4f, 0.5f);
-            }
+            if (!canAddOrRemovePassions) GUI.color = new Color(0.4f, 0.4f, 0.4f, 0.5f);
 
             widgetRow.Gap(GapBetweenKnobs);
             widgetRow.Icon(SkillUI.PassionMinorIcon);
@@ -284,7 +288,7 @@ public static class SkillPassionSelectionUiUtility
             }
 
             widgetRow.Gap(GapBeforeNumeric);
-            widgetRow.Label(selection.minor.ToString(), width: NumericLabelTextLength);
+            widgetRow.Label(selection.minor.ToString(), NumericLabelTextLength);
             widgetRow.Gap(GapAfterNumeric);
 
             if (ButtonHit(widgetRow, Plus, pawnCount > selection.major + selection.minor))
@@ -298,10 +302,7 @@ public static class SkillPassionSelectionUiUtility
 
             // draw minimal non-passion selection section if more pawns can be assigned.
             var canInteractWithMinimalBar = pawnCount > selection.major + selection.minor;
-            if (!canInteractWithMinimalBar)
-            {
-                GUI.color = new Color(0.4f, 0.4f, 0.4f, 0.5f);
-            }
+            if (!canInteractWithMinimalBar) GUI.color = new Color(0.4f, 0.4f, 0.4f, 0.5f);
 
             widgetRow.Gap(GapBetweenKnobs);
             widgetRow.Label(UsableText.Translate());
@@ -313,7 +314,7 @@ public static class SkillPassionSelectionUiUtility
             }
 
             widgetRow.Gap(GapBeforeNumeric);
-            widgetRow.Label(selection.usable.ToString(), width: NumericLabelTextLength);
+            widgetRow.Label(selection.usable.ToString(), NumericLabelTextLength);
             widgetRow.Gap(GapAfterNumeric);
 
             if (ButtonHit(widgetRow, Plus, pawnsRemaining > 0))
@@ -323,7 +324,7 @@ public static class SkillPassionSelectionUiUtility
             }
         }
 
-        if (Widgets.ButtonImage(new Rect((float) (rect.width - 24.0 - 6.0), 0.0f, 24f, 24f),
+        if (Widgets.ButtonImage(new Rect((float)(rect.width - 24.0 - 6.0), 0.0f, 24f, 24f),
                 TexButton.DeleteX))
         {
             SoundDefOf.Click.PlayOneShotOnCamera();
@@ -333,9 +334,14 @@ public static class SkillPassionSelectionUiUtility
         }
 
         Widgets.EndGroup();
+
         if (Mouse.IsOver(rect1))
         {
-            TooltipHandler.TipRegion(rect1, (TipSignal) selection.Skill.description.AsTipTitle());
+            var builder = new StringBuilder();
+            builder.AppendLine(selection.Skill.description.AsTipTitle()).AppendLine();
+            builder.AppendLine("SkillPassionTooltip".Translate(selection.major, selection.minor, selection.usable,
+                selection.Skill.LabelCap));
+            TooltipHandler.TipRegion(rect1, (TipSignal)builder.ToString());
             Widgets.DrawHighlight(rect1);
         }
 

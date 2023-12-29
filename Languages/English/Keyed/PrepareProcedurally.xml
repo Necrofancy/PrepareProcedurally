@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <LanguageData>
-
+	<PrepareProcedurallyButton>Prepare Procedurally</PrepareProcedurallyButton>
 	<!-- Initial Page UI -->
 	<SkillPassionPageTitle>Determine Backstories and Traits</SkillPassionPageTitle>
 	<SkillPassionSkillSelectWidgetLabel>Group Passions For Each Skill</SkillPassionSkillSelectWidgetLabel>
 	<SkillPassionPawnBiology>Biological Settings</SkillPassionPawnBiology>
 	<SkillPassionUsable>Useable:</SkillPassionUsable>
+	<SkillPassionTooltip>Generation will try to create pawns such that there are:\n - {0} with a major passion.\n - {1} more with a minor passion.\n - {2} more capable of {3}.</SkillPassionTooltip>
 
 	<SkillPassionAgeRangeLabel>Adults Will Have an Age Between {0} Years</SkillPassionAgeRangeLabel>
 	<SkillPassionMelaninRangeLabel>Skin Color Variation</SkillPassionMelaninRangeLabel>
@@ -14,6 +15,9 @@
 	<SkillPassionSkillVariationLevel>Vary Skill Weights By 100%-{0} For Backstory Variety</SkillPassionSkillVariationLevel>
 	<SkillPassionPassionMaxLabel>Max "Passion Points" in Generating Pawns {0}</SkillPassionPassionMaxLabel>
 	<SkillPassionGroupwideLabel>The groupwide skill requirements make up {0} of possible passion points.</SkillPassionGroupwideLabel>
+
+	<SkillPassionReRollButton>Reroll</SkillPassionReRollButton>
+
 	<!-- Scale these up or down according to the how long your language is -->
 	<!-- For English, this is scaled so that "Construction" is one line for the former and there is a comfy even margin for the row length. -->
 	<SkillPassionSkillTextLength>85</SkillPassionSkillTextLength>
@@ -24,6 +28,11 @@
 	<SkillPassionTraitForced>This trait is being forced by scenario or mod-based character generation. It cannot be removed.</SkillPassionTraitForced>
 
 	<ClickOnPawnToCustomizeSkills>Click For Skill Loadout UI</ClickOnPawnToCustomizeSkills>
+	<CustomizePawnTitle>Customize Specific Pawn:</CustomizePawnTitle>
+	<CustomizePawnMajorPassion>Try to make this pawn randomize with a major passion in {0}.</CustomizePawnMajorPassion>
+	<CustomizePawnMinorPassion>Try to make this pawn randomize with a minor passion or better in {0}.</CustomizePawnMinorPassion>
+	<CustomizePawnUsable>Try to make this pawn randomize so that it is capable of {0}.</CustomizePawnUsable>
+	<CustomizePawnNoWeight>Put no weight or emphasis on {0}.</CustomizePawnNoWeight>
 
 	<VariationTooltip>Procedural generation will try to pick pawn backstories and simulate randomization to quickly arrive at a certain loadout of passions. It does so by attaching a weight for each skill and picking stories by the best weight.\n\nVarying this weight by a random amount on generation gives more backstory variety and can help get out of ruts without having to specify each weight to get a specific story combination.</VariationTooltip>
 

@@ -15,42 +15,42 @@ public enum UsabilityRequirement
     Minor,
     Major
 }
-    
+
 public class EditSpecificPawn : Window
 {
     // DrawCharacterCard with a defined Randomize button -must- be this size or bad things happen.
     private const float CardSizeX = 837.5f;
-    private const float CardSizeY = 480;
+    private const float CardSizeY = 520;
     private const float WindowMargin = 34f;
-        
+    private const float YPadding = 30f;
+
     private static readonly Lazy<Texture2D> Minor = "UI/Icons/PassionMinor".AsTexture();
     private static readonly Lazy<Texture2D> Major = "UI/Icons/PassionMajor".AsTexture();
     private static readonly Lazy<Texture2D> Usable = "UI/Widgets/CheckOn".AsTexture();
     private static readonly Lazy<Texture2D> CanBeOff = "UI/Widgets/CheckPartial".AsTexture();
-        
+
     private readonly List<(SkillDef Skill, UsabilityRequirement Usability)> reqs;
-        
+
     private Pawn pawn;
-        
+
     private readonly bool doRenderClothes = true;
     private readonly bool renderHeadgear = true;
 
     private float listScrollViewHeight;
     private Vector2 listScrollPosition;
 
-    public override Vector2 InitialSize => new Vector2(CardSizeX + WindowMargin, CardSizeY + WindowMargin);
+    public override Vector2 InitialSize => new(CardSizeX + WindowMargin, CardSizeY + WindowMargin + YPadding);
 
     public EditSpecificPawn(Pawn pawn)
     {
         Editor.LockedPawns.Add(pawn);
         this.pawn = pawn;
         doCloseX = true;
-            
+
         var pawnIndex = StartingPawnUtility.PawnIndex(pawn);
         reqs = new List<(SkillDef Skill, UsabilityRequirement Usability)>();
         if (Editor.LastResults?.Count > pawnIndex - 1
             && Editor.LastResults[pawnIndex] is { } existing)
-        {
             foreach (var skill in DefDatabase<SkillDef>.AllDefsListForReading)
             {
                 var result = existing.FinalRanges[skill];
@@ -62,9 +62,7 @@ public class EditSpecificPawn : Window
                 };
                 reqs.Add((skill, usability));
             }
-        }
         else
-        {
             foreach (var skill in pawn.skills.skills)
             {
                 var req = skill.PermanentlyDisabled
@@ -76,18 +74,26 @@ public class EditSpecificPawn : Window
                             : UsabilityRequirement.Usable;
                 reqs.Add((skill.def, req));
             }
-        }
     }
-        
-    public override void DoWindowContents(Rect inRect)
+
+    public override void DoWindowContents(Rect rect)
     {
         if (pawn is null || pawn.Destroyed || pawn.Discarded)
         {
             Close();
             return;
         }
-        DrawPortraitArea(inRect);
-        DrawButtons(inRect);
+
+        Text.Font = GameFont.Medium;
+        var titleRect = new Rect(rect.x, rect.y, rect.width, YPadding);
+        Widgets.Label(titleRect, "CustomizePawnTitle".Translate());
+        Text.Font = GameFont.Small;
+
+        rect.y += YPadding;
+        rect.height -= YPadding;
+
+        DrawPortraitArea(rect);
+        DrawButtons(rect);
     }
 
     private void Randomize()
@@ -96,9 +102,8 @@ public class EditSpecificPawn : Window
         var requiredSkills = new List<SkillDef>();
         var requiredWorkTags = WorkTags.None;
 
-        var variation = new IntRange(10, (int)(Editor.SkillWeightVariation*10));
+        var variation = new IntRange(10, (int)(Editor.SkillWeightVariation * 10));
         foreach (var (skill, usability) in reqs)
-        {
             switch (usability)
             {
                 case UsabilityRequirement.Major:
@@ -120,16 +125,11 @@ public class EditSpecificPawn : Window
                     dict[skill] = -5 * variation.RandomInRange;
                     break;
             }
-        }
 
         foreach (var workType in DefDatabase<WorkTypeDef>.AllDefsListForReading)
-        {
             if (requiredSkills.Any(requiredSkills.Contains))
-            {
                 requiredWorkTags |= workType.workTags;
-            }
-        }
-            
+
         var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
 
         pawn = Compatibility.Layer.RandomizeSingularPawn(pawn, collectSpecificPassions, reqs);
@@ -137,42 +137,44 @@ public class EditSpecificPawn : Window
 
     private void DrawButtons(Rect rect)
     {
-        const float inwardsX = 500, inwardsY = 135;
-        const float buttonDimensions = 15f;
-        const float offsetForSkills = 26.8f;
-            
+        const float inwardsX = 497, inwardsY = 147;
+        const float buttonDimensions = 24f;
+        const float offsetForSkills = 27f;
+
         var buttonRect = new Rect(rect.x + inwardsX, rect.y + inwardsY, buttonDimensions, buttonDimensions);
-            
+
         for (var i = 0; i < reqs.Count; i++)
         {
             var (skill, req) = reqs[i];
             var icon = GetIcon(req);
             GUI.DrawTexture(buttonRect, icon);
+            if (Mouse.IsOver(buttonRect))
+            {
+                TooltipHandler.TipRegion(buttonRect, (TipSignal)GetLabel(req, skill));
+                Widgets.DrawHighlight(buttonRect);
+            }
+
             if (Widgets.ButtonInvisible(buttonRect, icon))
             {
                 var passionPoints = GetPassionPoints();
                 var remainingPoints = Editor.MaxPassionPoints - passionPoints;
                 var canBumpUp = CanIncreaseRequirement(req, remainingPoints);
 
-                if (ModsConfig.BiotechActive 
+                if (ModsConfig.BiotechActive
                     && StartingPawnUtilityState.GetStartingPawnRequestList() is { } pawnGenerationRequests)
                 {
                     var index = StartingPawnUtility.PawnIndex(pawn);
                     var request = pawnGenerationRequests[index];
                     foreach (var gene in request.ForcedXenotype.genes)
-                    {
                         if (gene.passionMod?.modType == PassionMod.PassionModType.DropAll &&
                             gene.passionMod.skill == skill)
-                        {
                             reqs[i] = (skill, UsabilityRequirement.CanBeOff);
-                        }
-                    }
                 }
 
                 var newReq = canBumpUp ? req + 1 : UsabilityRequirement.CanBeOff;
                 reqs[i] = (skill, newReq);
             }
-                
+
             buttonRect.y += offsetForSkills;
         }
     }
@@ -198,24 +200,30 @@ public class EditSpecificPawn : Window
 
     private static Texture2D GetIcon(UsabilityRequirement req)
     {
-        switch (req)
+        return req switch
         {
-            case UsabilityRequirement.Major:
-                return Major.Value;
-            case UsabilityRequirement.Minor:
-                return Minor.Value;
-            case UsabilityRequirement.Usable:
-                return Usable.Value;
-            default:
-                return CanBeOff.Value;
-        }
+            UsabilityRequirement.Major => Major.Value,
+            UsabilityRequirement.Minor => Minor.Value,
+            UsabilityRequirement.Usable => Usable.Value,
+            _ => CanBeOff.Value
+        };
+    }
+
+    private static string GetLabel(UsabilityRequirement req, SkillDef def)
+    {
+        return req switch
+        {
+            UsabilityRequirement.Major => "CustomizePawnMajorPassion".Translate(def.label),
+            UsabilityRequirement.Minor => "CustomizePawnMinorPassion".Translate(def.label),
+            UsabilityRequirement.Usable => "CustomizePawnUsable".Translate(def.label),
+            _ => "CustomizePawnNoWeight".Translate(def.label)
+        };
     }
 
     private float GetPassionPoints()
     {
         var sum = 0.0f;
         foreach (var item in reqs)
-        {
             switch (item.Usability)
             {
                 case UsabilityRequirement.Major:
@@ -225,7 +233,6 @@ public class EditSpecificPawn : Window
                     sum += 1.0f;
                     break;
             }
-        }
 
         return sum;
     }
@@ -236,7 +243,7 @@ public class EditSpecificPawn : Window
     private void DrawPortraitArea(Rect rect)
     {
         Widgets.DrawMenuSection(rect);
-        rect = rect.ContractedBy(WindowMargin / 2);
+        rect = rect.ContractedBy(WindowMargin / 2, WindowMargin);
 
         // draw pawn portrait
         var pawnPortraitRect = new Rect(rect.center.x - Page_ConfigureStartingPawns.PawnPortraitSize.x / 2f,
@@ -245,11 +252,11 @@ public class EditSpecificPawn : Window
         var pawnPortraitSize = Page_ConfigureStartingPawns.PawnPortraitSize;
         var south = Rot4.South;
         var cameraOffset = new Vector3();
-        var renderClothes = this.doRenderClothes;
+        var renderClothes = doRenderClothes;
         var num1 = renderHeadgear ? 1 : 0;
         var num2 = renderClothes ? 1 : 0;
         var image = PortraitsCache.Get(pawn, pawnPortraitSize, south, cameraOffset,
-            renderHeadgear: (num1 != 0), renderClothes: (num2 != 0), stylingStation: true);
+            renderHeadgear: num1 != 0, renderClothes: num2 != 0, stylingStation: true);
         GUI.DrawTexture(pawnPortraitRect, image);
 
 
@@ -263,7 +270,7 @@ public class EditSpecificPawn : Window
             ++subTables;
         if (hasPossesions)
             ++subTables;
-        var height = (float) (rect.height - 100.0 - (4.0 * subTables - 1.0)) /
+        var height = (float)(rect.height - 100.0 - (4.0 * subTables - 1.0)) /
                      subTables;
         var rect2 = rect;
         rect2.yMin += 100f;
@@ -299,33 +306,30 @@ public class EditSpecificPawn : Window
         var outRect = new Rect(0.0f, 0.0f, rect.width, rect.height);
         var viewRect = new Rect(0.0f, 0.0f, rect.width - 16f, listScrollViewHeight);
         var rect1 = rect;
-        if (viewRect.height > (double) outRect.height)
+        if (viewRect.height > (double)outRect.height)
             rect1.width -= 16f;
         Widgets.BeginScrollView(outRect, ref listScrollPosition, viewRect);
         var y = 0.0f;
         if (Find.GameInitData.startingPossessions.ContainsKey(selPawn))
-        {
-            for (var index = 0; index < possessions.Count; ++index)
+            foreach (var possession in possessions)
             {
-                var possession = possessions[index];
                 var rect2 = new Rect(0.0f, y, Text.LineHeight, Text.LineHeight);
                 Widgets.DefIcon(rect2, possession.ThingDef);
                 var rect3 = new Rect(rect2.xMax + 17f, y,
-                    (float) (rect.width - (double) rect2.width - 17.0 - 24.0), Text.LineHeight);
+                    (float)(rect.width - (double)rect2.width - 17.0 - 24.0), Text.LineHeight);
                 Widgets.Label(rect3, possession.LabelCap);
                 if (Mouse.IsOver(rect3))
                 {
                     Widgets.DrawHighlight(rect3);
                     TooltipHandler.TipRegion(rect3,
-                        (TipSignal) (possession.ThingDef.LabelCap.ToString()
-                                         .Colorize(ColoredText.TipSectionTitleColor) + "\n\n" +
-                                     possession.ThingDef.description));
+                        (TipSignal)(possession.ThingDef.LabelCap.ToString()
+                                        .Colorize(ColoredText.TipSectionTitleColor) + "\n\n" +
+                                    possession.ThingDef.description));
                 }
 
                 Widgets.InfoCardButton(rect3.xMax, y, possession.ThingDef);
                 y += Text.LineHeight;
             }
-        }
 
         if (Event.current.type == EventType.Layout)
             listScrollViewHeight = y;

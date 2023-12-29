@@ -7,6 +7,7 @@ using Necrofancy.PrepareProcedurally.Solving;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 using PawnTableDefOf = Necrofancy.PrepareProcedurally.Defs.PawnTableDefOf;
 
 namespace Necrofancy.PrepareProcedurally.Interface.Pages;
@@ -42,7 +43,13 @@ public class PrepareProcedurally : Page
 
             PropagateToEditor();
 
-            DoBottomButtons(rect);
+            void Reroll()
+            {
+                SoundDefOf.Click.PlayOneShotOnCamera();
+                Editor.MakeDirty();
+            }
+
+            DoBottomButtons(rect, midLabel: "SkillPassionReRollButton".Translate(), midAct: Reroll);
         }
         catch (Exception e)
         {
