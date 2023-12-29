@@ -5,10 +5,10 @@ Prepare Procedurally is meant to **faithful to standard pawn generation, but fas
 
 This mod will add a button to the Create Characters menu.
 
-![[Button.png]]
+![[Images/Button.png]]
 
 Clicking will open up the prepare procedurally user interface:
-![[PrepareProcedurally.png]]
+![[Images/PrepareProcedurally.png]]
 Any changes made to Biological Settings, Backstory Settings, and Group Passions will automatically reroll for any unlocked pawns. If you want to keep a pawn, you can click the lock icon, and it will reroll other pawns to try to meet the standards with that pawn in mind.
 
 In order to keep characters unique and interesting, procedural generation will generally avoid repeating the same backstory twice.
@@ -16,11 +16,11 @@ In order to keep characters unique and interesting, procedural generation will g
 
 Group passions start out pre-populated with a minimalist setup based on starting scenario, with some variation based on factors like ideology and how mountainous your starting tile is. 
 
-![[GroupPassions.png]]
+![[Images/GroupPassions.png]]
 Each skill setting allows setting an amount of major passions to try collecting, as well as minor/secondary passions and capable workers in that given skill.
 
 For how likely you are to actually fulfill those requirements, you can have a look near the passion points of the UI:
-![[PassionPoints.png]]
+![[Images/PassionPoints.png]]
 "Passion Points" are determined on pawn randomization. Major passions cost 1.5 of these points, and pawns will have a certain number of them generated. Minor passions cost 1 of these points. 
 
 The default setting of 7.0 passion points is a roughly ~2% chance of happening that or higher. It's astonishingly rare to have a full 9 passion points (0.003% chance) but it is technically possible in pawn generation.
@@ -30,10 +30,10 @@ The default setting of 7.0 passion points is a roughly ~2% chance of happening t
 ### Specific Skill Targets
 
 Clicking on a pawn in the pawns table will open up a customization menu for a specific pawn
-![[ClickToCustomize.png]]
+![[Images/ClickToCustomize.png]]
 
 From here, you have full control over what passions you'd like that individual pawn to randomize for specific skills.
-![[CharacterMenu.png]]
+![[Images/CharacterMenu.png]]
 ### Trait Customization
 
 Trait customization is based on rules set by backstory, starting scenario, and any mod that grants new traits.
@@ -44,12 +44,12 @@ Trait customization is based on rules set by backstory, starting scenario, and a
 ### Other Customizations
 
 If you have the Ideology DLC, choosing a favorite color is possible on the table of starting pawns:
-![[Favorite Color.png]]
+![[Images/Favorite Color.png]]
 
 If you have the Biotech DLC, changing the xenotype of a pawn through the detailed customization menu or in Create Character menu will be respected.
 # Humanoid Alien Races Support
 This mod has specific support for Humanoid Alien Races. If there are multiple races available for the starting scenario, the age ranges for each individual race will be editable separately.
-![[HumanoidAlienRacesSupport.png]]
+![[Images/HumanoidAlienRacesSupport.png]]
 
 The procedural generation will randomize the pawn first, to find the alien race and available backstories, and then work backwards to solve for the best backstory and relevant skills.
 # F.A.Q.
