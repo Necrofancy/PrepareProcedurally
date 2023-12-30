@@ -99,16 +99,17 @@ public class SkillPassionSelection
         return selectionsList;
     }
 
-    public bool StartingGroupSatisfies(IReadOnlyCollection<Pawn> pawns)
+    public bool StartingGroupSatisfies(IReadOnlyCollection<Pawn> pawns, out int majorLeft, out int minorLeft,
+        out int usableLeft)
     {
-        var majorLeft = major;
-        var minorLeft = minor;
-        var usableLeft = usable;
+        majorLeft = major;
+        minorLeft = minor;
+        usableLeft = usable;
 
         foreach (var pawn in pawns)
         {
             var skillRecord = pawn.skills.skills.First(x => x.def == Skill);
-            if (skillRecord.passion == Passion.Major && majorLeft > 0)
+            if (skillRecord.passion >= Passion.Major && majorLeft > 0)
                 majorLeft--;
             else if (skillRecord.passion >= Passion.Minor && minorLeft >= 0)
                 minorLeft--;

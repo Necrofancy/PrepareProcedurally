@@ -86,10 +86,11 @@ public class PrepareProcedurally : Page
 
     protected override void DoNext()
     {
-        var unsatisfiedRequirements = new List<SkillDef>();
+        var unsatisfiedRequirements =
+            new List<(SkillDef Skill, int MajorMissing, int MinorMissing, int UsableMissing)>();
         foreach (var requirement in Editor.SkillPassions)
-            if (!requirement.StartingGroupSatisfies(Editor.StartingPawns))
-                unsatisfiedRequirements.Add(requirement.Skill);
+            if (!requirement.StartingGroupSatisfies(Editor.StartingPawns, out var major, out var minor, out var usable))
+                unsatisfiedRequirements.Add((requirement.Skill, major, minor, usable));
 
         if (unsatisfiedRequirements.Any())
         {
@@ -97,7 +98,13 @@ public class PrepareProcedurally : Page
             foreach (var unsatisfied in unsatisfiedRequirements)
             {
                 builder.Append("    - ");
-                builder.AppendLine(unsatisfied.LabelCap);
+                builder.AppendLine(unsatisfied.Skill.LabelCap);
+                if (unsatisfied.MajorMissing > 0)
+                    builder.AppendLine($"        - Major: {unsatisfied.MajorMissing}");
+                if (unsatisfied.MinorMissing > 0)
+                    builder.AppendLine($"        - Minor: {unsatisfied.MinorMissing}");
+                if (unsatisfied.UsableMissing > 0)
+                    builder.AppendLine($"        - Usable: {unsatisfied.UsableMissing}");
             }
 
             var message = WarnUnsatisfiedSkillsMessage.Translate(builder.ToString());
