@@ -1,0 +1,12 @@
+﻿Shooting      4~6🔥🔥 
+Melee         2~2 
+Construction  4~4🔥 
+Mining        0~0 
+Cooking       6~8🔥🔥 
+Plants        2~2 
+Animals       10~10🔥🔥 
+Crafting      2~2 
+Artistic      0~4🔥🔥 
+Medical       3~3 
+Social        4~4🔥 
+Intellectual  0~0 

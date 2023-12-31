@@ -4,6 +4,7 @@ Issues can be reported on the Steam page discussions, or by DMing or pinging me 
 
 In roughly order of priority, these are summaries of known issues:
 
-1. Trait-related skill point bonuses are not being accounted for in final pawn skills. Some forced passions will also not be accounted for if the trait was randomized or added by request.
-2. Skill Ranges aren't manipulated to be -fully- accurate to pawn generation's priority on assigning passions. 
-    * As an example, if we want to generate a pawn that has 0~4 shooting, artistic, and social available, it is possible that for choosing a passion of social and no passion for shooting and artistic, a pawn could have 3 in all of them. This is slightly inaccurate to what pawn generation would do; it would give the passion in order of the skill defs.
+* "Animals" can be set to be a major or minor passion on a character that, due to their backstory, will have "Handling" worktype disabled.
+    * This is because Handling and Hunting are both animals-relevant works. A Hunter will benefit from the skill regardless of their ability to Handle, so the game will display in that case.
+    * This is probably not be what players are wanting when they specify that they want a pawn that has a strong passion in Animals.
+* Traits affecting pawn's final skills will lead to going over the maximum passion points. With the default of 7.0, this is still roughly fine.

@@ -79,14 +79,15 @@ public static class PostPawnGenerationChanges
     /// <summary>
     /// Apply simulated skill ranges to the pawn's given stats.
     /// </summary>
-    public static void ApplySimulatedSkillsTo(this SkillFinalizationResult result, Pawn pawn)
+    public static void ApplySimulatedSkillsTo(this IReadOnlyDictionary<SkillDef, PassionAndLevel> finalRanges,
+        Pawn pawn)
     {
         var passionsModdedByGenes = new Dictionary<SkillDef, PassionMod.PassionModType>();
         foreach (var gene in pawn.genes.GenesListForReading.Where(x => x.Active && x.def.passionMod != null))
             passionsModdedByGenes[gene.def.passionMod.skill] = gene.def.passionMod.modType;
         foreach (var skillRecord in pawn.skills.skills)
         {
-            var passionAndLevel = result.FinalRanges[skillRecord.def];
+            var passionAndLevel = finalRanges[skillRecord.def];
             skillRecord.levelInt = Rand.RangeInclusive(passionAndLevel.Min, passionAndLevel.Max);
             if (passionsModdedByGenes.TryGetValue(skillRecord.def, out var mod))
                 switch (mod)

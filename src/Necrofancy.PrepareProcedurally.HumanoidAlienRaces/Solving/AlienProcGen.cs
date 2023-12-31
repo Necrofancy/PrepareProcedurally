@@ -56,14 +56,14 @@ public static class AlienProcGen
         AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
         traits.ApplyRequestedTraitsTo(pawn);
 
-        var builder = new PawnBuilder(pawn);
+        var builder = PawnBuilder.ForPawn(pawn);
         foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
             if (usability == UsabilityRequirement.Major)
                 builder.TryLockInPassion(skill, Passion.Major);
             else if (usability == UsabilityRequirement.Minor)
                 builder.TryLockInPassion(skill, Passion.Minor);
 
-        builder.Build().ApplySimulatedSkillsTo(pawn);
+        builder.Build().result.ApplySimulatedSkillsTo(pawn);
 
         if (addBackToLocked) LockedPawns.Add(pawn);
 
@@ -125,11 +125,11 @@ public static class AlienProcGen
             AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, pawn);
             traits.ApplyRequestedTraitsTo(pawn);
 
-            var finalizationWithTraits = new PawnBuilder(pawn);
+            var finalizationWithTraits = PawnBuilder.ForPawn(pawn);
             foreach (var (skill, requirement) in finalization.FinalRanges)
                 finalizationWithTraits.TryLockInPassion(skill, requirement.Passion);
 
-            finalizationWithTraits.Build().ApplySimulatedSkillsTo(pawn);
+            finalizationWithTraits.Build().result.ApplySimulatedSkillsTo(pawn);
 
             ProcGen.OnPawnChanged(pawn);
         }

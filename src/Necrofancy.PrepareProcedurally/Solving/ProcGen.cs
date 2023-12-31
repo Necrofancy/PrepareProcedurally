@@ -53,11 +53,11 @@ public static class ProcGen
             PostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, pawn);
             traits.ApplyRequestedTraitsTo(pawn);
 
-            var finalizationWithTraits = new PawnBuilder(pawn);
+            var finalizationWithTraits = PawnBuilder.ForPawn(pawn);
             foreach (var (skill, requirement) in finalization.FinalRanges)
                 finalizationWithTraits.TryLockInPassion(skill, requirement.Passion);
 
-            finalizationWithTraits.Build().ApplySimulatedSkillsTo(pawn);
+            finalizationWithTraits.Build().result.ApplySimulatedSkillsTo(pawn);
 
             OnPawnChanged(pawnList[i]);
         }
@@ -101,7 +101,7 @@ public static class ProcGen
         PostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
         traits.ApplyRequestedTraitsTo(pawn);
 
-        var finalPawnBuild = new PawnBuilder(pawn);
+        var finalPawnBuild = PawnBuilder.ForPawn(pawn);
         foreach (var (skill, requirement) in reqs)
         {
             var passion = requirement switch
@@ -114,7 +114,7 @@ public static class ProcGen
             finalPawnBuild.TryLockInPassion(skill, passion);
         }
 
-        finalPawnBuild.Build().ApplySimulatedSkillsTo(pawn);
+        finalPawnBuild.Build().result.ApplySimulatedSkillsTo(pawn);
 
         if (addBackToLocked) LockedPawns.Add(pawn);
 

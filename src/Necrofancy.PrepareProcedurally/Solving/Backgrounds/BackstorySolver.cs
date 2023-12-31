@@ -65,7 +65,7 @@ public static class BackstorySolver
         {
             var possibility = bios[i];
             var builder = possibility.CanChange
-                ? new PawnBuilder(possibility.Background, possibility.AssumedAge)
+                ? PawnBuilder.FromPossibleBio(possibility.Background, possibility.AssumedAge)
                 : null;
 
             pawnsInOriginalOrder[i] = builder;
@@ -86,7 +86,16 @@ public static class BackstorySolver
         }
 
         var results = new List<SkillFinalizationResult?>(bios.Count);
-        foreach (var builder in pawnsInOriginalOrder) results.Add(builder?.Build() ?? null);
+        foreach (var builder in pawnsInOriginalOrder)
+            if (builder is null)
+            {
+                results.Add(null);
+            }
+            else
+            {
+                var (skills, exhaustedPoints) = builder.Build();
+                results.Add(new SkillFinalizationResult(skills, exhaustedPoints));
+            }
 
         return results;
     }
@@ -95,7 +104,7 @@ public static class BackstorySolver
     {
         var goal = req.Total;
         foreach (var pawnBuilder in pawns)
-            if (pawnBuilder?.LockIn(req, goal) == true)
+            if (pawnBuilder?.LockIn(req.Skill, req.Total, req.major, req.minor, goal) == true)
             {
                 goal--;
                 if (goal == 0)
