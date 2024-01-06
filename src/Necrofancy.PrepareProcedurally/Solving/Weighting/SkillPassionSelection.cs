@@ -111,7 +111,7 @@ public class SkillPassionSelection
             var skillRecord = pawn.skills.skills.First(x => x.def == Skill);
             if (skillRecord.passion >= Passion.Major && majorLeft > 0)
                 majorLeft--;
-            else if (skillRecord.passion >= Passion.Minor && minorLeft >= 0)
+            else if (skillRecord.passion >= Passion.Minor && minorLeft > 0)
                 minorLeft--;
             else if (!skillRecord.TotallyDisabled)
                 usableLeft--;
