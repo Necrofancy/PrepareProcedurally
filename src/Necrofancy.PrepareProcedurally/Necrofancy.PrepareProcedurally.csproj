@@ -25,7 +25,8 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>None</DebugType>
         <Optimize>true</Optimize>
         <OutputPath>..\..\Release\1.4\Assemblies</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
