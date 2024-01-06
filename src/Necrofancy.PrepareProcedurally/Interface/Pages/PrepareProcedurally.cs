@@ -25,8 +25,6 @@ public class PrepareProcedurally : Page
 
     private static Vector2 scrollPosition;
 
-    private bool hasRanBefore;
-
     public PrepareProcedurally()
     {
         // Just in case pawns were randomized outside of the editor, refresh pawn editor.
@@ -145,13 +143,6 @@ public class PrepareProcedurally : Page
             var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
             var pawnCount = Find.GameInitData.startingPawnCount;
             var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, Editor.SkillPassions);
-
-            if (!hasRanBefore)
-            {
-                // Editing PawnGenerationRequests will fail until at least one pawn has randomized in place.
-                Compatibility.Layer.RandomizeForTeam(situation);
-                hasRanBefore = true;
-            }
 
             Compatibility.Layer.RandomizeForTeam(situation);
 
