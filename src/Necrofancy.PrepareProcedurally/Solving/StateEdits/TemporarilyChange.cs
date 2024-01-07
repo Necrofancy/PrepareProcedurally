@@ -21,11 +21,10 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 /// </summary>
 public static class TemporarilyChange
 {
-    public static IDisposable SetAgeInRequest(float age, int pawnIndex)
+    public static TemporaryEdit<PawnGenerationRequest> SetSpecificRequest(int pawnIndex, float age,
+         GenderPossibility gender, bool allowAddictions, bool allowRelationships)
     {
-        if (!(StartingPawnUtilityState.GetStartingPawnRequestList() is { } startingPawnRequests)
-            || startingPawnRequests.Count <= pawnIndex)
-            return TemporaryEdit.NullEdit;
+        var startingPawnRequests = StartingPawnUtilityState.GetStartingPawnRequestList();
 
         var currentRequest = startingPawnRequests[pawnIndex];
         var editedRequest = startingPawnRequests[pawnIndex];
@@ -33,6 +32,17 @@ public static class TemporarilyChange
         editedRequest.FixedBiologicalAge = age;
         editedRequest.BiologicalAgeRange = null;
         editedRequest.ExcludeBiologicalAgeRange = null;
+
+        editedRequest.AllowAddictions = allowAddictions;
+        editedRequest.CanGeneratePawnRelations = allowRelationships;
+        
+        editedRequest.FixedGender = gender switch
+        {
+            GenderPossibility.Male => Gender.Male,
+            GenderPossibility.Female => Gender.Female,
+            GenderPossibility.Either => null,
+            _ => null
+        };
 
         void SetRequest(PawnGenerationRequest req)
         {
@@ -63,31 +73,6 @@ public static class TemporarilyChange
         }
 
         return TemporaryEdit.Many(temporaryEdits);
-    }
-
-    public static IDisposable GenderInRequest(GenderPossibility gender, int pawnIndex)
-    {
-        if (!(StartingPawnUtilityState.GetStartingPawnRequestList() is { } startingPawnRequests)
-            || startingPawnRequests.Count <= pawnIndex)
-            return TemporaryEdit.NullEdit;
-
-        var currentRequest = startingPawnRequests[pawnIndex];
-        var editedRequest = startingPawnRequests[pawnIndex];
-
-        editedRequest.FixedGender = gender switch
-        {
-            GenderPossibility.Male => Gender.Male,
-            GenderPossibility.Female => Gender.Female,
-            GenderPossibility.Either => null,
-            _ => null
-        };
-
-        void SetRequest(PawnGenerationRequest req)
-        {
-            startingPawnRequests[pawnIndex] = req;
-        }
-
-        return new TemporaryEdit<PawnGenerationRequest>(currentRequest, editedRequest, SetRequest);
     }
 
     public static TemporaryEdit<FloatRange> PlayerFactionMelaninRange(FloatRange temporaryRange)

@@ -17,6 +17,8 @@ public static class Editor
     private static FloatRange melaninRange = new(0.0f, 0.9f);
     private static float maxPassionPoints = 7.0f;
     private static ThingDef selectedRace;
+    private static bool allowBadHeDiffs = true;
+    private static bool allowRelationships = true;
 
     public static Dictionary<ThingDef, RaceAgeData> RaceAgeRanges { get; private set; }
 
@@ -37,6 +39,7 @@ public static class Editor
 
     public static HashSet<TraitDef> TraitsThatDisablePassions { get; } = new();
     public static List<List<TraitRequirement>> TraitRequirements { get; private set; }
+    public static List<GenderPossibility> GenderRequirements { get; set; }
     public static List<SkillPassionSelection> SkillPassions { get; private set; }
     public static List<Pawn> StartingPawns { get; set; }
     public static IReadOnlyList<SkillFinalizationResult?> LastResults { get; set; }
@@ -76,6 +79,18 @@ public static class Editor
 
     internal static bool AllowDirtying { get; set; }
 
+    internal static bool AllowBadHeDiffs
+    {
+        get => allowBadHeDiffs;
+        set => SetProperty(ref allowBadHeDiffs, value);
+    }
+
+    internal static bool AllowRelationships
+    {
+        get => allowRelationships;
+        set => SetProperty(ref allowRelationships, value);
+    }
+
     public static void MakeDirty()
     {
         if (AllowDirtying) Dirty = true;
@@ -100,6 +115,7 @@ public static class Editor
         var pawnCount = Find.GameInitData.startingPawnCount;
         StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
         TraitRequirements = StartingPawns.Select(_ => new List<TraitRequirement>()).ToList();
+        GenderRequirements = StartingPawns.Select(_ => GenderPossibility.Either).ToList();
 
         var kind = Faction.OfPlayer.def.basicMemberKind;
         var minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(kind);

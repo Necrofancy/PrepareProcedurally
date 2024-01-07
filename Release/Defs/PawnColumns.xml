@@ -12,8 +12,8 @@
   </PawnColumnDef>
 
   <PawnColumnDef>
-    <defName>IntendedRole</defName>
-    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.IdeologicalRole</workerClass>
+    <defName>Gender</defName>
+    <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Gender</workerClass>
   </PawnColumnDef>
 
   <PawnColumnDef MayRequire="Ludeon.RimWorld.Ideology">

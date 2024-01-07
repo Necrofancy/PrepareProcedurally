@@ -80,6 +80,7 @@
         <Compile Include="Interface\LazyTexture.cs"/>
         <Compile Include="Interface\MaplessPawnTable.cs"/>
         <Compile Include="Interface\PawnColumnWorkers\FavoriteColor.cs"/>
+        <Compile Include="Interface\PawnColumnWorkers\Gender.cs" />
         <Compile Include="Interface\PawnColumnWorkers\Race.cs"/>
         <Compile Include="LogAssembly.cs"/>
         <Compile Include="Solving\Backgrounds\BackgroundPossibility.cs"/>
@@ -96,7 +97,6 @@
         <Compile Include="Interface\PawnColumnWorkers\Adulthood.cs"/>
         <Compile Include="Interface\PawnColumnWorkers\Backstory.cs"/>
         <Compile Include="Interface\PawnColumnWorkers\Childhood.cs"/>
-        <Compile Include="Interface\PawnColumnWorkers\IdeologicalRole.cs"/>
         <Compile Include="Interface\PawnColumnWorkers\LockForSelection.cs"/>
         <Compile Include="Interface\PawnColumnWorkers\PawnCanBePrepared.cs"/>
         <Compile Include="Interface\PawnColumnWorkers\Traits.cs"/>
@@ -110,6 +110,7 @@
         <Compile Include="Solving\Skills\SkillDisables.cs"/>
         <Compile Include="Solving\Skills\SkillFinalizationResult.cs"/>
         <Compile Include="Solving\Skills\SkillRangeBuilder.cs"/>
+        <Compile Include="Solving\StateEdits\PawnGenerationEdits.cs" />
         <Compile Include="Solving\StateEdits\PostPawnGenerationChanges.cs"/>
         <Compile Include="Solving\StateEdits\StartingPawnUtilityState.cs"/>
         <Compile Include="Solving\StateEdits\TemporarilyChange.cs"/>

@@ -72,6 +72,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="AlienExtensions.cs"/>
+        <Compile Include="HarmonyPatches.cs" />
         <Compile Include="Solving\AlienBackstorySolver.cs"/>
         <Compile Include="Solving\AlienBalancingSituation.cs"/>
         <Compile Include="Solving\AlienCategories.cs"/>
@@ -80,6 +81,7 @@
         <Compile Include="HumanoidAlienRaceCompatibility.cs"/>
         <Compile Include="LogAssembly.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="Solving\PawnGenerationRequestTransforms.cs" />
         <Compile Include="Solving\SpecialTraitHandling.cs"/>
     </ItemGroup>
     <ItemGroup>

@@ -42,10 +42,16 @@ public static class ProcGen
                     traitsToBan.Add(trait);
 
             Pawn pawn;
+
+            var age = backstory.AssumedAge;
+            
+            var gender = backstory.Background.Gender != GenderPossibility.Either
+                ? backstory.Background.Gender
+                : GenderRequirements[i];
+            
+            using (TemporarilyChange.SetSpecificRequest(i, age, gender, AllowBadHeDiffs, AllowRelationships))
             using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
             using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
-            using (TemporarilyChange.SetAgeInRequest(backstory.AssumedAge, i))
-            using (TemporarilyChange.GenderInRequest(backstory.Background.Gender, i))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
             }
@@ -89,10 +95,13 @@ public static class ProcGen
             addBackToLocked = true;
         }
 
+        var gender = bio.Gender != GenderPossibility.Either
+            ? bio.Gender
+            : GenderRequirements[index];
+
         using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
-        using (TemporarilyChange.SetAgeInRequest(age, index))
-        using (TemporarilyChange.GenderInRequest(bio.Gender, index))
+        using (TemporarilyChange.SetSpecificRequest(index, age, gender, AllowBadHeDiffs, AllowRelationships))
         {
             pawn = StartingPawnUtility.RandomizeInPlace(pawn);
             OnPawnChanged(pawn);

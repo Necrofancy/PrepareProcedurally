@@ -12,6 +12,7 @@ using Verse;
 namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
 
 using static Editor;
+using static PawnGenerationRequestTransforms;
 
 /// <summary>
 /// Procedural generation rules specific to Humanoid Alien Races.
@@ -31,6 +32,13 @@ public static class AlienProcGen
         }
 
         string pawnChildhoods = null, pawnAdulthoods = null;
+        if (!AllowBadHeDiffs)
+            PreventAddictions();
+        if (!AllowRelationships)
+            PreventRelationships();
+        if (GenderRequirements[index] != GenderPossibility.Either)
+            FixGender(GenderRequirements[index]);
+        
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))
         {
@@ -76,6 +84,13 @@ public static class AlienProcGen
         // so let's generate the pawns first to figure out their race and figure it out from there.
         List<AlienCategories> categories = new(StartingPawns.Count);
 
+        var list = StartingPawnUtilityState.GetStartingPawnRequestList().ToList();
+        for (int j = 0; j < list.Count; j++)
+        {
+            list.SetGender(GenderPossibility.Female, j);
+            list.DisableRelations(j);
+        }
+        
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))
         {
@@ -91,6 +106,13 @@ public static class AlienProcGen
                 var foundBackstoryToWorkWith = false;
                 while (!foundBackstoryToWorkWith)
                 {
+                    if (!AllowBadHeDiffs)
+                        PreventAddictions();
+                    if (!AllowRelationships)
+                        PreventRelationships();
+                    if (GenderRequirements[pawnIndex] != GenderPossibility.Either)
+                        FixGender(GenderRequirements[pawnIndex]);
+                    
                     pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                     ProcGen.OnPawnChanged(pawn);
 
