@@ -45,10 +45,9 @@ public static class PawnGenerationRequestTransforms
             if (request.KindDef.race is ThingDef_AlienRace race)
             {
                 var maleProbability = race.alienRace.generalSettings.maleGenderProbability;
-                if ((fixedGender == Gender.Male && maleProbability < 0) 
+                if ((fixedGender == Gender.Male && maleProbability <= 0) 
                     || (fixedGender == Gender.Female && maleProbability >=1 ))
                 {
-                    Log.Error($"Ignored because {race.defName} has maleGenderProbability {maleProbability}");
                     return;
                 }
             }
