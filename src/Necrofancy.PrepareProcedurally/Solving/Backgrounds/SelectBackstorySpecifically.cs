@@ -143,6 +143,6 @@ public class SelectBackstorySpecifically
     private bool AllowedBio(PawnBio bio)
     {
         return bio.childhood.spawnCategories.Any(x => categoryNames.Contains(x))
-            && genderRequirement == GenderPossibility.Either || genderRequirement == bio.gender;
+            && (genderRequirement == GenderPossibility.Either || genderRequirement == bio.gender);
     }
 }

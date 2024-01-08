@@ -49,7 +49,7 @@ public static class ProcGen
                 ? backstory.Background.Gender
                 : GenderRequirements[i];
             
-            using (TemporarilyChange.SetSpecificRequest(i, age, gender, AllowBadHeDiffs, AllowRelationships))
+            using (TemporarilyChange.SetSpecificRequest(i, age, gender, AllowBadHeDiffs, AllowRelationships, AllowPregnancy))
             using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
             using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
             {
@@ -58,6 +58,8 @@ public static class ProcGen
 
             PostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, pawn);
             traits.ApplyRequestedTraitsTo(pawn);
+            if (!AllowBadHeDiffs)
+                PostPawnGenerationChanges.RemoveBadHeDiffs(pawn);
 
             var finalizationWithTraits = PawnBuilder.ForPawn(pawn);
             foreach (var (skill, requirement) in finalization.FinalRanges)
@@ -101,7 +103,7 @@ public static class ProcGen
 
         using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
-        using (TemporarilyChange.SetSpecificRequest(index, age, gender, AllowBadHeDiffs, AllowRelationships))
+        using (TemporarilyChange.SetSpecificRequest(index, age, gender, AllowBadHeDiffs, AllowRelationships, AllowPregnancy))
         {
             pawn = StartingPawnUtility.RandomizeInPlace(pawn);
             OnPawnChanged(pawn);
@@ -109,6 +111,8 @@ public static class ProcGen
 
         PostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
         traits.ApplyRequestedTraitsTo(pawn);
+        if (!AllowBadHeDiffs)
+            PostPawnGenerationChanges.RemoveBadHeDiffs(pawn);
 
         var finalPawnBuild = PawnBuilder.ForPawn(pawn);
         foreach (var (skill, requirement) in reqs)

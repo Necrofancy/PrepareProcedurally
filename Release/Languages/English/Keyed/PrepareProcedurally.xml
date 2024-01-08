@@ -12,7 +12,13 @@
 	<Necrofancy.PrepareProcedurally.BiologicalSettingsLabel>Biological Settings</Necrofancy.PrepareProcedurally.BiologicalSettingsLabel>
 	<Necrofancy.PrepareProcedurally.BiologicalAgeRange>Adults Will Have an Age Between {0} Years</Necrofancy.PrepareProcedurally.BiologicalAgeRange>
 	<Necrofancy.PrepareProcedurally.BiologicalMelaninRange>Skin Color Variation</Necrofancy.PrepareProcedurally.BiologicalMelaninRange>
-	
+	<Necrofancy.PrepareProcedurally.BiologicalAllowInjuriesLabel>Allow Injuries</Necrofancy.PrepareProcedurally.BiologicalAllowInjuriesLabel>
+	<Necrofancy.PrepareProcedurally.BiologicalAllowInjuriesTooltip>If disabled, characters will not generate with permanent injuries or addictions.\n\nThey may still have implants related to their technology level.</Necrofancy.PrepareProcedurally.BiologicalAllowInjuriesTooltip>
+	<Necrofancy.PrepareProcedurally.BiologicalAllowRelationshipsLabel>Allow Relationships</Necrofancy.PrepareProcedurally.BiologicalAllowRelationshipsLabel>
+	<Necrofancy.PrepareProcedurally.BiologicalAllowRelationshipsTooltip>If disabled, characters will generate with no relationships at the start</Necrofancy.PrepareProcedurally.BiologicalAllowRelationshipsTooltip>
+	<Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyLabel>Allow Pregnancy</Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyLabel>
+	<Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyTooltip>If disabled, characters will not generate with an initial pregnancy.\n\nThis does not stop them from becoming pregnant after the game starts.</Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyTooltip>
+
 	<Necrofancy.PrepareProcedurally.BackstoryPassionLabel>Backstory and Passion Settings</Necrofancy.PrepareProcedurally.BackstoryPassionLabel>
 	<Necrofancy.PrepareProcedurally.VariationLabel>Vary Skill Weights By 100%-{0} For Backstory Variety</Necrofancy.PrepareProcedurally.VariationLabel>
 	<Necrofancy.PrepareProcedurally.SkillVariationTooltip>Procedural generation will try to pick pawn backstories and simulate randomization to quickly arrive at a certain loadout of passions. It does so by attaching a weight for each skill and picking stories by the best weight.\n\nVarying this weight by a random amount on generation gives more backstory variety and can help get out of ruts without having to specify each weight to get a specific story combination.</Necrofancy.PrepareProcedurally.SkillVariationTooltip>

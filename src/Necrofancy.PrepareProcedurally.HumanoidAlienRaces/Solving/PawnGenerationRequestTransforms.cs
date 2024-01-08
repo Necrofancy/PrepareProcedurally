@@ -59,4 +59,11 @@ public static class PawnGenerationRequestTransforms
 
         BuiltUpChanges.Add(Disable);
     }
+    
+    public static void PreventPregnancy()
+    {
+        void Disable(ref PawnGenerationRequest request) => request.AllowPregnant = false;
+
+        BuiltUpChanges.Add(Disable);
+    }
 }

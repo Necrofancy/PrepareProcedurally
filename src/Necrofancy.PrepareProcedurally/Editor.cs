@@ -19,6 +19,7 @@ public static class Editor
     private static ThingDef selectedRace;
     private static bool allowBadHeDiffs = true;
     private static bool allowRelationships = true;
+    private static bool allowPregnancy = true;
 
     public static Dictionary<ThingDef, RaceAgeData> RaceAgeRanges { get; private set; }
 
@@ -89,6 +90,12 @@ public static class Editor
     {
         get => allowRelationships;
         set => SetProperty(ref allowRelationships, value);
+    }
+
+    public static bool AllowPregnancy
+    {
+        get => allowPregnancy;
+        set => SetProperty(ref allowPregnancy, value);
     }
 
     public static void MakeDirty()

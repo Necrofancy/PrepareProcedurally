@@ -38,6 +38,8 @@ public static class AlienProcGen
             PreventRelationships();
         if (GenderRequirements[index] != GenderPossibility.Either)
             FixGender(GenderRequirements[index]);
+        if (!AllowPregnancy)
+            PreventPregnancy();
         
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))
@@ -63,6 +65,8 @@ public static class AlienProcGen
         var traits = bio.Traits;
         AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
         traits.ApplyRequestedTraitsTo(pawn);
+        if (!AllowBadHeDiffs)
+            PostPawnGenerationChanges.RemoveBadHeDiffs(pawn);
 
         var builder = PawnBuilder.ForPawn(pawn);
         foreach (var (skill, usability) in reqs.OrderBy(x => x.Usability).ThenByDescending(x => x.Skill.listOrder))
@@ -105,6 +109,8 @@ public static class AlienProcGen
                         PreventRelationships();
                     if (GenderRequirements[pawnIndex] != GenderPossibility.Either)
                         FixGender(GenderRequirements[pawnIndex]);
+                    if (!AllowPregnancy)
+                        PreventPregnancy();
                     
                     pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                     ProcGen.OnPawnChanged(pawn);
@@ -139,6 +145,8 @@ public static class AlienProcGen
 
             AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(backstory.Background, pawn);
             traits.ApplyRequestedTraitsTo(pawn);
+            if (!AllowBadHeDiffs)
+                PostPawnGenerationChanges.RemoveBadHeDiffs(pawn);
 
             var finalizationWithTraits = PawnBuilder.ForPawn(pawn);
             foreach (var (skill, requirement) in finalization.FinalRanges)

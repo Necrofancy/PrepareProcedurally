@@ -25,6 +25,12 @@ public static class SkillPassionSelectionUiUtility
     private const string PawnBiology = "Necrofancy.PrepareProcedurally.BiologicalSettingsLabel";
     private const string AgeRangeText = "Necrofancy.PrepareProcedurally.BiologicalAgeRange";
     private const string MelaninRangeText = "Necrofancy.PrepareProcedurally.BiologicalMelaninRange";
+    private const string InjuriesLabel = "Necrofancy.PrepareProcedurally.BiologicalAllowInjuriesLabel";
+    private const string InjuriesTooltip = "Necrofancy.PrepareProcedurally.BiologicalAllowInjuriesTooltip";
+    private const string RelationshipsLabel = "Necrofancy.PrepareProcedurally.BiologicalAllowRelationshipsLabel";
+    private const string RelationshipsTooltip = "Necrofancy.PrepareProcedurally.BiologicalAllowRelationshipsTooltip";
+    private const string PregnancyLabel = "Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyLabel";
+    private const string PregnancyTooltip = "Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyTooltip";
     private const string PassionText = "Necrofancy.PrepareProcedurally.BackstoryPassionLabel";
     private const string SkillVariationText = "Necrofancy.PrepareProcedurally.VariationLabel";
     private const string PassionMaxText = "Necrofancy.PrepareProcedurally.PassionPointsLabel";
@@ -92,7 +98,8 @@ public static class SkillPassionSelectionUiUtility
             Find.WindowStack.Add(new FloatMenu(selectPawnKinds));
         }
 
-        var bioRect = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight * 5);
+        var bioCount = ModsConfig.BiotechActive ? 8 : 7;
+        var bioRect = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight * bioCount);
         Widgets.DrawMenuSection(bioRect);
         var bioInnerRect = bioRect.GetInnerRect();
 
@@ -101,7 +108,6 @@ public static class SkillPassionSelectionUiUtility
         var ageRange = Editor.AgeRange;
 
         // Age minimum is to force an adulthood backstory.
-
         var minAge = Editor.AllowedAgeRange.min;
         var maxAge = Editor.AllowedAgeRange.max;
 
@@ -116,6 +122,29 @@ public static class SkillPassionSelectionUiUtility
         var minSelectedMelanin = genes[melaninRange.min].minMelanin;
         var maxSelectedMelanin = melaninRange.max >= maxMelanin ? 1 : genes[melaninRange.max + 1].minMelanin;
         Editor.MelaninRange = new FloatRange(minSelectedMelanin, maxSelectedMelanin);
+        
+        // Allow Bad HeDiffs Checkbox
+        var allowInjuries = Editor.AllowBadHeDiffs;
+        var allowInjuriesRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 4f, bioInnerRect.width, RowHeight);
+        Widgets.CheckboxLabeled(allowInjuriesRect, InjuriesLabel.Translate(), ref allowInjuries);
+        TooltipHandler.TipRegion(allowInjuriesRect, InjuriesTooltip.Translate());
+        Editor.AllowBadHeDiffs = allowInjuries;
+        
+        // Allow Relationships checkbox
+        var allowRelationships = Editor.AllowRelationships;
+        var allowRelationshipsRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 5f, bioInnerRect.width, RowHeight);
+        Widgets.CheckboxLabeled(allowRelationshipsRect, RelationshipsLabel.Translate(), ref allowRelationships);
+        TooltipHandler.TipRegion(allowRelationshipsRect, RelationshipsTooltip.Translate());
+        Editor.AllowRelationships = allowRelationships;
+
+        if (ModsConfig.BiotechActive)
+        {
+            var allowPregnant = Editor.AllowPregnancy;
+            var allowPregnancyRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 6f, bioInnerRect.width, RowHeight);
+            Widgets.CheckboxLabeled(allowPregnancyRect, PregnancyLabel.Translate(), ref allowPregnant);
+            TooltipHandler.TipRegion(allowPregnancyRect, PregnancyTooltip.Translate());
+            Editor.AllowPregnancy = allowPregnant;
+        }
 
         var minSkinColor = genes[melaninRange.min].IconColor;
         var maxSkinColor = genes[melaninRange.max].IconColor;

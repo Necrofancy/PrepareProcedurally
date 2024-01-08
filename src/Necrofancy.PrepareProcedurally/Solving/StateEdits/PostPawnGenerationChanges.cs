@@ -131,4 +131,17 @@ public static class PostPawnGenerationChanges
 
         TraitUtilities.FixTraitOverflow(pawn);
     }
+
+    public static void RemoveBadHeDiffs(Pawn pawn)
+    {
+        var badThings = new List<Hediff>();
+        foreach (var diff in pawn.health.hediffSet.hediffs)
+        {
+            if (diff.def.isBad)
+                badThings.Add(diff);
+        }
+        
+        foreach (var bad in badThings)
+            pawn.health.RemoveHediff(bad);
+    }
 }
