@@ -137,7 +137,7 @@ public static class PostPawnGenerationChanges
         var badThings = new List<Hediff>();
         foreach (var diff in pawn.health.hediffSet.hediffs)
         {
-            if (diff.def.isBad)
+            if (diff.def.isBad && diff.def.everCurableByItem)
                 badThings.Add(diff);
         }
         
