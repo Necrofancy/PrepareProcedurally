@@ -12,7 +12,6 @@ using Verse;
 namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
 
 using static Editor;
-using static PawnGenerationRequestTransforms;
 
 /// <summary>
 /// Procedural generation rules specific to Humanoid Alien Races.
@@ -32,14 +31,6 @@ public static class AlienProcGen
         }
 
         string pawnChildhoods = null, pawnAdulthoods = null;
-        if (!AllowBadHeDiffs)
-            PreventAddictions();
-        if (!AllowRelationships)
-            PreventRelationships();
-        if (GenderRequirements[index] != GenderPossibility.Either)
-            FixGender(GenderRequirements[index]);
-        if (!AllowPregnancy)
-            PreventPregnancy();
         
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))
@@ -47,6 +38,7 @@ public static class AlienProcGen
             var foundBackstoryToWorkWith = false;
             while (!foundBackstoryToWorkWith)
             {
+                PawnGenerationRequestTransforms.SetBasedOnEditorSettings(index);
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                 ProcGen.OnPawnChanged(pawn);
 
@@ -103,15 +95,7 @@ public static class AlienProcGen
                 var foundBackstoryToWorkWith = false;
                 while (!foundBackstoryToWorkWith)
                 {
-                    if (!AllowBadHeDiffs)
-                        PreventAddictions();
-                    if (!AllowRelationships)
-                        PreventRelationships();
-                    if (GenderRequirements[pawnIndex] != GenderPossibility.Either)
-                        FixGender(GenderRequirements[pawnIndex]);
-                    if (!AllowPregnancy)
-                        PreventPregnancy();
-                    
+                    PawnGenerationRequestTransforms.SetBasedOnEditorSettings(pawnIndex);                    
                     pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                     ProcGen.OnPawnChanged(pawn);
 

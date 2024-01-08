@@ -11,6 +11,18 @@ public static class PawnGenerationRequestTransforms
 
     private static readonly List<EditRequest> BuiltUpChanges = [];
 
+    public static void SetBasedOnEditorSettings(int index)
+    {
+        if (!Editor.AllowBadHeDiffs)
+            PreventAddictions();
+        if (!Editor.AllowRelationships)
+            PreventRelationships();
+        if (Editor.GenderRequirements[index] != GenderPossibility.Either)
+            FixGender(Editor.GenderRequirements[index]);
+        if (!Editor.AllowPregnancy)
+            PreventPregnancy();
+    }
+    
     public static void ApplyChangesTo(ref PawnGenerationRequest request)
     {
         foreach (var transform in BuiltUpChanges)
@@ -36,6 +48,7 @@ public static class PawnGenerationRequestTransforms
                 if ((fixedGender == Gender.Male && maleProbability < 0) 
                     || (fixedGender == Gender.Female && maleProbability >=1 ))
                 {
+                    Log.Error($"Ignored because {race.defName} has maleGenderProbability {maleProbability}");
                     return;
                 }
             }
