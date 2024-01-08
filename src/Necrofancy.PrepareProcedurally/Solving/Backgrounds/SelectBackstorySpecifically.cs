@@ -10,15 +10,17 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 public class SelectBackstorySpecifically
 {
     private readonly List<string> categoryNames;
+    private readonly GenderPossibility genderRequirement;
 
     private readonly List<BackstoryDef> childhoodStories = new();
     private readonly List<BackstoryDef> adulthoodStories = new();
 
     private readonly HashSet<BackstoryDef> alreadyUsed = new();
 
-    public SelectBackstorySpecifically(List<string> spawnCategories)
+    public SelectBackstorySpecifically(List<string> spawnCategories, GenderPossibility genderRequirement)
     {
         categoryNames = spawnCategories;
+        this.genderRequirement = genderRequirement;
         foreach (var pawn in Editor.LockedPawns)
         {
             var story = pawn.story;
@@ -28,8 +30,9 @@ public class SelectBackstorySpecifically
         }
     }
 
-    public SelectBackstorySpecifically(string categoryName)
+    public SelectBackstorySpecifically(string categoryName, GenderPossibility genderRequirement)
     {
+        this.genderRequirement = genderRequirement;
         categoryNames = new List<string> { categoryName };
         foreach (var pawn in Editor.LockedPawns)
         {
@@ -139,6 +142,7 @@ public class SelectBackstorySpecifically
 
     private bool AllowedBio(PawnBio bio)
     {
-        return bio.childhood.spawnCategories.Any(x => categoryNames.Contains(x));
+        return bio.childhood.spawnCategories.Any(x => categoryNames.Contains(x))
+            && genderRequirement == GenderPossibility.Either || genderRequirement == bio.gender;
     }
 }

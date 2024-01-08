@@ -58,7 +58,7 @@ public static class AlienProcGen
             }
         }
 
-        var specifier = new SelectBackstorySpecifically(new List<string> { pawnChildhoods, pawnAdulthoods });
+        var specifier = new SelectBackstorySpecifically([pawnChildhoods, pawnAdulthoods], GenderRequirements[index]);
         var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
         AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
@@ -83,13 +83,6 @@ public static class AlienProcGen
         // it's actually impossible to try balancing up-front because I don't know what backstories are available
         // so let's generate the pawns first to figure out their race and figure it out from there.
         List<AlienCategories> categories = new(StartingPawns.Count);
-
-        var list = StartingPawnUtilityState.GetStartingPawnRequestList().ToList();
-        for (int j = 0; j < list.Count; j++)
-        {
-            list.SetGender(GenderPossibility.Female, j);
-            list.DisableRelations(j);
-        }
         
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))

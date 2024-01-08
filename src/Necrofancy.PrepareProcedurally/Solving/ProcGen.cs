@@ -78,7 +78,7 @@ public static class ProcGen
 
         var index = StartingPawnUtility.PawnIndex(pawn);
         var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
-        var specifier = new SelectBackstorySpecifically(backstoryCategory);
+        var specifier = new SelectBackstorySpecifically(backstoryCategory, GenderRequirements[index]);
         var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
 

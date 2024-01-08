@@ -16,8 +16,6 @@ public class Gender : PawnColumnWorker_Icon
     private const string TooltipPreferFemale = "Necrofancy.PrepareProcedurally.ProcGenPreferFemaleTooltip";
     private const string TooltipNoPreference = "Necrofancy.PrepareProcedurally.ProcGenPreferNoGenderPreferenceTooltip";
     
-    private const string PreferencePostamble = "Necrofancy.PrepareProcedurally.GenderPreferencePostAmble";
-    
     protected override Texture2D GetIconFor(Pawn pawn) => pawn.gender.GetIcon();
 
     protected override Color GetIconColor(Pawn pawn)
@@ -47,7 +45,7 @@ public class Gender : PawnColumnWorker_Icon
             _ => TooltipNoPreference.Translate()
         };
 
-        builder.AppendLine(currentPref).AppendLine().AppendLine(PreferencePostamble.Translate());
+        builder.AppendLine(currentPref);
         
         return builder.ToString();
     }

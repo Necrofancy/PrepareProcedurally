@@ -13,7 +13,6 @@ public static class BackstorySolver
     public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(BalancingSituation situation,
         SimpleCurve ageRange, IntRange variation)
     {
-        var specifier = new SelectBackstorySpecifically(situation.CategoryName);
         var currentBackgrounds = new List<BackgroundPossibility>(situation.Pawns);
 
         var weights = new Dictionary<SkillPassionSelection, int>();
@@ -36,6 +35,7 @@ public static class BackstorySolver
             var age = Rand.ByCurve(ageRange);
 
             var skillWeightingSystem = new SpecificSkillWeights(weights);
+            var specifier = new SelectBackstorySpecifically(situation.CategoryName, Editor.GenderRequirements[i]);
             var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
             var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
             currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, age, true));

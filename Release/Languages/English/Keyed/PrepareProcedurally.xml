@@ -33,13 +33,13 @@
 	<Necrofancy.PrepareProcedurally.UnlockedPawnTooltip>This pawn is not locked in and will be randomized as needed by the procedural editor to fit other requests.\n\nClick to lock.</Necrofancy.PrepareProcedurally.UnlockedPawnTooltip>
 	<Necrofancy.PrepareProcedurally.ClickToCustomizePawnTooltip>Click to customize this pawn slot a bit more.</Necrofancy.PrepareProcedurally.ClickToCustomizePawnTooltip>
 	
-	<Necrofancy.PrepareProcedurally.ProcGenPreferMaleLabel>Prefer Generating Male Characters</Necrofancy.PrepareProcedurally.ProcGenPreferMaleLabel>
-	<Necrofancy.PrepareProcedurally.ProcGenPreferFemaleLabel>Prefer Generating Female Characters</Necrofancy.PrepareProcedurally.ProcGenPreferFemaleLabel>
-	<Necrofancy.PrepareProcedurally.ProcGenNoGenderPreferenceTooltip>Remove Gender Preference In Generating Characters</Necrofancy.PrepareProcedurally.ProcGenNoGenderPreferenceTooltip>
+	<Necrofancy.PrepareProcedurally.ProcGenPreferMaleLabel>Male</Necrofancy.PrepareProcedurally.ProcGenPreferMaleLabel>
+	<Necrofancy.PrepareProcedurally.ProcGenPreferFemaleLabel>Female</Necrofancy.PrepareProcedurally.ProcGenPreferFemaleLabel>
+	<Necrofancy.PrepareProcedurally.ProcGenNoGenderPreferenceTooltip>Either</Necrofancy.PrepareProcedurally.ProcGenNoGenderPreferenceTooltip>
 
-	<Necrofancy.PrepareProcedurally.ProcGenPreferMaleTooltip>When generating characters, generation will prefer male characters if either gender is possible.</Necrofancy.PrepareProcedurally.ProcGenPreferMaleTooltip>
-	<Necrofancy.PrepareProcedurally.ProcGenPreferFemaleTooltip>When generating characters, generation will prefer female characters if either gender is possible.</Necrofancy.PrepareProcedurally.ProcGenPreferFemaleTooltip>
-	<Necrofancy.PrepareProcedurally.ProcGenPreferNoGenderPreferenceTooltip>When generating characters, generation currently won't prefer either gender especially.</Necrofancy.PrepareProcedurally.ProcGenPreferNoGenderPreferenceTooltip>
+	<Necrofancy.PrepareProcedurally.ProcGenPreferMaleTooltip>Generation will prefer male characters in generation, and limit backstories that have an incompatible gender.</Necrofancy.PrepareProcedurally.ProcGenPreferMaleTooltip>
+	<Necrofancy.PrepareProcedurally.ProcGenPreferFemaleTooltip>Generation will prefer female characters in generation, and limit backstories that have an incompatible gender.</Necrofancy.PrepareProcedurally.ProcGenPreferFemaleTooltip>
+	<Necrofancy.PrepareProcedurally.ProcGenPreferNoGenderPreferenceTooltip>When generating characters, no preference will be enforced to limit backstories.</Necrofancy.PrepareProcedurally.ProcGenPreferNoGenderPreferenceTooltip>
 
 	<Necrofancy.PrepareProcedurally.GenderPreferencePostAmble>Procedural pawn generation will favor other factors, such as backstory, over fulfilling this setting.</Necrofancy.PrepareProcedurally.GenderPreferencePostAmble>
 
