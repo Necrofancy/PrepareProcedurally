@@ -110,7 +110,6 @@
         <Compile Include="Solving\Skills\SkillDisables.cs"/>
         <Compile Include="Solving\Skills\SkillFinalizationResult.cs"/>
         <Compile Include="Solving\Skills\SkillRangeBuilder.cs"/>
-        <Compile Include="Solving\StateEdits\PawnGenerationEdits.cs" />
         <Compile Include="Solving\StateEdits\PostPawnGenerationChanges.cs"/>
         <Compile Include="Solving\StateEdits\StartingPawnUtilityState.cs"/>
         <Compile Include="Solving\StateEdits\TemporarilyChange.cs"/>
