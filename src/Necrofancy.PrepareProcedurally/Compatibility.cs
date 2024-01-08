@@ -10,7 +10,7 @@ namespace Necrofancy.PrepareProcedurally;
 
 public class Compatibility
 {
-    public static Compatibility Layer { get; protected set; } = new Compatibility();
+    public static Compatibility Layer { get; protected set; } = new ();
         
     public virtual int GetMaximumGeneratedTraits(Pawn pawn) => 3;
     
@@ -18,6 +18,8 @@ public class Compatibility
         
     public virtual IEnumerable<PawnKindDef> GetPawnKindsThatCanAlsoGenerateFor(FactionDef def) => Enumerable.Empty<PawnKindDef>();
 
+    public virtual bool IsFixedGender(Pawn pawn) => false;
+    
     public virtual void RandomizeForTeam(BalancingSituation situation)
     {
         ProcGen.RandomizeForTeam(situation);

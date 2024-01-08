@@ -52,4 +52,12 @@ public class HumanoidAlienRaceCompatibility : Compatibility
     {
         AlienProcGen.RandomizeTeam(situation);
     }
+
+    public override bool IsFixedGender(Pawn pawn)
+    {
+        if (pawn.def is not ThingDef_AlienRace race) 
+            return false;
+        
+        return race.alienRace.generalSettings.maleGenderProbability is <= 0 or >= 1;
+    }
 }

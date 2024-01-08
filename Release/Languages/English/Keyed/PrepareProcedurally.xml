@@ -46,8 +46,7 @@
 	<Necrofancy.PrepareProcedurally.ProcGenPreferMaleTooltip>Generation will prefer male characters in generation, and limit backstories that have an incompatible gender.</Necrofancy.PrepareProcedurally.ProcGenPreferMaleTooltip>
 	<Necrofancy.PrepareProcedurally.ProcGenPreferFemaleTooltip>Generation will prefer female characters in generation, and limit backstories that have an incompatible gender.</Necrofancy.PrepareProcedurally.ProcGenPreferFemaleTooltip>
 	<Necrofancy.PrepareProcedurally.ProcGenPreferNoGenderPreferenceTooltip>When generating characters, no preference will be enforced to limit backstories.</Necrofancy.PrepareProcedurally.ProcGenPreferNoGenderPreferenceTooltip>
-
-	<Necrofancy.PrepareProcedurally.GenderPreferencePostAmble>Procedural pawn generation will favor other factors, such as backstory, over fulfilling this setting.</Necrofancy.PrepareProcedurally.GenderPreferencePostAmble>
+	<Necrofancy.PrepareProcedurally.ProcGenCannotRequestGender>This race is monosex; it cannot be changed.</Necrofancy.PrepareProcedurally.ProcGenCannotRequestGender>
 
 	<Necrofancy.PrepareProcedurally.TraitIsBackstoryTooltip>This trait is forced by the given backstory of the pawn. Locked pawns will not have this trait removed for trait options, and unlocked pawns may reroll a different backstory to avoid this trait if chosen traits conflict with it.</Necrofancy.PrepareProcedurally.TraitIsBackstoryTooltip>
 	<Necrofancy.PrepareProcedurally.PlayerRequestedTraitLabel>This trait is being locked in on request. Click this trait to remove the lock in for this pawn slot.</Necrofancy.PrepareProcedurally.PlayerRequestedTraitLabel>

@@ -16,10 +16,17 @@ public class Gender : PawnColumnWorker_Icon
     private const string TooltipPreferFemale = "Necrofancy.PrepareProcedurally.ProcGenPreferFemaleTooltip";
     private const string TooltipNoPreference = "Necrofancy.PrepareProcedurally.ProcGenPreferNoGenderPreferenceTooltip";
     
+    private const string TooltipCouldRequestGender = "Necrofancy.PrepareProcedurally.ProcGenCannotRequestGender";
+    
     protected override Texture2D GetIconFor(Pawn pawn) => pawn.gender.GetIcon();
 
     protected override Color GetIconColor(Pawn pawn)
     {
+        if (Compatibility.Layer.IsFixedGender(pawn))
+        {
+            return ColoredText.SubtleGrayColor;
+        }
+        
         var index = Editor.StartingPawns.IndexOf(pawn);
         var genderPossibility = index != -1 ? Editor.GenderRequirements[index] : GenderPossibility.Either;
         return genderPossibility switch
@@ -38,14 +45,21 @@ public class Gender : PawnColumnWorker_Icon
             return builder.ToString();
         
         builder.AppendLine().AppendLine();
-        var currentPref = Editor.GenderRequirements[index] switch
+        if (Compatibility.Layer.IsFixedGender(pawn))
         {
-            GenderPossibility.Male => TooltipPreferMale.Translate(),
-            GenderPossibility.Female => TooltipPreferFemale.Translate(),
-            _ => TooltipNoPreference.Translate()
-        };
+            builder.AppendLine(TooltipCouldRequestGender.Translate());
+        }
+        else
+        {
+            var currentPref = Editor.GenderRequirements[index] switch
+            {
+                GenderPossibility.Male => TooltipPreferMale.Translate(),
+                GenderPossibility.Female => TooltipPreferFemale.Translate(),
+                _ => TooltipNoPreference.Translate()
+            };
 
-        builder.AppendLine(currentPref);
+            builder.AppendLine(currentPref);
+        }
         
         return builder.ToString();
     }
