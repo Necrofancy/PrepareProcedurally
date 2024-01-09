@@ -12,7 +12,7 @@
   </PawnColumnDef>
 
   <PawnColumnDef>
-    <defName>Gender</defName>
+    <defName>ReviewAndSelectGender</defName>
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Gender</workerClass>
   </PawnColumnDef>
 

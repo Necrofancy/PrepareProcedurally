@@ -7,7 +7,7 @@
     <columns>
       <li>PawnCanBePrepared</li>
       <li>LockForSelection</li>
-      <li>Gender</li>
+      <li>ReviewAndSelectGender</li>
       <li MayRequire="Ludeon.RimWorld.Ideology">FavoriteColor</li>
       <li MayRequire="Ludeon.RimWorld.Biotech">SelectXeno</li>
       <li MayRequire="erdelf.humanoidalienraces_steam">Race</li>
