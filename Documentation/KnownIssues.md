@@ -16,7 +16,4 @@ In roughly order of priority, these are summaries of known issues:
     * As an example, if procgen wants a pawn to be good at Melee, but not Shooting, give it the ability to choose Brawler as a requested trait.
     * Limitations to resolve:
         * There would need to be a setting to _not_ leverage this with certain skills. Gourmand gives a bonus to Cooking, Sickly gives a bonus to Medical, and Tortured Artist forces an Artistic as the highest-priority in passions. Players generally hate those traits. 
-
-* Checkboxes to:
-    * Prevent Relationships
-    * Prevent Permanent Injuries
+    * Overall, based on _vanilla_ traits, this would be net more annoying than worth doing. If players want to play with this, they can request the traits and reroll specifically.
