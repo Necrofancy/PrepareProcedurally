@@ -45,7 +45,7 @@ public class PrepareProcedurally : Page
             Text.Font = GameFont.Tiny;
             Widgets.Label(lower, CustomizePawnSkillsLabel.Translate());
 
-            var table = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, 400,
+            var table = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, (int)rect.width,
                 800);
             lower.y += 15;
             var viewSize = new Rect(lower.position, table.Size)

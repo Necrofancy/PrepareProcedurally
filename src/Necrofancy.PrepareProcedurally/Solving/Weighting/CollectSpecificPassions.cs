@@ -73,21 +73,29 @@ public class CollectSpecificPassions
                 continue;
             }
 
-            if (possibility.Childhood.skillGains.TryGetValue(skill, out var bonus))
+            foreach (var gain in possibility.Childhood.skillGains)
             {
-                sum += weight * bonus;
+                if (gain.skill == skill)
+                    sum += weight * gain.amount;
             }
-            if (possibility.Adulthood.skillGains.TryGetValue(skill, out bonus))
+            
+            foreach (var gain in possibility.Adulthood.skillGains)
             {
-                sum += weight * bonus;
+                if (gain.skill == skill)
+                    sum += weight * gain.amount;
             }
 
             foreach (var trait in possibility.Traits)
             {
                 var traitData = trait.def.DataAtDegree(trait.degree ?? 0);
-                if (traitData.skillGains?.TryGetValue(skill, out bonus) == true)
+                if (traitData.skillGains is {} traitGains)
                 {
-                    sum += weight * bonus;
+                    foreach (var gain in traitGains)
+                    {
+                        if (gain.skill == skill)
+                            sum += weight * gain.amount;
+                    }
+
                 }
             }
         }

@@ -20,10 +20,10 @@
 	<Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyTooltip>If disabled, characters will not generate with an initial pregnancy.\n\nThis does not stop them from becoming pregnant after the game starts.</Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyTooltip>
 
 	<Necrofancy.PrepareProcedurally.BackstoryPassionLabel>Backstory and Passion Settings</Necrofancy.PrepareProcedurally.BackstoryPassionLabel>
-	<Necrofancy.PrepareProcedurally.VariationLabel>Vary Skill Weights By 100%-{0} For Backstory Variety</Necrofancy.PrepareProcedurally.VariationLabel>
+	<Necrofancy.PrepareProcedurally.VariationLabel>Vary Skill Weights From 100%-{0}</Necrofancy.PrepareProcedurally.VariationLabel>
 	<Necrofancy.PrepareProcedurally.SkillVariationTooltip>Procedural generation will try to pick pawn backstories and simulate randomization to quickly arrive at a certain loadout of passions. It does so by attaching a weight for each skill and picking stories by the best weight.\n\nVarying this weight by a random amount on generation gives more backstory variety and can help get out of ruts without having to specify each weight to get a specific story combination.</Necrofancy.PrepareProcedurally.SkillVariationTooltip>
 	<Necrofancy.PrepareProcedurally.SkillVariationLeft>Unvarying</Necrofancy.PrepareProcedurally.SkillVariationLeft>
-	<Necrofancy.PrepareProcedurally.SkillVariationRight>1-5x Variation</Necrofancy.PrepareProcedurally.SkillVariationRight>
+	<Necrofancy.PrepareProcedurally.SkillVariationRight>5x Variation</Necrofancy.PrepareProcedurally.SkillVariationRight>
 	<Necrofancy.PrepareProcedurally.PassionPointsLabel>Max "Passion Points" in Generating Pawns {0}</Necrofancy.PrepareProcedurally.PassionPointsLabel>
 	<Necrofancy.PrepareProcedurally.PassionPointsTooltip>When characters are generated, they are given a range of points between 0-9, based on a normal distribution centered at five points. Outliers on the far ends (i.e. exactly 0 or 9) are exceedingly unlikely.\n\n    - Minor passions take 1 point\n    - Major passions take 1.5 points\n\nCertain traits can force or prevent passions, but otherwise a set amount of major and minor passions are given based on the skill level for the pawn generated.</Necrofancy.PrepareProcedurally.PassionPointsTooltip>
 	<Necrofancy.PrepareProcedurally.GroupwideUsageIndicator>The groupwide skill requirements make up {0} of possible passion points.</Necrofancy.PrepareProcedurally.GroupwideUsageIndicator>

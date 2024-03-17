@@ -28,10 +28,18 @@ public class SpecificSkillWeights
         {
             var skill = requirement.Skill;
             var added = 0;
-            if (possibility.Childhood.skillGains.TryGetValue(skill, out var change))
-                added += change;
-            if (possibility.Adulthood.skillGains.TryGetValue(skill, out change))
-                added += change;
+            
+            foreach (var gain in possibility.Childhood.skillGains)
+            {
+                if (gain.skill == skill)
+                    added += gain.amount;
+            }
+            
+            foreach (var gain in possibility.Adulthood.skillGains)
+            {
+                if (gain.skill == skill)
+                    added += gain.amount;
+            }
 
             if (skill.IsDisabled(disables, workDisables))
             {

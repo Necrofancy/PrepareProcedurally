@@ -174,7 +174,7 @@ public static class SkillPassionSelectionUiUtility
 
         // skill weight variation
         var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 11, textRect.width, RowHeight);
-        Editor.SkillWeightVariation = Widgets.HorizontalSlider_NewTemp(variationSlider, Editor.SkillWeightVariation, 1f,
+        Editor.SkillWeightVariation = Widgets.HorizontalSlider(variationSlider, Editor.SkillWeightVariation, 1f,
             5.0f, true, SkillVariationText.Translate(Editor.SkillWeightVariation.ToString("P0")),
             SkillVariationLeft.Translate(),
             SkillVariationRight.Translate(), 0.1f);
@@ -182,7 +182,7 @@ public static class SkillPassionSelectionUiUtility
 
         // max passion slider and explainer
         var passionSlider = new Rect(textRect.x, textRect.y + RowHeight * 13, textRect.width, RowHeight);
-        Editor.MaxPassionPoints = Widgets.HorizontalSlider_NewTemp(passionSlider, Editor.MaxPassionPoints, 0, 9.0f,
+        Editor.MaxPassionPoints = Widgets.HorizontalSlider(passionSlider, Editor.MaxPassionPoints, 0, 9.0f,
             true, PassionMaxText.Translate(Editor.MaxPassionPoints.ToString("N1")), "0", "9", 0.5f);
         var textExplainer = new Rect(textRect.x, textRect.y + RowHeight * 14, textRect.width, RowHeight * 2);
         var passionPointsNeeded = skillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
@@ -355,7 +355,7 @@ public static class SkillPassionSelectionUiUtility
         }
 
         if (Widgets.ButtonImage(new Rect((float)(rect.width - 24.0 - 6.0), 0.0f, 24f, 24f),
-                TexButton.DeleteX))
+                TexButton.Delete))
         {
             SoundDefOf.Click.PlayOneShotOnCamera();
             factions.RemoveAt(index);

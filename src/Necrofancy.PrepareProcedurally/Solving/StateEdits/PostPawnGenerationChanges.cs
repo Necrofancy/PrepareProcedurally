@@ -59,7 +59,7 @@ public static class PostPawnGenerationChanges
     internal static void AddBackstoryPossessions(BioPossibility bio, List<ThingDefCount> possessions)
     {
         foreach (var item in bio.Adulthood.possessions)
-            possessions.Add(new ThingDefCount(item.key, Math.Min(item.value, item.key.stackLimit)));
+            possessions.Add(new ThingDefCount(item.key, item.value.RandomInRange));
     }
 
     internal static void RemoveBackstoryPossessions(Pawn pawn, List<ThingDefCount> possessions)
@@ -118,15 +118,34 @@ public static class PostPawnGenerationChanges
     /// </summary>
     public static void ApplyRequestedTraitsTo(this List<TraitRequirement> traits, Pawn pawn)
     {
-        foreach (var trait in traits)
+        List<Trait> conflictingTraits = new List<Trait>();
+        foreach (var toAdd in traits)
         {
-            if (pawn.story?.traits == null
-                || (pawn.story.traits.HasTrait(trait.def)
-                    && pawn.story.traits.DegreeOfTrait(trait.def) == trait.degree))
+            var alreadyHave = toAdd.degree is int degree
+                ? pawn.story.traits.HasTrait(toAdd.def, degree)
+                : pawn.story.traits.HasTrait(toAdd.def);
+            
+            if (alreadyHave)
+            {
                 continue;
-            if (pawn.story.traits.HasTrait(trait.def)) pawn.story.traits.allTraits.RemoveAll(tr => tr.def == trait.def);
+            }
 
-            pawn.story.traits.GainTrait(new Trait(trait.def, trait.degree ?? 0));
+            foreach (var ownedTrait in pawn.story.traits.allTraits)
+            {
+                bool conflict = toAdd.def.ConflictsWith(ownedTrait) || toAdd.def == ownedTrait.def;
+                if (conflict && !TraitUtilities.IsBackstoryTraitOfPawn(ownedTrait, pawn))
+                {
+                    conflictingTraits.Add(ownedTrait);
+                }
+            }
+
+            foreach (var trait in conflictingTraits)
+            {
+                pawn.story.traits.RemoveTrait(trait);
+            }
+            
+            conflictingTraits.Clear();
+            pawn.story.traits.GainTrait(new Trait(toAdd.def, toAdd.degree ?? 0));
         }
 
         TraitUtilities.FixTraitOverflow(pawn);

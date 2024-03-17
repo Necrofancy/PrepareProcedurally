@@ -43,13 +43,13 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
                         writer.WriteLine($"!!!!COULD NOT FINALIZE THIS PAWN!!!!");
                     writer.WriteLine($"Childhood: {possibility.Background.Childhood.title}");
                     foreach (var skillLevel in possibility.Background.Childhood.skillGains)
-                        writer.WriteLine($"    {skillLevel.Key.skillLabel}: {skillLevel.Value}");
+                        writer.WriteLine($"    {skillLevel.skill.skillLabel}: {skillLevel.amount}");
 
                     writer.WriteLine($"    Disabled Work: {possibility.Background.Childhood.workDisables}");
 
                     writer.WriteLine($"Adulthood: {possibility.Background.Adulthood.title}");
                     foreach (var skillLevel in possibility.Background.Adulthood.skillGains)
-                        writer.WriteLine($"    {skillLevel.Key.skillLabel}: {skillLevel.Value}");
+                        writer.WriteLine($"    {skillLevel.skill.skillLabel}: {skillLevel.amount}");
 
                     writer.WriteLine($"    Disabled Work: {possibility.Background.Adulthood.workDisables}");
                     writer.WriteLine($"Skills at Age 35:");

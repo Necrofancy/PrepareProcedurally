@@ -110,13 +110,17 @@ public static class EstimateRolling
 
         void AddBackstory(BackstoryDef backstory)
         {
-            if (!backstory.skillGains.TryGetValue(skill, out var value))
-                return;
-
-            var multiplied = value > 0
-                ? backstoryMultiplier * value
-                : backstoryNegativeMultiplier * value;
-            story += multiplied;
+            foreach (SkillGain skillGain in backstory.skillGains)
+            {
+                if (skillGain.skill == skill)
+                {
+                    int value = skillGain.amount;
+                    var multiplied = value > 0
+                        ? backstoryMultiplier * value
+                        : backstoryNegativeMultiplier * value;
+                    story += multiplied;
+                }
+            }
         }
 
         AddBackstory(bioPossibility.Childhood);
@@ -145,21 +149,33 @@ public static class EstimateRolling
 
         void AddBackstory(BackstoryDef backstory)
         {
-            if (!backstory.skillGains.TryGetValue(skill, out var value))
-                return;
-
-            var multiplied = value > 0
-                ? backstoryMultiplier * value
-                : backstoryNegativeMultiplier * value;
-            story += multiplied;
+            foreach (SkillGain skillGain in backstory.skillGains)
+            {
+                if (skillGain.skill == skill)
+                {
+                    int value = skillGain.amount;
+                    var multiplied = value > 0
+                        ? backstoryMultiplier * value
+                        : backstoryNegativeMultiplier * value;
+                    story += multiplied;
+                }
+            }
         }
 
         AddBackstory(pawn.story.Childhood);
         AddBackstory(pawn.story.Adulthood);
 
         foreach (var trait in pawn.story.traits.allTraits)
-            if (trait.CurrentData.skillGains is { } gains && gains.TryGetValue(skill, out var gain))
-                story += gain;
+        {
+            if (trait.CurrentData.skillGains is { } gains)
+            {
+                foreach (var skillGain in gains.Where(x => x.skill == skill))
+                {
+                    story += skillGain.amount;
+                }
+            }
+        }
+
 
         var ageMax = AgeSkillMaxFactorCurve.Evaluate(pawn.ageTracker.AgeBiologicalYearsFloat);
         var ageMultiplierRange = new FloatRange(1.0f, ageMax);

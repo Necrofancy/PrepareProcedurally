@@ -21,7 +21,7 @@ public class FavoriteColor : PawnColumnWorker_Icon
     protected override string GetIconTip(Pawn pawn)
     {
         var orIdeoColor = string.Empty;
-        if (pawn.Ideo != null && !pawn.Ideo.hiddenIdeoMode)
+        if (pawn.Ideo != null && !pawn.Ideo.hidden)
             orIdeoColor = "OrIdeoColor".Translate(pawn.Named("PAWN"));
         return "FavoriteColorTooltip".Translate(pawn.Named("PAWN"), 0.6f.ToStringPercent().Named("PERCENTAGE"), orIdeoColor.Named("ORIDEO")).Resolve();
     }

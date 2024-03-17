@@ -2,7 +2,7 @@
 
 <Manifest>
 	<identifier>Necrofancy.PrepareProcedurally</identifier>
-	<version>1.0.0.4</version>
+	<version>1.1.0.0</version>
 	<dependencies>
 		<li>Harmony</li>
 	</dependencies>
