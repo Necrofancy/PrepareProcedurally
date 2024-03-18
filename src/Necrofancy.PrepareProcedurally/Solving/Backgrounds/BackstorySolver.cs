@@ -35,7 +35,7 @@ public static class BackstorySolver
             var age = Rand.ByCurve(ageRange);
 
             var skillWeightingSystem = new SpecificSkillWeights(weights);
-            var specifier = new SelectBackstorySpecifically(situation.CategoryName, Editor.GenderRequirements[i]);
+            var specifier = new SelectBackstorySpecifically(situation.CategoryName, Editor.GenderRequirements[i], currentBackgrounds);
             var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
             var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
             currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, age, true));
