@@ -17,7 +17,8 @@ public class SelectBackstorySpecifically
 
     private readonly HashSet<BackstoryDef> alreadyUsed = new();
 
-    public SelectBackstorySpecifically(List<string> spawnCategories, GenderPossibility genderRequirement)
+    public SelectBackstorySpecifically(List<string> spawnCategories, GenderPossibility genderRequirement,
+        IEnumerable<BackgroundPossibility> possibilities)
     {
         categoryNames = spawnCategories;
         this.genderRequirement = genderRequirement;
@@ -28,15 +29,44 @@ public class SelectBackstorySpecifically
             if (story.Adulthood != null)
                 alreadyUsed.Add(story.Adulthood);
         }
+
+        foreach (var pawn in possibilities)
+        {
+            alreadyUsed.Add(pawn.Background.Childhood);
+            if (pawn.Background.Adulthood != null)
+                alreadyUsed.Add(pawn.Background.Adulthood);
+        }
+    }
+    
+    public SelectBackstorySpecifically(List<string> spawnCategories, GenderPossibility genderRequirement,
+        Pawn pawn) : this(spawnCategories, genderRequirement, Enumerable.Empty<BackgroundPossibility>())
+    {
+        alreadyUsed.Add(pawn.story.Childhood);
+        if (pawn.story.Adulthood is { } adulthood)
+        {
+            alreadyUsed.Add(adulthood);
+        }
     }
 
-    public SelectBackstorySpecifically(string categoryName, GenderPossibility genderRequirement)
+    public SelectBackstorySpecifically(string categoryName, GenderPossibility genderRequirement, IEnumerable<BackgroundPossibility> possibilities)
+        : this([categoryName], genderRequirement, possibilities)
     {
+        // no special category.
+    }
+
+    public SelectBackstorySpecifically(string categoryName, GenderPossibility genderRequirement, Pawn pawn)
+    {
+        categoryNames = [categoryName];
         this.genderRequirement = genderRequirement;
-        categoryNames = new List<string> { categoryName };
-        foreach (var pawn in Editor.LockedPawns)
+        alreadyUsed.Add(pawn.story.Childhood);
+        if (pawn.story.Adulthood is { } adulthood)
         {
-            var story = pawn.story;
+            alreadyUsed.Add(adulthood);
+        }
+        
+        foreach (var lockedPawn in Editor.LockedPawns)
+        {
+            var story = lockedPawn.story;
             alreadyUsed.Add(story.Childhood);
             if (story.Adulthood != null)
                 alreadyUsed.Add(story.Adulthood);
