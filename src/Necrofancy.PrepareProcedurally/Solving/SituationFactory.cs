@@ -19,7 +19,7 @@ public static class SituationFactory
         var tile = Find.GameInitData.startingTile;
         var terrain = Find.World.grid[tile];
 
-        requirements.AddRange(BySetupOf.Basic.GetRequirements(terrain.biome, terrain.hilliness).Where(Relevant));
+        requirements.AddRange(BySetupOf.Basic.GetRequirements(terrain.Biomes.FirstOrDefault(), terrain.hilliness).Where(Relevant));
 
         if (ideoligion is not null)
         {

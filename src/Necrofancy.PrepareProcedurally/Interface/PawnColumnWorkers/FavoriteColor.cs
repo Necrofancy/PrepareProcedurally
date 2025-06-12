@@ -16,7 +16,7 @@ public class FavoriteColor : PawnColumnWorker_Icon
         
     protected override Texture2D GetIconFor(Pawn pawn) => BaseContent.WhiteTex;
 
-    protected override Color GetIconColor(Pawn pawn) => pawn.story.favoriteColor ?? Color.black;
+    protected override Color GetIconColor(Pawn pawn) => pawn.story.favoriteColor?.color ?? Color.black;
 
     protected override string GetIconTip(Pawn pawn)
     {
@@ -33,7 +33,7 @@ public class FavoriteColor : PawnColumnWorker_Icon
         {
             void ApplyColor()
             {
-                pawn.story.favoriteColor = color.color;
+                pawn.story.favoriteColor = color;
                 Editor.LockedPawns.Add(pawn);
             }
 
