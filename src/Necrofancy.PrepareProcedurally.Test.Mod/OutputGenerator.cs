@@ -22,7 +22,7 @@ namespace Necrofancy.PrepareProcedurally.Test.Mod
             var passionRanges = BackstorySolver.FigureOutPassions(possibilities, situation);
             using (var writer = CreateWriter(situationWithFileName.FileName))
             {
-                writer.WriteLine($"{situation.CategoryName} start with {situation.Pawns} pawns.");
+                writer.WriteLine($"{situation.CategoryFilters} start with {situation.Pawns} pawns.");
                 writer.WriteLine(situationWithFileName.Description);
 
                 NewSection(writer);

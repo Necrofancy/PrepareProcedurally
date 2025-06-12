@@ -9,54 +9,47 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 public class SelectBackstorySpecifically
 {
-    private readonly List<string> categoryNames;
+    private readonly List<BackstoryCategoryFilter> categoryFilters;
     private readonly GenderPossibility genderRequirement;
 
-    private readonly List<BackstoryDef> childhoodStories = new();
-    private readonly List<BackstoryDef> adulthoodStories = new();
-
     private readonly HashSet<BackstoryDef> alreadyUsed = new();
+    private readonly List<TraitRequirement> alreadyForcedTraits = new();
 
-    public SelectBackstorySpecifically(List<string> spawnCategories, GenderPossibility genderRequirement,
+    public SelectBackstorySpecifically(List<BackstoryCategoryFilter> spawnCategories, GenderPossibility genderRequirement,
         IEnumerable<BackgroundPossibility> possibilities)
     {
-        categoryNames = spawnCategories;
+        categoryFilters = spawnCategories;
         this.genderRequirement = genderRequirement;
         foreach (var pawn in Editor.LockedPawns)
         {
-            var story = pawn.story;
-            alreadyUsed.Add(story.Childhood);
-            if (story.Adulthood != null)
-                alreadyUsed.Add(story.Adulthood);
+            AddToAlreadyUsed(pawn);
         }
 
         foreach (var pawn in possibilities)
         {
-            alreadyUsed.Add(pawn.Background.Childhood);
-            if (pawn.Background.Adulthood != null)
-                alreadyUsed.Add(pawn.Background.Adulthood);
-        }
-    }
-    
-    public SelectBackstorySpecifically(List<string> spawnCategories, GenderPossibility genderRequirement,
-        Pawn pawn) : this(spawnCategories, genderRequirement, Enumerable.Empty<BackgroundPossibility>())
-    {
-        alreadyUsed.Add(pawn.story.Childhood);
-        if (pawn.story.Adulthood is { } adulthood)
-        {
-            alreadyUsed.Add(adulthood);
+            AddToAlreadyUsed(pawn.Background);
         }
     }
 
-    public SelectBackstorySpecifically(string categoryName, GenderPossibility genderRequirement, IEnumerable<BackgroundPossibility> possibilities)
-        : this([categoryName], genderRequirement, possibilities)
+    public SelectBackstorySpecifically(List<BackstoryCategoryFilter> categoryFilters, GenderPossibility genderRequirement,
+        Pawn pawn) : this(categoryFilters, genderRequirement, Enumerable.Empty<BackgroundPossibility>())
+    {
+        AddToAlreadyUsed(pawn.story.Childhood);
+        if (pawn.story.Adulthood is { } adulthood)
+        {
+            AddToAlreadyUsed(adulthood);
+        }
+    }
+
+    public SelectBackstorySpecifically(BackstoryCategoryFilter backstoryFilter, GenderPossibility genderRequirement, IEnumerable<BackgroundPossibility> possibilities)
+        : this([backstoryFilter], genderRequirement, possibilities)
     {
         // no special category.
     }
 
-    public SelectBackstorySpecifically(string categoryName, GenderPossibility genderRequirement, Pawn pawn)
+    public SelectBackstorySpecifically(BackstoryCategoryFilter categoryName, GenderPossibility genderRequirement, Pawn pawn)
     {
-        categoryNames = [categoryName];
+        categoryFilters = [categoryName];
         this.genderRequirement = genderRequirement;
         alreadyUsed.Add(pawn.story.Childhood);
         if (pawn.story.Adulthood is { } adulthood)
@@ -73,20 +66,15 @@ public class SelectBackstorySpecifically
         }
     }
 
-    public void AlreadyUsedBackstory(BioPossibility possibility)
-    {
-        alreadyUsed.Add(possibility.Childhood);
-        if (possibility.Adulthood is { } adulthood)
-            alreadyUsed.Add(adulthood);
-    }
-
     public BioPossibility GetBestBio(WeightBackgroundAlgorithm weightingSystem,
         IReadOnlyList<TraitRequirement> requiredTraits)
     {
         (BioPossibility? Bio, float Ranking) bestSoFar = (default, float.MinValue);
         foreach (var poss in GetPawnPossibilities(weightingSystem, requiredTraits))
+        {
             if (poss.Ranking >= bestSoFar.Ranking)
                 bestSoFar = poss;
+        }
 
         var best = bestSoFar.Bio
                    ?? throw new InvalidOperationException("No valid pawn possibilities were found.");
@@ -100,41 +88,60 @@ public class SelectBackstorySpecifically
     private IEnumerable<(BioPossibility Bio, float Ranking)> GetPawnPossibilities(
         WeightBackgroundAlgorithm weightingSystem, IReadOnlyList<TraitRequirement> requiredTraits)
     {
-        childhoodStories.Clear();
-        adulthoodStories.Clear();
-
-        foreach (var backstory in DefDatabase<BackstoryDef>.AllDefsListForReading)
-            if (backstory.shuffleable && backstory.spawnCategories.Any(x => categoryNames.Contains(x)))
+        float PunishReusedSkills(BioPossibility possibility)
+        {
+            var ranking = weightingSystem(possibility);
+            foreach (var newlyForced in possibility.Traits)
+            foreach (var alreadyForced in this.alreadyForcedTraits)
             {
-                var list = backstory.slot == BackstorySlot.Childhood ? childhoodStories : adulthoodStories;
-                if (!alreadyUsed.Contains(backstory))
-                    list.Add(backstory);
+                if (newlyForced.def == alreadyForced.def && newlyForced.degree == alreadyForced.degree)
+                {
+                    ranking *= 0.66f;
+                }
             }
 
+            return ranking;
+        }
+        
         foreach (var bio in SolidBioDatabase.allBios.Where(AllowedBio))
         {
             var possibility = new BioPossibility(bio);
             foreach (var trait in requiredTraits) possibility.Traits.Add(trait);
             if (!alreadyUsed.Contains(bio.childhood)
                 && !UnworkableTraitCombination(requiredTraits, bio.childhood, bio.adulthood))
-                yield return (possibility, weightingSystem(possibility));
+                yield return (possibility, PunishReusedSkills(possibility));
         }
 
-        foreach (var childhood in childhoodStories)
-        foreach (var adulthood in adulthoodStories)
+        foreach (var category in this.categoryFilters)
         {
-            if (UnworkableTraitCombination(requiredTraits, childhood, adulthood))
-                continue;
+            List<BackstoryDef> childhoods = new();
+            List<BackstoryDef> adulthoods = new();
 
-            var requiredWork = childhood.requiredWorkTags | adulthood.requiredWorkTags;
-            var disabledWork = childhood.workDisables | adulthood.workDisables;
-            if ((requiredWork & disabledWork) != WorkTags.None)
-                continue;
+            foreach (var backstory in DefDatabase<BackstoryDef>.AllDefsListForReading)
+            {
+                if (backstory.shuffleable && category.Matches(backstory) && !alreadyUsed.Contains(backstory))
+                {
+                    var list = backstory.slot == BackstorySlot.Childhood ? childhoods : adulthoods;
+                    list.Add(backstory);
+                }
+            }
 
-            var possibility = new BioPossibility(childhood, adulthood);
-            foreach (var trait in requiredTraits) possibility.Traits.Add(trait);
+            foreach (var childhood in childhoods)
+            foreach (var adulthood in adulthoods)
+            {
+                if (UnworkableTraitCombination(requiredTraits, childhood, adulthood))
+                    continue;
 
-            yield return (possibility, weightingSystem(possibility));
+                var requiredWork = childhood.requiredWorkTags | adulthood.requiredWorkTags;
+                var disabledWork = childhood.workDisables | adulthood.workDisables;
+                if ((requiredWork & disabledWork) != WorkTags.None)
+                    continue;
+
+                var possibility = new BioPossibility(childhood, adulthood);
+                foreach (var trait in requiredTraits) possibility.Traits.Add(trait);
+
+                yield return (possibility, PunishReusedSkills(possibility));
+            }
         }
     }
 
@@ -169,10 +176,40 @@ public class SelectBackstorySpecifically
 
         return false;
     }
+    
+    private void AddToAlreadyUsed(BioPossibility possibility)
+    {
+        AddToAlreadyUsed(possibility.Childhood);
+        if (possibility.Adulthood is { } adulthood)
+            AddToAlreadyUsed(adulthood);
+    }
+    
+    private void AddToAlreadyUsed(Pawn pawn)
+    {
+        AddToAlreadyUsed(pawn.story.Childhood);
+        if (pawn.story.Adulthood != null)
+            AddToAlreadyUsed(pawn.story.Adulthood);
+    }
 
+    public void AddToAlreadyUsed(BackstoryDef def)
+    {
+        if (alreadyUsed.Add(def) && def.forcedTraits is List<BackstoryTrait> requirements)
+        {
+            foreach (var requirement in requirements)
+            {
+                alreadyForcedTraits.Add(new TraitRequirement{def = requirement.def, degree = requirement.degree});
+            }
+        }
+    }
+    
     private bool AllowedBio(PawnBio bio)
     {
-        return bio.childhood.spawnCategories.Any(x => categoryNames.Contains(x))
-            && (genderRequirement == GenderPossibility.Either || genderRequirement == bio.gender);
+        var genderMatch = (genderRequirement == GenderPossibility.Either || genderRequirement == bio.gender);
+        if (!genderMatch)
+        {
+            return false;
+        }
+
+        return categoryFilters.Any(x => x.Matches(bio));
     }
 }

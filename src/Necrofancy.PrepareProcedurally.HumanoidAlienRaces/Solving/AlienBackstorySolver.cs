@@ -2,6 +2,7 @@
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
+using RimWorld;
 using Verse;
 
 namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
@@ -14,7 +15,7 @@ public class AlienBackstorySolver
         IntRange variation)
     {
         var currentBackgrounds = new List<BackgroundPossibility>(situation.Pawns);
-        var categories = new List<string>(2);
+        var categories = new BackstoryCategoryFilter();
 
         var weights = new Dictionary<SkillPassionSelection, int>();
         for (var i = currentBackgrounds.Count; i < situation.Pawns; i++)
@@ -34,15 +35,22 @@ public class AlienBackstorySolver
             }
 
             var age = Editor.StartingPawns[i].ageTracker.AgeBiologicalYearsFloat;
-            categories.Clear();
             var category = situation.BackstoryCategories[i];
-            categories.Add(category.ChildhoodCategory);
-            categories.Add(category.AdulthoodCategory);
+            categories.categoriesChildhood = [category.ChildhoodCategory];
+            categories.categoriesAdulthood = [category.AdulthoodCategory];
 
             var skillWeightingSystem = new SpecificSkillWeights(weights);
             var specifier = new SelectBackstorySpecifically(categories, Editor.GenderRequirements[i], currentBackgrounds);
-            for (var j = 0; j < i; j++) 
-                specifier.AlreadyUsedBackstory(currentBackgrounds[j].Background);
+            for (var j = 0; j < i; j++)
+            {
+                var childhood = currentBackgrounds[j].Background.Childhood;
+                
+                specifier.AddToAlreadyUsed(childhood);
+                if (currentBackgrounds[j].Background.Adulthood is not null)
+                {
+                    specifier.AddToAlreadyUsed(currentBackgrounds[j].Background.Adulthood);
+                }
+            }
             var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
             var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
             currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, age, true));

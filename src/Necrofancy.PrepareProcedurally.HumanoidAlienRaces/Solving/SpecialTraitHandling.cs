@@ -22,12 +22,12 @@ public static class SpecialTraitHandling
         if (pawn.story.Childhood is AlienBackstoryDef childhood)
             foreach (var trait in childhood.forcedTraitsChance)
                 if (trait.Approved(pawn))
-                    pawn.story.traits.GainTrait(new Trait(trait.defName, trait.degree, true));
+                    pawn.story.traits.GainTrait(new Trait(trait.entry.def, trait.entry.degree, true));
 
         if (pawn.story.Adulthood is AlienBackstoryDef adulthood)
             foreach (var trait in adulthood.forcedTraitsChance)
                 if (trait.Approved(pawn))
-                    pawn.story.traits.GainTrait(new Trait(trait.defName, trait.degree, true));
+                    pawn.story.traits.GainTrait(new Trait(trait.entry.def, trait.entry.degree, true));
     }
 
     public static bool ForcedByBackstory(Trait trait, Pawn pawn)
@@ -35,11 +35,11 @@ public static class SpecialTraitHandling
         if (!trait.ScenForced) return false;
 
         if (pawn.story.Childhood is AlienBackstoryDef childhood)
-            if (childhood.forcedTraitsChance.Any(x => x.defName == trait.def))
+            if (childhood.forcedTraitsChance.Any(x => x.entry.def == trait.def))
                 return true;
 
         if (pawn.story.Adulthood is AlienBackstoryDef adulthood)
-            if (adulthood.forcedTraitsChance.Any(x => x.defName == trait.def))
+            if (adulthood.forcedTraitsChance.Any(x => x.entry.def == trait.def))
                 return true;
 
         return false;

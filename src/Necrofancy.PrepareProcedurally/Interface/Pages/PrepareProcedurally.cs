@@ -140,9 +140,9 @@ public class PrepareProcedurally : Page
         {
             CloseSubdialogs();
 
-            var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
+            var backstoryFilters = Faction.OfPlayer.def.backstoryFilters;
             var pawnCount = Find.GameInitData.startingPawnCount;
-            var situation = new BalancingSituation(string.Empty, backstoryCategory, pawnCount, Editor.SkillPassions);
+            var situation = new BalancingSituation(string.Empty, backstoryFilters, pawnCount, Editor.SkillPassions);
 
             Compatibility.Layer.RandomizeForTeam(situation);
 

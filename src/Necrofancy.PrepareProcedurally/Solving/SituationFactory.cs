@@ -12,7 +12,7 @@ public static class SituationFactory
     public static BalancingSituation FromPlayerData()
     {
         var pawnCount = Find.GameInitData.startingPawnCount;
-        var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
+        var backstoryCategories = Faction.OfPlayer.def.backstoryFilters;
 
         var requirements = new List<SkillRequirementDef>();
         var ideoligion = Faction.OfPlayer.ideos.PrimaryIdeo;
@@ -20,16 +20,19 @@ public static class SituationFactory
         var terrain = Find.World.grid[tile];
 
         requirements.AddRange(BySetupOf.Basic.GetRequirements(terrain.biome, terrain.hilliness).Where(Relevant));
-            
-        foreach (var preceptLink in DefDatabase<ByPrecept>.AllDefsListForReading)
-        {
-            if (preceptLink.relatedPrecepts?.Any(ideoligion.HasPrecept) == true)
-                requirements.AddRange(preceptLink.skillRequirements.Where(Relevant));
-        }
 
+        if (ideoligion is not null)
+        {
+            foreach (var preceptLink in DefDatabase<ByPrecept>.AllDefsListForReading)
+            {
+                if (preceptLink.relatedPrecepts?.Any(ideoligion.HasPrecept) == true)
+                    requirements.AddRange(preceptLink.skillRequirements.Where(Relevant));
+            }
+        }
+        
         var selections = SkillPassionSelection.FromReqs(requirements, pawnCount);
 
-        return new BalancingSituation(string.Empty, backstoryCategory, pawnCount, selections);
+        return new BalancingSituation(string.Empty, backstoryCategories, pawnCount, selections);
 
         bool Relevant(SkillRequirementDef def) => def.Count(pawnCount) > 0;
     }

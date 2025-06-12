@@ -79,9 +79,9 @@ public static class ProcGen
         var age = Rand.ByCurve(ageCurve);
 
         var index = StartingPawnUtility.PawnIndex(pawn);
-        var backstoryCategory = Faction.OfPlayer.def.backstoryFilters.First().categories.First();
+        var backstoryFilters = Faction.OfPlayer.def.backstoryFilters;
         
-        var specifier = new SelectBackstorySpecifically(backstoryCategory, GenderRequirements[index], pawn);
+        var specifier = new SelectBackstorySpecifically(backstoryFilters, GenderRequirements[index], pawn);
         var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
 

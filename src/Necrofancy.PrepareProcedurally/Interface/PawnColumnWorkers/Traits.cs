@@ -86,15 +86,26 @@ public class Traits : PawnColumnWorker
         var index = StartingPawnUtility.PawnIndex(pawn);
         Editor.TraitRequirements[index].Add(option);
 
-        foreach (var trait in pawn.story.traits.allTraits)
+        List<Trait> geneTraits = new List<Trait>();
+        List<Trait> toRemove = new List<Trait>();
+        foreach (var ownedTrait in pawn.story.traits.allTraits)
         {
-            if (option.AllowsTrait(trait.def))
+            if (ownedTrait.sourceGene is not null)
             {
-                pawn.story.traits.RemoveTrait(trait);
-                break;
+                geneTraits.Add(ownedTrait);
+                toRemove.Add(ownedTrait);
+            }
+            else if (option.AllowsTrait(ownedTrait.def))
+            {
+                toRemove.Add(ownedTrait);
             }
         }
-            
+
+        foreach (var trait in toRemove)
+        {
+            pawn.story.traits.RemoveTrait(trait);
+        }
+        
         if (option.def.IsSexualityTrait())
         {
             pawn.story.traits.GainTrait(new Trait(option.def, option.degree ?? 0));
@@ -102,6 +113,13 @@ public class Traits : PawnColumnWorker
         }
             
         pawn.story.traits.GainTrait(new Trait(option.def, option.degree ?? 0));
+        foreach (var trait in geneTraits)
+        {
+            pawn.story.traits.GainTrait(trait, suppressConflicts: true);
+        }
+        
+        pawn.story.traits.RecalculateSuppression();
+        
         TraitUtilities.FixTraitOverflow(pawn);
     }
 

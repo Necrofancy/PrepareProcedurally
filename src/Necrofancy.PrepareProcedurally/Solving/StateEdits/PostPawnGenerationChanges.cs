@@ -118,13 +118,14 @@ public static class PostPawnGenerationChanges
     /// </summary>
     public static void ApplyRequestedTraitsTo(this List<TraitRequirement> traits, Pawn pawn)
     {
-        List<Trait> conflictingTraits = new List<Trait>();
+        List<Trait> toRemove = new List<Trait>();
+        List<Trait> toAddBack = new List<Trait>();
         foreach (var toAdd in traits)
         {
             var alreadyHave = toAdd.degree is int degree
                 ? pawn.story.traits.HasTrait(toAdd.def, degree)
                 : pawn.story.traits.HasTrait(toAdd.def);
-            
+
             if (alreadyHave)
             {
                 continue;
@@ -133,22 +134,33 @@ public static class PostPawnGenerationChanges
             foreach (var ownedTrait in pawn.story.traits.allTraits)
             {
                 bool conflict = toAdd.def.ConflictsWith(ownedTrait) || toAdd.def == ownedTrait.def;
-                if (conflict && !TraitUtilities.IsBackstoryTraitOfPawn(ownedTrait, pawn))
+
+                if (ownedTrait.sourceGene is not null)
                 {
-                    conflictingTraits.Add(ownedTrait);
+                    toAddBack.Add(ownedTrait);
+                    toRemove.Add(ownedTrait);
+                }
+                else if (conflict && !TraitUtilities.IsBackstoryTraitOfPawn(ownedTrait, pawn))
+                {
+                    toRemove.Add(ownedTrait);
                 }
             }
 
-            foreach (var trait in conflictingTraits)
+            foreach (var trait in toRemove)
             {
                 pawn.story.traits.RemoveTrait(trait);
             }
-            
-            conflictingTraits.Clear();
+
+            toRemove.Clear();
             pawn.story.traits.GainTrait(new Trait(toAdd.def, toAdd.degree ?? 0));
+            foreach (var trait in toAddBack)
+            {
+                pawn.story.traits.GainTrait(trait, suppressConflicts:true);
+            }
         }
 
         TraitUtilities.FixTraitOverflow(pawn);
+        pawn.story.traits.RecalculateSuppression();
     }
 
     public static void RemoveBadHeDiffs(Pawn pawn)
