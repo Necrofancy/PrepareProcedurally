@@ -114,6 +114,7 @@
         <Compile Include="Solving\Weighting\SkillPassionSelection.cs"/>
         <Compile Include="Solving\Weighting\SpecificSkillWeights.cs"/>
         <Compile Include="Solving\Weighting\WeightBackgroundAlgorithm.cs"/>
+        <Compile Include="Solving\WorldPawnDestruction.cs" />
         <Compile Include="VerseExtensions.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
     </ItemGroup>
