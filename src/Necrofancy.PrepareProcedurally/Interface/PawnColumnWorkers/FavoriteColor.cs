@@ -20,10 +20,17 @@ public class FavoriteColor : PawnColumnWorker_Icon
 
     protected override string GetIconTip(Pawn pawn)
     {
+        var pawnNamed = pawn.Named("PAWN");
+        var colorNamed = pawn.story.favoriteColor.label.Named("COLOR");
+        var percentNamed = 0.6f.ToStringPercent().Named("PERCENTAGE");
+        var ideoColor = "OrIdeoColor".Translate(pawnNamed);
+        
         var orIdeoColor = string.Empty;
         if (pawn.Ideo != null && !pawn.Ideo.hidden)
-            orIdeoColor = "OrIdeoColor".Translate(pawn.Named("PAWN"));
-        return "FavoriteColorTooltip".Translate(pawn.Named("PAWN"), 0.6f.ToStringPercent().Named("PERCENTAGE"), orIdeoColor.Named("ORIDEO")).Resolve();
+            orIdeoColor = ideoColor;
+        var orIdeoNamed = orIdeoColor.Named("ORIDEO");
+        
+        return "FavoriteColorTooltip".Translate(pawnNamed,colorNamed, percentNamed, orIdeoNamed).Resolve();
     }
         
     protected override void ClickedIcon(Pawn pawn)
