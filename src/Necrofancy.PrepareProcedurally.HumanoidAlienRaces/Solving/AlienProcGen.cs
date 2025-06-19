@@ -32,6 +32,8 @@ public static class AlienProcGen
 
         string pawnChildhoods = null, pawnAdulthoods = null;
         
+        WorldPawnDestruction.DestroyRelationships(pawn);
+        
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))
         {
@@ -95,6 +97,8 @@ public static class AlienProcGen
                 var foundBackstoryToWorkWith = false;
                 while (!foundBackstoryToWorkWith)
                 {
+                    WorldPawnDestruction.DestroyRelationships(pawn);
+
                     PawnGenerationRequestTransforms.SetBasedOnEditorSettings(pawnIndex);                    
                     pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                     ProcGen.OnPawnChanged(pawn);

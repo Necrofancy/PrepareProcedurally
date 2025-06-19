@@ -6,6 +6,7 @@ using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 using static Necrofancy.PrepareProcedurally.Editor;
 
@@ -48,6 +49,8 @@ public static class ProcGen
             var gender = backstory.Background.Gender != GenderPossibility.Either
                 ? backstory.Background.Gender
                 : GenderRequirements[i];
+            
+            WorldPawnDestruction.DestroyRelationships(pawnList[i]);
             
             using (TemporarilyChange.SetSpecificRequest(i, age, gender, AllowBadHeDiffs, AllowRelationships, AllowPregnancy))
             using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
@@ -101,6 +104,8 @@ public static class ProcGen
         var gender = bio.Gender != GenderPossibility.Either
             ? bio.Gender
             : GenderRequirements[index];
+
+        WorldPawnDestruction.DestroyRelationships(pawn);
 
         using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
