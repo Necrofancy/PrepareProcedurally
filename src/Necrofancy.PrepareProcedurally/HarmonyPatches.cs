@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
 using RimWorld;
@@ -61,13 +60,22 @@ public class HarmonyPatches
 
     private static void AddButtonToDialog(Rect rect, Page_ConfigureStartingPawns __instance)
     {
+        var horizontalPlacement = (rect.x + rect.width) / 2 - 75F;
+        var verticalPlacement = 0;
+        var width = 150;
+        var height = 38;
+        if (ModsConfig.IsActive("lakuna.preparemoderately"))
+        {
+            horizontalPlacement += 175;
+        }
+        
         string buttonText = "Necrofancy.PrepareProcedurally.Button".Translate();
         var buttonRect = new Rect
         {
-            x = (rect.x + rect.width) / 2 - 75F,
-            y = rect.y - 50,
-            width = 150,
-            height = 38
+            x = horizontalPlacement,
+            y = verticalPlacement,
+            width = width,
+            height = height
         };
 
         if (Widgets.ButtonText(buttonRect, buttonText))
