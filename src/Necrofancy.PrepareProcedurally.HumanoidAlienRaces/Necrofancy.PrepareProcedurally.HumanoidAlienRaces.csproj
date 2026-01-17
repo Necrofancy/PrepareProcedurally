@@ -37,16 +37,20 @@
         <Deterministic>false</Deterministic>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
         <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>..\..\packages\Lib.Harmony.2.2.1\lib\net45\0Harmony.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <Reference Include="AlienRace">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\839005762\1.5\Assemblies\AlienRace.dll</HintPath>
+            <HintPath>..\..\Steam\1.6\AlienRace\AlienRace.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <Reference Include="Assembly-CSharp">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <HintPath>..\..\Steam\1.6\Game\Assembly-CSharp.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <Reference Include="System"/>
@@ -54,15 +58,15 @@
         <Reference Include="System.Data"/>
         <Reference Include="System.Xml"/>
         <Reference Include="UnityEngine.CoreModule">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <HintPath>..\..\Steam\1.6\Game\UnityEngine.CoreModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
-        <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>..\..\Steam\1.6\Game\UnityEngine.IMGUIModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
-        <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+        <Reference Include="UnityEngine.TextRenderingModule">
+            <HintPath>..\..\Steam\1.6\Game\UnityEngine.TextRenderingModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
     </ItemGroup>

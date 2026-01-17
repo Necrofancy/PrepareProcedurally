@@ -18,8 +18,9 @@
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
+        <RimworldVersion>1.6</RimworldVersion>
+        <DefineConstants>DEBUG;TRACE;VER_1_6</DefineConstants>
         <OutputPath>..\..\Release\1.6\Assemblies</OutputPath>
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
@@ -28,8 +29,19 @@
         <DebugSymbols>false</DebugSymbols>
         <DebugType>None</DebugType>
         <Optimize>true</Optimize>
+        <RimworldVersion>1.6</RimworldVersion>
+        <DefineConstants>TRACE;VER_1_6</DefineConstants>
         <OutputPath>..\..\Release\1.6\Assemblies</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == '1.6|Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>none</DebugType>
+        <Optimize>true</Optimize>
+        <RimworldVersion>1.6</RimworldVersion>
+        <DefineConstants>VER_1_6</DefineConstants>
+        <OutputPath>..\..\Release\1.6\Assemblies</OutputPath>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
@@ -37,27 +49,31 @@
         <Deterministic>false</Deterministic>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
         <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, PublicKeyToken=null">
             <HintPath>..\..\packages\Lib.Harmony.2.2.1\lib\net45\0Harmony.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <Reference Include="Assembly-CSharp">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <HintPath>..\..\Steam\$(RimworldVersion)\Game\Assembly-CSharp.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="System.Xml"/>
         <Reference Include="UnityEngine.CoreModule">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <HintPath>..\..\Steam\$(RimworldVersion)\Game\UnityEngine.CoreModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
-        <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>..\..\Steam\$(RimworldVersion)\Game\UnityEngine.IMGUIModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
-        <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+        <Reference Include="UnityEngine.TextRenderingModule">
+            <HintPath>..\..\Steam\$(RimworldVersion)\Game\UnityEngine.TextRenderingModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
     </ItemGroup>

@@ -37,21 +37,13 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\packages\Lib.Harmony.2.2.1\lib\net45\0Harmony.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
         <Reference Include="Assembly-CSharp">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <HintPath>..\..\Steam\1.6\Game\Assembly-CSharp.dll</HintPath>
             <Private>true</Private>
-        </Reference>
-        <Reference Include="DiffEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c7a34512ecd69090">
-            <HintPath>..\..\packages\DiffEngine.9.1.0\lib\net461\DiffEngine.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
-        <Reference Include="EmptyFiles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c7a34512ecd69090">
-            <HintPath>..\..\packages\EmptyFiles.2.8.0\lib\net461\EmptyFiles.dll</HintPath>
-            <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
             <HintPath>..\..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -62,93 +54,70 @@
             <HintPath>..\..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="SimpleInfoName, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c7a34512ecd69090">
-            <HintPath>..\..\packages\SimpleInfoName.1.1.1\lib\net461\SimpleInfoName.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
         <Reference Include="System"/>
-        <Reference Include="System.ComponentModel.Composition"/>
-        <Reference Include="System.Configuration"/>
         <Reference Include="System.Core"/>
-        <Reference Include="System.Data"/>
-        <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Reference Include="System.IO">
             <HintPath>..\..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="System.Management"/>
-        <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-            <HintPath>..\..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
-        <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Reference Include="System.Runtime">
             <HintPath>..\..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-            <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
-        <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
             <HintPath>..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Reference Include="System.Security.Cryptography.Algorithms">
             <HintPath>..\..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Reference Include="System.Security.Cryptography.Encoding">
             <HintPath>..\..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Reference Include="System.Security.Cryptography.Primitives">
             <HintPath>..\..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Reference Include="System.Security.Cryptography.X509Certificates">
             <HintPath>..\..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+        <Reference Include="System.Threading.Tasks.Extensions">
             <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
             <Private>True</Private>
         </Reference>
         <Reference Include="System.Xml"/>
         <Reference Include="System.Xml.Linq"/>
         <Reference Include="UnityEngine.CoreModule">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <HintPath>..\..\Steam\1.6\Game\UnityEngine.CoreModule.dll</HintPath>
             <Private>true</Private>
         </Reference>
-        <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>..\..\Steam\1.6\Game\UnityEngine.IMGUIModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.TextCoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextCoreModule.dll</HintPath>
+        <Reference Include="UnityEngine.TextRenderingModule">
+            <HintPath>..\..\Steam\1.6\Game\UnityEngine.TextRenderingModule.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-        </Reference>
-        <Reference Include="Verify, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c7a34512ecd69090">
+        <Reference Include="Verify">
             <HintPath>..\..\packages\Verify.17.0.0-beta.1\lib\net461\Verify.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="Verify.Xunit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c7a34512ecd69090">
+        <Reference Include="Verify.Xunit">
             <HintPath>..\..\packages\Verify.Xunit.17.0.0-beta.1\lib\net461\Verify.Xunit.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
+        <Reference Include="xunit.abstractions">
             <HintPath>..\..\packages\xunit.abstractions.2.0.3\lib\net35\xunit.abstractions.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="xunit.assert, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
+        <Reference Include="xunit.assert">
             <HintPath>..\..\packages\xunit.assert.2.4.1\lib\netstandard1.1\xunit.assert.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="xunit.core, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
+        <Reference Include="xunit.core">
             <HintPath>..\..\packages\xunit.extensibility.core.2.4.1\lib\net452\xunit.core.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
-        <Reference Include="xunit.execution.desktop, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
-            <HintPath>..\..\packages\xunit.extensibility.execution.2.4.1\lib\net452\xunit.execution.desktop.dll</HintPath>
             <Private>True</Private>
         </Reference>
     </ItemGroup>
@@ -163,10 +132,6 @@
         <Compile Include="UnderstandingPassionPoints.cs"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Necrofancy.PrepareProcedurally.Test.Mod\Necrofancy.PrepareProcedurally.Test.Mod.csproj">
-            <Project>{cc9bd976-b901-4216-a782-e97f02766bbb}</Project>
-            <Name>Necrofancy.PrepareProcedurally.Test.Mod</Name>
-        </ProjectReference>
         <ProjectReference Include="..\Necrofancy.PrepareProcedurally\Necrofancy.PrepareProcedurally.csproj">
             <Project>{5de2aaf4-9ab9-4888-b87c-2eb9c7e250bf}</Project>
             <Name>Necrofancy.PrepareProcedurally</Name>
