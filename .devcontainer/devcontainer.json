@@ -1,18 +1,23 @@
 {
-  "name": "Build Container for Linux",
+  "name": "Linux Environment",
   "build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
+    "context": "..",
+    "dockerfile": "Dockerfile"
   },
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-dotnettools.csharp"
-      ]
+  "workspaceFolder": "/workspaces/PrepareProcedurally",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/PrepareProcedurally,type=bind",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:1": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "userUid": "1000",
+      "userGid": "1000",
+      "username": "vscode"
     }
   },
-  "forwardPorts": [],
-  "postCreateCommand": "",
+  "runArgs": [
+    "--security-opt", "label=disable"
+  ],
   "remoteUser": "root",
-  "containerUser": "root"
+  "containerUser": "vscode"
 }
