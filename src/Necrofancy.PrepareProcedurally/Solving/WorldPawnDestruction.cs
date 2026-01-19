@@ -16,7 +16,7 @@ public static class WorldPawnDestruction
     {
         foreach (var related in pawn.relations.RelatedPawns)
         {
-            if (related.IsWorldPawn())
+            if (related.IsWorldPawn() && related.Faction?.leader != related)
             {
                 Find.WorldPawns.RemoveAndDiscardPawnViaGC(related);
             }
