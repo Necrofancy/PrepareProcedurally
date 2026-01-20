@@ -1,22 +1,27 @@
 using System;
+using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
+// ReSharper disable UnusedParameter.Local
+// ReSharper disable InconsistentNaming
+
 namespace Necrofancy.PrepareProcedurally;
 
-[StaticConstructorOnStartup]
-[UsedImplicitly]
+[StaticConstructorOnStartup, UsedImplicitly]
 public class HarmonyPatches
 {
     static HarmonyPatches()
     {
         var harmony = new Harmony("Necrofancy.PrepareProcedurally");
-
+        #if DEBUG
+        Harmony.DEBUG = true;
+        #endif
         var startingDialog = typeof(Page_ConfigureStartingPawns);
-
+        
         // The mod needs to set up starting state based on ideology, starting map tile, and general scenario.
         SetEditorStateOnOpeningCreateCharactersDialog(startingDialog, harmony);
         // The only effects happen on interacting with mod-added UI. There are no external changes otherwise.
@@ -24,6 +29,10 @@ public class HarmonyPatches
         AddButtonToCreateCharactersDialog(startingDialog, harmony);
         // Clear editor state and make sure any dialogs are closed to further ensure no state changes happen mid-game.
         ClearEditorStateOnProceedingFromCreateCharactersDialog(startingDialog, harmony);
+        CreateReversePatchesOfVanillaUi(harmony);
+        
+        var assembly = Assembly.GetExecutingAssembly();
+        Logging.Info($"release v{assembly.GetName().Version} patches loaded");
     }
 
     private static void SetEditorStateOnOpeningCreateCharactersDialog(Type startingDialog, Harmony harmony)
@@ -51,6 +60,27 @@ public class HarmonyPatches
         var clearStateMethod = AccessTools.Method(typeof(HarmonyPatches), nameof(ClearStateAndCloseWindows));
         var clearState = new HarmonyMethod(clearStateMethod);
         harmony.Patch(doNextMethod, postfix: clearState);
+    }
+    
+    private static void CreateReversePatchesOfVanillaUi(Harmony harmony)
+    {
+        var baseType = typeof(ReusingVanillaUi);
+        void ReversePatch(Type rimworldClass, string functionName, Type[] parameters = null)
+        {
+            Logging.Debug($"Reverse patching {rimworldClass.Name}.{functionName} into {baseType.Name}.{functionName}");
+            var source = AccessTools.Method(rimworldClass, functionName, parameters);
+            var destination = AccessTools.Method(baseType, functionName, parameters);
+            var method = new HarmonyMethod(destination);
+            harmony.CreateReversePatcher(source, method).Patch();
+            Logging.Debug($"End reverse patching.");
+        }
+
+        // transpilers are colocated within the ReusingVanillaUi methods.
+        // there's no way to directly locate them here and have Harmony resolve them.
+        ReversePatch(typeof(SkillUI), nameof(ReusingVanillaUi.DrawSkillsOf));
+        ReversePatch(typeof(CharacterCardUtility), nameof(ReusingVanillaUi.DoLeftSection));
+        ReversePatch(typeof(CharacterCardUtility), nameof(CharacterCardUtility.DrawCharacterCard));
+        ReversePatch(typeof(StartingPawnUtility), nameof(StartingPawnUtility.DrawPortraitArea));
     }
 
     private static void InitializeEditorState()
@@ -89,7 +119,7 @@ public class HarmonyPatches
                 Log.Error(e.ToString());
             }
     }
-
+    
     public static void ClearStateAndCloseWindows()
     {
         Editor.ClearState();

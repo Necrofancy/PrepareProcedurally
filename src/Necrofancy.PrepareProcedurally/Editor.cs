@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
@@ -45,6 +46,7 @@ public static class Editor
     public static List<Pawn> StartingPawns { get; set; }
     public static IReadOnlyList<SkillFinalizationResult?> LastResults { get; set; }
     public static HashSet<Pawn> LockedPawns { get; } = new();
+
 
     public static IntRange AgeRange
     {
