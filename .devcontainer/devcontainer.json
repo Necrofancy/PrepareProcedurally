@@ -5,7 +5,7 @@
     "dockerfile": "Dockerfile"
   },
   "workspaceFolder": "/workspaces/PrepareProcedurally",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/PrepareProcedurally,type=bind",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/PrepareProcedurally,type=bind,z",
   "features": {
     "ghcr.io/devcontainers/features/common-utils:1": {
       "installZsh": true,
@@ -15,9 +15,6 @@
       "username": "vscode"
     }
   },
-  "runArgs": [
-    "--security-opt", "label=disable"
-  ],
   "remoteUser": "root",
   "containerUser": "vscode"
 }
