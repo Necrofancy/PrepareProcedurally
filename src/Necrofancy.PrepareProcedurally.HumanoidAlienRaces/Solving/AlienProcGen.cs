@@ -85,12 +85,12 @@ public static class AlienProcGen
     {
         // it's actually impossible to try balancing up-front because I don't know what backstories are available
         // so let's generate the pawns first to figure out their race and figure it out from there.
-        List<AlienCategories> categories = new(StartingPawns.Count);
+        List<AlienCategories> categories = new(StartingPawns.Length);
         
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))
         {
-            for (var pawnIndex = 0; pawnIndex < StartingPawns.Count; pawnIndex++)
+            for (var pawnIndex = 0; pawnIndex < StartingPawns.Length; pawnIndex++)
             {
                 var pawn = StartingPawns[pawnIndex];
                 if (LockedPawns.Contains(pawn))
@@ -120,13 +120,13 @@ public static class AlienProcGen
             }
         }
 
-        AlienBalancingSituation alienSituation = new(categories, StartingPawns.Count, situation.SkillRequirements);
+        AlienBalancingSituation alienSituation = new(categories, StartingPawns.Length, situation.SkillRequirements);
 
         var variation = new IntRange(10, (int)(SkillWeightVariation * 10));
         var backgrounds = AlienBackstorySolver.TryToSolveWith(alienSituation, variation);
         var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
 
-        for (var pawnIndex = 0; pawnIndex < StartingPawns.Count; pawnIndex++)
+        for (var pawnIndex = 0; pawnIndex < StartingPawns.Length; pawnIndex++)
         {
             var backstory = backgrounds[pawnIndex];
             var traits = backstory.Background.Traits;

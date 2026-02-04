@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
@@ -13,25 +12,18 @@ namespace Necrofancy.PrepareProcedurally;
 
 public static class Editor
 {
-    private static IntRange ageRange = new(21, 30);
-    private static float skillWeightVariation = 1.5f;
-    private static FloatRange melaninRange = new(0.0f, 0.9f);
-    private static float maxPassionPoints = 7.0f;
-    private static ThingDef selectedRace;
-    private static bool allowBadHeDiffs = true;
-    private static bool allowRelationships = true;
-    private static bool allowPregnancy = true;
-
+    private static readonly FloatRange DefaultMelaninRange = new(0.0f, 0.9f);
+    
     public static Dictionary<ThingDef, RaceAgeData> RaceAgeRanges { get; private set; }
 
     public static ThingDef SelectedRace
     {
-        get => selectedRace;
+        get;
         set
         {
-            if (selectedRace != value)
+            if (field != value)
             {
-                selectedRace = value;
+                field = value;
 
                 AllowedAgeRange = RaceAgeRanges[value].AllowedAgeRange;
                 AgeRange = RaceAgeRanges[value].AgeRange;
@@ -40,42 +32,39 @@ public static class Editor
     }
 
     public static HashSet<TraitDef> TraitsThatDisablePassions { get; } = new();
-    public static List<List<TraitRequirement>> TraitRequirements { get; private set; }
-    public static List<GenderPossibility> GenderRequirements { get; set; }
+    public static List<TraitRequirement>[] TraitRequirements { get; private set; }
+    public static BackstoryDef[] SetChildhoods { get; private set; }
+    public static BackstoryDef[] SetAdulthoods { get; private set; }
+    public static GenderPossibility[] GenderRequirements { get; set; }
     public static List<SkillPassionSelection> SkillPassions { get; private set; }
-    public static List<Pawn> StartingPawns { get; set; }
+    public static Pawn[] StartingPawns { get; set; }
     public static IReadOnlyList<SkillFinalizationResult?> LastResults { get; set; }
     public static HashSet<Pawn> LockedPawns { get; } = new();
-
-
+    
     public static IntRange AgeRange
     {
-        get => ageRange;
+        get;
         set
         {
-            if (SetProperty(ref ageRange, value))
+            if (SetProperty(ref field, value))
                 RaceAgeRanges[SelectedRace] = RaceAgeRanges[SelectedRace].WithUpdatedAge(value);
         }
     }
 
     public static IntRange AllowedAgeRange { get; private set; }
 
-    public static float SkillWeightVariation
-    {
-        get => skillWeightVariation;
-        set => SetProperty(ref skillWeightVariation, value);
-    }
+    public static float SkillWeightVariation { get; set => SetProperty(ref field, value); }= 1.5f;
 
     public static FloatRange MelaninRange
     {
-        get => melaninRange;
-        set => SetProperty(ref melaninRange, value);
+        get;
+        set => SetProperty(ref field, value);
     }
 
     public static float MaxPassionPoints
     {
-        get => maxPassionPoints;
-        set => SetProperty(ref maxPassionPoints, value);
+        get;
+        set => SetProperty(ref field, value);
     }
 
     internal static bool Dirty { get; set; }
@@ -84,24 +73,25 @@ public static class Editor
 
     internal static bool AllowBadHeDiffs
     {
-        get => allowBadHeDiffs;
-        set => SetProperty(ref allowBadHeDiffs, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = true;
 
     internal static bool AllowRelationships
     {
-        get => allowRelationships;
-        set => SetProperty(ref allowRelationships, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = true;
 
     public static bool AllowPregnancy
     {
-        get => allowPregnancy;
-        set => SetProperty(ref allowPregnancy, value);
-    }
+        get;
+        set => SetProperty(ref field, value);
+    } = true;
 
-    public static void MakeDirty()
+    public static void MakeDirty([CallerMemberName]string caller = null)
     {
+        Logging.Debug($"Dirtying editor from '{caller}'");
         if (AllowDirtying) Dirty = true;
     }
 
@@ -122,18 +112,19 @@ public static class Editor
         SkillPassions = DefDatabase<SkillDef>.AllDefsListForReading
             .Select(SkillPassionSelection.CreateFromSkill).ToList();
         var pawnCount = Find.GameInitData.startingPawnCount;
-        StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
-        TraitRequirements = StartingPawns.Select(_ => new List<TraitRequirement>()).ToList();
-        GenderRequirements = StartingPawns.Select(_ => GenderPossibility.Either).ToList();
+        StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToArray();
+        TraitRequirements = StartingPawns.Select(_ => new List<TraitRequirement>()).ToArray();
+        GenderRequirements = StartingPawns.Select(_ => GenderPossibility.Either).ToArray();
+        SetChildhoods = new BackstoryDef[pawnCount];
+        SetAdulthoods = new BackstoryDef[pawnCount];
 
         var kind = Faction.OfPlayer.def.basicMemberKind;
         var minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(kind);
         var maximumAdulthoodAge = (int)kind.race.race.ageGenerationCurve.Last().x;
-        melaninRange = new FloatRange(0.0f, 1f);
         AllowedAgeRange = new IntRange(minimumAdulthoodAge, maximumAdulthoodAge);
-        ageRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
+        AgeRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
 
-        var biologicalSettings = new RaceAgeData(ageRange, AllowedAgeRange);
+        var biologicalSettings = new RaceAgeData(AgeRange, AllowedAgeRange);
         RaceAgeRanges = new Dictionary<ThingDef, RaceAgeData> { { kind.race, biologicalSettings } };
 
         SelectedRace = kind.race;
@@ -143,21 +134,22 @@ public static class Editor
             minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(otherKind);
             maximumAdulthoodAge = (int)otherKind.race.race.ageGenerationCurve.Last().x;
             var allowedAgeRange = new IntRange(minimumAdulthoodAge, maximumAdulthoodAge);
-            melaninRange = new FloatRange(0.0f, 0.9f);
-            ageRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
-            RaceAgeRanges[otherKind.race] = new RaceAgeData(ageRange, allowedAgeRange);
+            AgeRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
+            RaceAgeRanges[otherKind.race] = new RaceAgeData(AgeRange, allowedAgeRange);
         }
 
-        skillWeightVariation = 1.5f;
+        SkillWeightVariation = 1.5f;
         // TODO: For tribal starts it might be fun to have this be based on latitude of the starting location.
-        melaninRange = new FloatRange(0.0f, 0.9f);
-        maxPassionPoints = 7.0f;
+        MelaninRange = DefaultMelaninRange;
+        MaxPassionPoints = 7.0f;
+        
+        AllowDirtying = true;
     }
 
     public static void RefreshPawnList()
     {
         var pawnCount = Find.GameInitData.startingPawnCount;
-        StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
+        StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToArray();
         var pawnsToRemove = LockedPawns.Where(pawn => !StartingPawns.Contains(pawn)).ToList();
 
         foreach (var pawn in pawnsToRemove) LockedPawns.Remove(pawn);
@@ -177,17 +169,17 @@ public static class Editor
     // ReSharper disable once UnusedParameter.Local
     private static bool SetProperty<T>(ref T value, T newValue, [CallerMemberName] string caller = null)
     {
+        if (!AllowDirtying)
+        {
+            value = newValue;
+            return false;
+        }
+        
         if (!newValue?.Equals(value) == true)
         {
             value = newValue;
-            if (AllowDirtying)
-            {
-                Dirty = true;
-#if DEBUG
-                    Log.Message($"Property changed on editor for '{caller}' - Dirty for Procedural Generation");
-#endif
-            }
-
+            Dirty = true;
+            Logging.Debug($"Property changed on editor for '{caller}' - Dirty for Procedural Generation");
             return true;
         }
 

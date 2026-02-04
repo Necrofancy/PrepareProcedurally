@@ -146,11 +146,9 @@ public class PrepareProcedurally : Page
 
             Compatibility.Layer.RandomizeForTeam(situation);
 
-            Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToList();
+            Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToArray();
 
             Editor.Dirty = false;
         }
-
-        Editor.AllowDirtying = true;
     }
 }

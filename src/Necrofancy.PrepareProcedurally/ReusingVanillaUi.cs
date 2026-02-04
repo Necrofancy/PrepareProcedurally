@@ -9,6 +9,7 @@ using Necrofancy.PrepareProcedurally.Interface;
 using RimWorld;
 using UnityEngine;
 using Verse;
+
 #pragma warning disable CS8321 // Local function is declared but never used
 
 // ReSharper disable UnusedMember.Local
@@ -29,11 +30,24 @@ public static class ReusingVanillaUi
 
             var vanillaDrawCharacterCard = AccessTools.Method(typeof(CharacterCardUtility),
                 nameof(CharacterCardUtility.DrawCharacterCard));
+            
+            var randomizeMethod = AccessTools.Method(typeof(SelectedPawn), nameof(SelectedPawn.Randomize));
+            var vanillaRandomize = AccessTools.Method(typeof(StartingPawnUtility), nameof(StartingPawnUtility.RandomizePawn));
+
             foreach (var instruction in instructions)
             {
-                if (instruction.Calls(vanillaDrawCharacterCard))
+                // Replace the Action being loaded in 
+                if (instruction.opcode == OpCodes.Ldftn
+                    && instruction.operand is MethodInfo lambda
+                    && IsLambdaCallingMethod(lambda, vanillaRandomize))
+                {
+                    Logging.Debug("Loading SelectedPawn.Randomize instead of vanilla version");
+                    yield return new CodeInstruction(OpCodes.Ldftn, randomizeMethod);
+                }
+                else if (instruction.Calls(vanillaDrawCharacterCard))
                 {
                     Logging.Debug("Swapping call for DrawCharacterCard");
+                    
                     yield return new CodeInstruction(OpCodes.Call,
                         AccessTools.Method(typeof(ReusingVanillaUi), nameof(ReusingVanillaUi.DrawCharacterCard)));
                 }
@@ -60,18 +74,11 @@ public static class ReusingVanillaUi
         {
             StartTranspile();
 
-            var vanillaDoLeft = AccessMethod(typeof(CharacterCardUtility), nameof(ReusingVanillaUi.DoLeftSection));
             var vanillaDrawSkills = AccessMethod(typeof(SkillUI), nameof(SkillUI.DrawSkillsOf));
 
             foreach (var instruction in instructions)
             {
-                if (instruction.Calls(vanillaDoLeft))
-                {
-                    Logging.Debug("Swapping call for DoLeftSection");
-                    yield return new CodeInstruction(OpCodes.Call,
-                        AccessTools.Method(typeof(ReusingVanillaUi), nameof(ReusingVanillaUi.DoLeftSection)));
-                }
-                else if (instruction.Calls(vanillaDrawSkills))
+                if (instruction.Calls(vanillaDrawSkills))
                 {
                     Logging.Debug("Swapping call for DrawSkillsOf");
                     yield return new CodeInstruction(OpCodes.Call,
@@ -85,27 +92,11 @@ public static class ReusingVanillaUi
 
             EndTranspile();
         }
-
-        _ = Transpiler(null);
-    }
-
-    internal static void DoLeftSection(Rect rect, Rect leftRect, Pawn pawn)
-    {
-        IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            StartTranspile();
-            
-            foreach (var instruction in instructions)
-            {
-                yield return instruction;
-            }
-            
-            EndTranspile();
-        }
-
-        _ = Transpiler(null);
     }
     
+    /// <summary>
+    /// Similar to <see cref="SkillUI.DrawSkillsOf"/> but adding character controls for UI
+    /// </summary>
     internal static void DrawSkillsOf(Pawn p, Vector2 offset, SkillUI.SkillDrawMode mode, Rect container)
     {
         IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -134,12 +125,12 @@ public static class ReusingVanillaUi
 
             EndTranspile();
         }
-
-        _ = Transpiler(null);
     }
 
     [Conditional("DEBUG")]
     private static void StartTranspile([CallerMemberName] string name = "") => Logging.Debug($"Start transpiling {name}");
+    
+    [Conditional("DEBUG")]
     private static void EndTranspile([CallerMemberName] string name = "") => Logging.Debug($"End transpiling {name}");
 
     private static MethodInfo AccessMethod(Type type, string methodName, Type[] parameters = null, Type[] generics = null)
@@ -151,13 +142,35 @@ public static class ReusingVanillaUi
         }
         
         return info;
-    } 
+    }
 
+    private static CodeMatch LooseMatch(Type type, string methodName)
+    {
+        return new CodeMatch(instruction => CallMatches(instruction, type, methodName));
+    }
+    
     private static bool CallMatches(CodeInstruction instr, Type type, string methodName)
     {
         return (instr.opcode == OpCodes.Call || instr.opcode == OpCodes.Callvirt) 
                && instr.operand is MethodBase mb 
                && mb.Name == methodName 
                && mb.DeclaringType == type;
+    }
+    
+    private static bool IsLambdaCallingMethod(MethodInfo lambda, MethodInfo target)
+    {
+        if (lambda == null || target == null) return false;
+
+        try 
+        {
+            var instructions = PatchProcessor.GetOriginalInstructions(lambda);
+            return instructions.Any(ins => 
+                (ins.opcode == OpCodes.Call || ins.opcode == OpCodes.Callvirt) && 
+                ins.operand is MethodInfo mi && mi == target);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

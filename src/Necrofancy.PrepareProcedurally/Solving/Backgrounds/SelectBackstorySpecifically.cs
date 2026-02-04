@@ -15,6 +15,10 @@ public class SelectBackstorySpecifically
     private readonly HashSet<BackstoryDef> alreadyUsed = new();
     private readonly List<TraitRequirement> alreadyForcedTraits = new();
 
+    private BackstoryDef forcedChildhood;
+    private BackstoryDef forcedAdulthood;
+    private PawnBio forcedBio;
+
     public SelectBackstorySpecifically(List<BackstoryCategoryFilter> spawnCategories, GenderPossibility genderRequirement,
         IEnumerable<BackgroundPossibility> possibilities)
     {
@@ -84,10 +88,126 @@ public class SelectBackstorySpecifically
 
         return best;
     }
+    
+    
 
+    public IReadOnlyList<BackstoryOption> PossibleChildhoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef adulthood = null)
+    {
+        var possibleChildhoods = new List<BackstoryOption>();
+
+        foreach (var category in this.categoryFilters)
+        {
+            foreach (var backstory in DefDatabase<BackstoryDef>.AllDefsListForReading)
+            {
+                bool matches = 
+                    backstory.shuffleable 
+                    && category.Matches(backstory) 
+                    && backstory.slot == BackstorySlot.Childhood;
+                
+                if (matches)
+                {
+                    possibleChildhoods.Add(new BackstoryOption(backstory));
+                }
+            }
+        }
+        
+        if (adulthood?.shuffleable == true)
+        {
+            // no solid bios are possible.
+            return possibleChildhoods;
+        }
+
+        foreach (var bio in SolidBioDatabase.allBios.Where(AllowedBio))
+        {
+            var possibility = new BioPossibility(bio);
+            foreach (var trait in requiredTraits) possibility.Traits.Add(trait);
+            if (!alreadyUsed.Contains(bio.childhood)
+                && !UnworkableTraitCombination(requiredTraits, bio.childhood, bio.adulthood))
+                possibleChildhoods.Add(new BackstoryOption(bio.childhood, bio.gender, bio));
+        }
+
+        return possibleChildhoods;
+    }
+    
+    public IReadOnlyList<BackstoryOption> PossibleAdulthoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef childhood = null)
+    {
+        var possibleAdulthoods = new List<BackstoryOption>();
+        
+        foreach (var category in this.categoryFilters)
+        {
+            foreach (var backstory in DefDatabase<BackstoryDef>.AllDefsListForReading)
+            {
+                bool matches = 
+                    backstory.shuffleable 
+                    && category.Matches(backstory) 
+                    && backstory.slot == BackstorySlot.Adulthood;
+                
+                if (matches)
+                {
+                    possibleAdulthoods.Add(new BackstoryOption(backstory));
+                }
+            }
+        }
+
+        if (childhood?.shuffleable == true)
+        {
+            // no solid bios are possible.
+            return possibleAdulthoods;
+        }
+        
+        foreach (var bio in SolidBioDatabase.allBios.Where(AllowedBio))
+        {
+            var possibility = new BioPossibility(bio);
+            foreach (var trait in requiredTraits) possibility.Traits.Add(trait);
+            if (!alreadyUsed.Contains(bio.childhood)
+                && !UnworkableTraitCombination(requiredTraits, bio.childhood, bio.adulthood))
+                possibleAdulthoods.Add(new BackstoryOption(bio.adulthood, bio.gender, bio));
+        }
+
+        return possibleAdulthoods;
+    }
+
+    public void ForceChildhood(BackstoryDef childhood)
+    {
+        if (childhood.shuffleable)
+        {
+            forcedChildhood = childhood;
+        }
+        else
+        {
+            var bio = SolidBioDatabase.allBios.First(x => x.childhood == childhood);
+            ForceBio(bio);
+        }
+    }
+
+    public void ForceAdulthood(BackstoryDef adulthood)
+    {
+        if (adulthood.shuffleable)
+        {
+            forcedAdulthood = adulthood;
+        }
+        else
+        {
+            var bio = SolidBioDatabase.allBios.First(x => x.adulthood == adulthood);
+            ForceBio(bio);
+        }
+    }
+
+    public void ForceBio(PawnBio bio)
+    {
+        this.forcedBio = bio;
+    }
+        
     private IEnumerable<(BioPossibility Bio, float Ranking)> GetPawnPossibilities(
         WeightBackgroundAlgorithm weightingSystem, IReadOnlyList<TraitRequirement> requiredTraits)
     {
+        if (forcedBio is not null)
+        {
+            var possibility = new BioPossibility(forcedBio);
+            foreach (var trait in requiredTraits) possibility.Traits.Add(trait);
+            yield return (possibility, PunishReusedSkills(possibility));
+            yield break;
+        }
         float PunishReusedSkills(BioPossibility possibility)
         {
             var ranking = weightingSystem(possibility);
@@ -102,27 +222,36 @@ public class SelectBackstorySpecifically
 
             return ranking;
         }
-        
-        foreach (var bio in SolidBioDatabase.allBios.Where(AllowedBio))
+
+        if (forcedChildhood is null && forcedAdulthood is null)
         {
-            var possibility = new BioPossibility(bio);
-            foreach (var trait in requiredTraits) possibility.Traits.Add(trait);
-            if (!alreadyUsed.Contains(bio.childhood)
-                && !UnworkableTraitCombination(requiredTraits, bio.childhood, bio.adulthood))
-                yield return (possibility, PunishReusedSkills(possibility));
+            foreach (var bio in SolidBioDatabase.allBios.Where(AllowedBio))
+            {
+                var possibility = new BioPossibility(bio);
+                foreach (var trait in requiredTraits) possibility.Traits.Add(trait);
+                if (!alreadyUsed.Contains(bio.childhood)
+                    && !UnworkableTraitCombination(requiredTraits, bio.childhood, bio.adulthood))
+                    yield return (possibility, PunishReusedSkills(possibility));
+            }
         }
 
-        foreach (var category in this.categoryFilters)
+        foreach (var category in categoryFilters)
         {
-            List<BackstoryDef> childhoods = new();
-            List<BackstoryDef> adulthoods = new();
+            List<BackstoryDef> childhoods = forcedChildhood is null ? [] : [forcedChildhood];
+            List<BackstoryDef> adulthoods = forcedAdulthood is null ? [] : [forcedAdulthood];
 
             foreach (var backstory in DefDatabase<BackstoryDef>.AllDefsListForReading)
             {
                 if (backstory.shuffleable && category.Matches(backstory) && !alreadyUsed.Contains(backstory))
                 {
-                    var list = backstory.slot == BackstorySlot.Childhood ? childhoods : adulthoods;
-                    list.Add(backstory);
+                    if (backstory.slot == BackstorySlot.Childhood && forcedChildhood is null)
+                    {
+                        childhoods.Add(backstory);
+                    } 
+                    else if (backstory.slot == BackstorySlot.Adulthood && forcedAdulthood is null)
+                    {
+                        adulthoods.Add(backstory);
+                    }
                 }
             }
 

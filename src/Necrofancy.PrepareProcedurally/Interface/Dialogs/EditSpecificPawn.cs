@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Necrofancy.PrepareProcedurally.Solving;
-using Necrofancy.PrepareProcedurally.Solving.Weighting;
-using RimWorld;
+﻿using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -23,21 +19,31 @@ public class EditSpecificPawn : Window
     private const float CardSizeY = 520;
     private const float WindowMargin = 34f;
     private const float YPadding = 30f;
+
+    private readonly int pawnIndex;
     
-    
+    private const float BackstoryX = 83f;
+    private const float BackstoryY = 131f;
+
+#if UI_DEBUGGING
+    private static int _debugX = BackstoryX;
+    private static string _debugXString = BackstoryX.ToString();
+    private static int _debugY = BackstoryY;
+    private static string _debugYString = BackstoryY.ToString();
+#endif
     public override Vector2 InitialSize => new(CardSizeX + WindowMargin, CardSizeY + WindowMargin + YPadding);
 
     public EditSpecificPawn(Pawn pawn)
     {
+        pawnIndex = StartingPawnUtility.PawnIndex(pawn);
         SelectedPawn.Select(pawn);
         doCloseX = true;
     }
-    
     public override void DoWindowContents(Rect rect)
     {
         if (SelectedPawn.Pawn is null || SelectedPawn.Pawn.Destroyed || SelectedPawn.Pawn.Discarded)
         {
-            Close();
+            Close(doCloseSound:false);
             return;
         }
 
@@ -45,11 +51,41 @@ public class EditSpecificPawn : Window
         var titleRect = new Rect(rect.x, rect.y, rect.width, YPadding);
         Widgets.Label(titleRect, "Necrofancy.PrepareProcedurally.EditSpecificPawnTitle".Translate());
         Text.Font = GameFont.Small;
-
+        
+#if UI_DEBUGGING
+        var debugRect = rect with { x = rect.x + 300, width = 150};
+        Widgets.IntEntry(debugRect, ref _debugX, ref _debugXString);
+        debugRect = debugRect with { x = debugRect.xMax + 10 };
+        Widgets.IntEntry(debugRect, ref _debugY, ref _debugYString);
+#endif
         rect.y += YPadding;
         rect.height -= YPadding;
-
-        var pawnIndex = StartingPawnUtility.PawnIndex(SelectedPawn.Pawn);
         ReusingVanillaUi.DrawPortraitArea(rect, pawnIndex, true, true);
+#if UI_DEBUGGING
+        rect.x += _debugX;
+        rect.y += _debugY;
+#else
+        rect.x += BackstoryX;
+        rect.y += BackstoryY;
+#endif
+        rect.width = 22f;
+        rect.height = 22f;
+        
+        DrawBackstoryRow(rect, BackstorySlot.Childhood);
+        rect.y += 26f; // additional 4px padding added in DoLeftSection
+        DrawBackstoryRow(rect, BackstorySlot.Adulthood);
+    }
+    
+    private void DrawBackstoryRow(Rect buttonRect, BackstorySlot slot)
+    {
+        var locked = slot switch
+        {
+            BackstorySlot.Childhood => Editor.SetChildhoods[SelectedPawn.Index] is not null,
+            _ => Editor.SetAdulthoods[SelectedPawn.Index] is not null
+        };
+        var button = locked ? LazyTexture.Locked : LazyTexture.Unlocked;
+        BackstorySelection.ForSelectedPawn(slot, buttonRect);
+        Widgets.ButtonImage(buttonRect, button.Value);
+        TooltipHandler.TipRegion(buttonRect, "ClickToSelect".Translate());
     }
 }

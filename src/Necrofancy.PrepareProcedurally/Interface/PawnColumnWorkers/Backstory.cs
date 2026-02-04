@@ -8,7 +8,14 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 public abstract class Backstory : PawnColumnWorker
 {
     protected abstract BackstoryDef StoryFrom(Pawn pawn);
-        
+    protected abstract void SelectBackstory(Pawn pawn);
+    protected abstract bool Locked(Pawn pawn);
+
+    protected void OnceSelected(Pawn pawn)
+    {
+        Editor.LockedPawns.Remove(pawn);
+        Editor.MakeDirty();
+    }
     public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
     {
         var story = StoryFrom(pawn);
@@ -26,14 +33,19 @@ public abstract class Backstory : PawnColumnWorker
         GUI.color = color;
         if (Mouse.IsOver(rect)) 
             Widgets.DrawHighlight(rect);
+        GUI.color = Locked(pawn) ? Color.yellow : Color.white;
         Widgets.Label(new Rect(rect.x + 4f, rect.y, width, rect.height), label);
         GUI.color = Color.white;
         if (!Mouse.IsOver(rect)) 
             return;
         var tip = new TipSignal(() => story.FullDescriptionFor(pawn), (int) rect.y * 37);
         TooltipHandler.TipRegion(rect, tip);
-    }
 
+        if (Widgets.ButtonInvisible(rect, doMouseoverSound: true))
+        {
+            SelectBackstory(pawn);
+        }
+    }
     public override int GetMinWidth(PawnTable table)
     {
         float maxWidth = 0;
@@ -48,4 +60,5 @@ public abstract class Backstory : PawnColumnWorker
 
         return (int)maxWidth;
     }
+    
 }

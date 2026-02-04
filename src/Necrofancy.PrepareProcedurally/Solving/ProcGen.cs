@@ -85,6 +85,16 @@ public static class ProcGen
         var backstoryFilters = Faction.OfPlayer.def.backstoryFilters;
         
         var specifier = new SelectBackstorySpecifically(backstoryFilters, GenderRequirements[index], pawn);
+        if (SetChildhoods[index] is not null)
+        {
+            specifier.ForceChildhood(SetChildhoods[index]);
+        }
+
+        if (SetAdulthoods[index] is not null)
+        {
+            specifier.ForceAdulthood(SetAdulthoods[index]);
+        }
+        
         var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
 

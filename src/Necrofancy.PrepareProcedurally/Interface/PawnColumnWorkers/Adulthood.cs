@@ -11,4 +11,14 @@ public class Adulthood : Backstory
     {
         return pawn.story.Adulthood;
     }
+    protected override void SelectBackstory(Pawn pawn)
+    {
+        BackstorySelection.PossibleAdulthoods(pawn, () => OnceSelected(pawn));
+    }
+
+    protected override bool Locked(Pawn pawn)
+    {
+        var index = StartingPawnUtility.PawnIndex(pawn);
+        return Editor.SetAdulthoods[index] is not null;
+    }
 }

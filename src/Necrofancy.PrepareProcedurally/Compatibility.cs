@@ -2,6 +2,7 @@
 using System.Linq;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
+using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using Verse;
@@ -23,6 +24,11 @@ public class Compatibility
     public virtual void RandomizeForTeam(BalancingSituation situation)
     {
         ProcGen.RandomizeForTeam(situation);
+    }
+    
+    public virtual SelectBackstorySpecifically GetBackstorySelection(Pawn pawn)
+    {
+        return new SelectBackstorySpecifically(pawn.Faction.def.backstoryFilters, GenderPossibility.Either, pawn);
     }
 
     public virtual Pawn RandomizeSingularPawn(Pawn pawn, CollectSpecificPassions collector,

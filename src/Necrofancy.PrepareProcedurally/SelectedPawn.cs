@@ -13,6 +13,7 @@ public static class SelectedPawn
     public static int Index { get; private set; }
     
     public static List<(SkillDef Skill, UsabilityRequirement Usability)> Requirements { get; private set; }
+    
     public static void Select(Pawn pawn)
     {
         Editor.LockedPawns.Add(pawn);
@@ -67,6 +68,7 @@ public static class SelectedPawn
 
         return sum;
     }
+    
     public static void Randomize()
     {
         var dict = new Dictionary<SkillDef, int>();
@@ -103,6 +105,6 @@ public static class SelectedPawn
 
         var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
 
-        SelectedPawn.Pawn = Compatibility.Layer.RandomizeSingularPawn(SelectedPawn.Pawn, collectSpecificPassions, SelectedPawn.Requirements);
+        Pawn = Compatibility.Layer.RandomizeSingularPawn(Pawn, collectSpecificPassions, Requirements);
     }
 }

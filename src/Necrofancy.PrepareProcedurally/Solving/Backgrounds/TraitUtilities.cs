@@ -13,7 +13,7 @@ internal static class TraitUtilities
         var requiredTraits = new List<TraitRequirement>();
         
         var index = StartingPawnUtility.PawnIndex(pawn);
-        if (index < Editor.TraitRequirements.Count && Editor.TraitRequirements[index] is { } traits)
+        if (index < Editor.TraitRequirements.Length && Editor.TraitRequirements[index] is { } traits)
         {
             requiredTraits.AddRange(traits);
         }
@@ -34,7 +34,7 @@ internal static class TraitUtilities
         }
 
         var index = StartingPawnUtility.PawnIndex(pawn);
-        if (index < Editor.TraitRequirements.Count && Editor.TraitRequirements[index] is { } traits)
+        if (index < Editor.TraitRequirements.Length && Editor.TraitRequirements[index] is { } traits)
         {
             requiredTraits.AddRange(traits);
         }

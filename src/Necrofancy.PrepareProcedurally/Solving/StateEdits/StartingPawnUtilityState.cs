@@ -33,7 +33,7 @@ internal static class StartingPawnUtilityState
     
     public static List<PawnGenerationRequest> GetStartingPawnRequestList()
     {
-        ensureGenerationRequestInRangeOf.Invoke(null, [Editor.StartingPawns.Count]);
+        ensureGenerationRequestInRangeOf.Invoke(null, [Editor.StartingPawns.Length]);
         return (List<PawnGenerationRequest>)startingAndOptionalPawns.GetValue(null);
     }
 
