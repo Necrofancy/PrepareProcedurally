@@ -88,6 +88,8 @@ public static class Editor
         get;
         set => SetProperty(ref field, value);
     } = true;
+    
+    public static bool ShowCompatibility { get; set; } = true;
 
     public static void MakeDirty([CallerMemberName]string caller = null)
     {

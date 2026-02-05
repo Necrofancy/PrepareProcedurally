@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using System.Linq;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -49,7 +50,9 @@ public class EditSpecificPawn : Window
 
         Text.Font = GameFont.Medium;
         var titleRect = new Rect(rect.x, rect.y, rect.width, YPadding);
-        Widgets.Label(titleRect, "Necrofancy.PrepareProcedurally.EditSpecificPawnTitle".Translate());
+        var label = "Necrofancy.PrepareProcedurally.EditSpecificPawnTitle".Translate();
+        var vec = Text.CalcSize(label);
+        Widgets.Label(titleRect, label);
         Text.Font = GameFont.Small;
         
 #if UI_DEBUGGING
@@ -61,6 +64,15 @@ public class EditSpecificPawn : Window
         rect.y += YPadding;
         rect.height -= YPadding;
         ReusingVanillaUi.DrawPortraitArea(rect, pawnIndex, true, true);
+        
+        if (Editor.ShowCompatibility)
+        {
+            var width = 60f * (Editor.StartingPawns.Length - 1);
+            var height = 75f;
+            var xStart = (rect.xMax - rect.xMin - width) / 2;
+            var relationShipsRect = new Rect(xStart, rect.yMax - height, width, height);
+            ShowRelationships(relationShipsRect);
+        }
 #if UI_DEBUGGING
         rect.x += _debugX;
         rect.y += _debugY;
@@ -87,5 +99,36 @@ public class EditSpecificPawn : Window
         BackstorySelection.ForSelectedPawn(slot, buttonRect);
         Widgets.ButtonImage(buttonRect, button.Value);
         TooltipHandler.TipRegion(buttonRect, "ClickToSelect".Translate());
+    }
+    private void ShowRelationships(Rect areaRect)
+    {
+        var otherPawns = Editor.StartingPawns.Except(SelectedPawn.Pawn).ToList();
+        var width = areaRect.width / otherPawns.Count;
+        foreach (var otherPawn in otherPawns)
+        {
+            areaRect.SplitVertically(width, out var left, out var remainder);
+
+            var topHeight = areaRect.height - Text.LineHeight;
+
+            left.SplitHorizontally(topHeight, out _, out var textRect);
+
+            DrawPawn(otherPawn, left);
+
+            var anchor = Text.Anchor;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Widgets.Label(textRect, SelectedPawn.Pawn.relations.CompatibilityWith(otherPawn).ToString("F"));
+            Text.Anchor = anchor;
+            
+            TooltipHandler.TipRegion(left, otherPawn.LabelCap);
+            
+            areaRect = remainder;
+        }
+    }
+
+    private void DrawPawn(Pawn otherPawn, Rect portraitRect)
+    {
+        portraitRect = portraitRect.ContractedBy(2f);
+        var tex = PortraitsCache.Get(otherPawn, portraitRect.size, Rot4.South);
+        Widgets.DrawTextureFitted(portraitRect, tex, 1f);
     }
 }

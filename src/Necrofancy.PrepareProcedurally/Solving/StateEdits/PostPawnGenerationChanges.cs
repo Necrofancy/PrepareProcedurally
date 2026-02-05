@@ -58,6 +58,8 @@ public static class PostPawnGenerationChanges
 
     internal static void AddBackstoryPossessions(BioPossibility bio, List<ThingDefCount> possessions)
     {
+        if (Find.Scenario.AllParts.Any(x => x is ScenPart_NoPossessions))
+            return;
         foreach (var item in bio.Adulthood.possessions)
             possessions.Add(new ThingDefCount(item.key, item.value.RandomInRange));
     }

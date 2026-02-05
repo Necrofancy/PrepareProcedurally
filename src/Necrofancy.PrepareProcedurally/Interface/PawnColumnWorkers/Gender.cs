@@ -21,7 +21,7 @@ public class Gender : PawnColumnWorker_Icon
 
     protected override Color GetIconColor(Pawn pawn)
     {
-        if (Compatibility.Layer.IsFixedGender(pawn))
+        if (PrepareProcedurally.Compatibility.Layer.IsFixedGender(pawn))
         {
             return ColoredText.SubtleGrayColor;
         }
@@ -44,7 +44,7 @@ public class Gender : PawnColumnWorker_Icon
             return builder.ToString();
         
         builder.AppendLine().AppendLine();
-        if (Compatibility.Layer.IsFixedGender(pawn))
+        if (PrepareProcedurally.Compatibility.Layer.IsFixedGender(pawn))
         {
             builder.AppendLine(TooltipCouldRequestGender.Translate());
         }
