@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
+using RimWorld;
 using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Weighting;
@@ -28,18 +29,26 @@ public class SpecificSkillWeights
         {
             var skill = requirement.Skill;
             var added = 0;
+
+#if RW1_4
+            void AddIfMatch(KeyValuePair<SkillDef, int> gain)
+            {
+                if (gain.Key == skill)
+                    added += gain.Value;
+            }
+#else
+            void AddIfMatch(SkillGain gain)
+            {
+                if (gain.skill == skill)
+                    added += gain.amount;
+            }
+#endif
             
             foreach (var gain in possibility.Childhood.skillGains)
-            {
-                if (gain.skill == skill)
-                    added += gain.amount;
-            }
+                AddIfMatch(gain);
             
             foreach (var gain in possibility.Adulthood.skillGains)
-            {
-                if (gain.skill == skill)
-                    added += gain.amount;
-            }
+                AddIfMatch(gain);
 
             if (skill.IsDisabled(disables, workDisables))
             {

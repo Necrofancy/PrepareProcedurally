@@ -9,6 +9,25 @@
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- Check if the configuration starts with 'Debug' -->
+        <IsDebugConfig>$(Configuration.StartsWith('Debug'))</IsDebugConfig>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(IsDebugConfig)' == 'true'">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(IsDebugConfig)' != 'true'">
+        <Optimize>true</Optimize>
+        <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>none</DebugType>
+    </PropertyGroup>
+
     <!-- =========================
          Shared assembly metadata
          ========================= -->
@@ -37,43 +56,43 @@
     <!-- =========================
          RimWorld version selection
          Priority:
-           1) Explicit -p:RimWorldVersion=...
+           1) Explicit -p:RimworldVersion=...
            2) Infer from Configuration name (IDE workflow)
            3) Default to latest version for plain Debug/Release
          ========================= -->
     <Choose>
-        <When Condition="'$(RimWorldVersion)' != ''">
+        <When Condition="'$(RimworldVersion)' != ''">
             <!-- Provided by build.sh or terminal explicitly; no action needed. -->
         </When>
         
-        <When Condition="$([System.String]::Copy('$(Configuration)').Contains(' - 1.4'))">
+        <When Condition="$([System.String]::Copy('$(Configuration)').Contains('1.4'))">
             <PropertyGroup>
-                <RimWorldVersion>1.4</RimWorldVersion>
+                <RimworldVersion>1.4</RimworldVersion>
             </PropertyGroup>
         </When>
 
-        <When Condition="$([System.String]::Copy('$(Configuration)').Contains(' - 1.5'))">
+        <When Condition="$([System.String]::Copy('$(Configuration)').Contains('1.5'))">
             <PropertyGroup>
-                <RimWorldVersion>1.5</RimWorldVersion>
+                <RimworldVersion>1.5</RimworldVersion>
             </PropertyGroup>
         </When>
 
-        <When Condition="$([System.String]::Copy('$(Configuration)').Contains(' - 1.6'))">
+        <When Condition="$([System.String]::Copy('$(Configuration)').Contains('1.6'))">
             <PropertyGroup>
-                <RimWorldVersion>1.6</RimWorldVersion>
+                <RimworldVersion>1.6</RimworldVersion>
             </PropertyGroup>
         </When>
 
         <Otherwise>
             <PropertyGroup>
-                <RimWorldVersion>1.6</RimWorldVersion>
+                <RimworldVersion>1.6</RimworldVersion>
             </PropertyGroup>
         </Otherwise>
     </Choose>
     
     <PropertyGroup>
         <!-- Enables #if RW1_4 / RW1_5 / RW1_6 -->
-        <DefineConstants>$(DefineConstants);RW$(RimWorldVersion.Replace('.', '_'))</DefineConstants>
+        <DefineConstants>$(DefineConstants);RW$(RimworldVersion.Replace('.', '_'))</DefineConstants>
     </PropertyGroup>
 
     <!-- =========================

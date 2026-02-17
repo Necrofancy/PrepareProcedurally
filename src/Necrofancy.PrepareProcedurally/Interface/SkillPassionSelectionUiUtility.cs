@@ -172,6 +172,8 @@ public static class SkillPassionSelectionUiUtility
         var skillLabels = new Rect(textRect.x, textRect.y + RowHeight * 10, textRect.width, RowHeight);
         Widgets.Label(skillLabels, PassionText.Translate());
 
+#pragma warning disable CS0612 // 1.4 marks Widgets.HorizontalSlider as obsolete, but keeps it in later versions
+        
         // skill weight variation
         var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 11, textRect.width, RowHeight);
         Editor.SkillWeightVariation = Widgets.HorizontalSlider(variationSlider, Editor.SkillWeightVariation, 1f,
@@ -184,6 +186,9 @@ public static class SkillPassionSelectionUiUtility
         var passionSlider = new Rect(textRect.x, textRect.y + RowHeight * 13, textRect.width, RowHeight);
         Editor.MaxPassionPoints = Widgets.HorizontalSlider(passionSlider, Editor.MaxPassionPoints, 0, 9.0f,
             true, PassionMaxText.Translate(Editor.MaxPassionPoints.ToString("N1")), "0", "9", 0.5f);
+
+#pragma warning restore CS0612 // Restore obsolete warning
+
         var textExplainer = new Rect(textRect.x, textRect.y + RowHeight * 14, textRect.width, RowHeight * 2);
         var passionPointsNeeded = skillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
         var passionPointsAvailable = Editor.MaxPassionPoints * Find.GameInitData.startingPawnCount;
@@ -354,8 +359,12 @@ public static class SkillPassionSelectionUiUtility
             }
         }
 
-        if (Widgets.ButtonImage(new Rect((float)(rect.width - 24.0 - 6.0), 0.0f, 24f, 24f),
-                TexButton.Delete))
+#if RW1_4
+        var delete = TexButton.DeleteX;
+#else
+        var delete = TexButton.Delete;
+#endif
+        if (Widgets.ButtonImage(new Rect((float)(rect.width - 24.0 - 6.0), 0.0f, 24f, 24f), delete))
         {
             SoundDefOf.Click.PlayOneShotOnCamera();
             factions.RemoveAt(index);

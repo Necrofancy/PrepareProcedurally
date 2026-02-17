@@ -16,8 +16,9 @@ using Verse;
 
 namespace Necrofancy.PrepareProcedurally;
 
-public static class ReusingVanillaUi
+public static partial class ReusingVanillaUi
 {
+#if !RW1_4
     internal static void DrawPortraitArea(
         Rect rect,
         int pawnIndex,
@@ -62,7 +63,7 @@ public static class ReusingVanillaUi
 
         _ = Transpiler(null);
     }
-
+#endif
     internal static void DrawCharacterCard(
         Rect rect,
         Pawn pawn,

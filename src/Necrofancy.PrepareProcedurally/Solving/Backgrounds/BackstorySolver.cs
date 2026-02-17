@@ -52,7 +52,7 @@ public static class BackstorySolver
         return currentBackgrounds;
     }
 
-    internal static BackgroundPossibility StaticBackgroundPossibility(Pawn pawn)
+    public static BackgroundPossibility StaticBackgroundPossibility(Pawn pawn)
     {
         var bio = new BioPossibility(pawn.story.Childhood, pawn.story.Adulthood);
         var dict = new Dictionary<SkillDef, IntRange>();

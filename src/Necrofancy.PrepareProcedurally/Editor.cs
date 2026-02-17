@@ -67,17 +67,17 @@ public static class Editor
         set => SetProperty(ref field, value);
     }
 
-    internal static bool Dirty { get; set; }
+    public static bool Dirty { get; set; }
 
-    internal static bool AllowDirtying { get; set; }
+    public static bool AllowDirtying { get; set; }
 
-    internal static bool AllowBadHeDiffs
+    public static bool AllowBadHeDiffs
     {
         get;
         set => SetProperty(ref field, value);
     } = true;
 
-    internal static bool AllowRelationships
+    public static bool AllowRelationships
     {
         get;
         set => SetProperty(ref field, value);

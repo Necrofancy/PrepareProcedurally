@@ -18,8 +18,12 @@ public static class SituationFactory
         var ideoligion = Faction.OfPlayer.ideos.PrimaryIdeo;
         var tile = Find.GameInitData.startingTile;
         var terrain = Find.World.grid[tile];
-
+        
+#if RW1_4 || RW1_5 // before Odyssey, there was only ever one biome.
+        requirements.AddRange(BySetupOf.Basic.GetRequirements(terrain.biome, terrain.hilliness).Where(Relevant));
+#else
         requirements.AddRange(BySetupOf.Basic.GetRequirements(terrain.Biomes.FirstOrDefault(), terrain.hilliness).Where(Relevant));
+#endif
 
         if (ideoligion is not null)
         {

@@ -28,6 +28,7 @@
 
   "mounts": [
     "source=nuget-packages,target=/home/dev/.nuget/packages,type=volume",
+    "source=${localEnv:HOME}/SteamCMD/Rimworld,target=${localEnv:HOME}/SteamCMD/Rimworld,type=bind,Z",
 
     "source=jb-config,target=/home/dev/.config/JetBrains,type=volume",
     "source=jb-cache,target=/home/dev/.cache/JetBrains,type=volume",
@@ -37,5 +38,9 @@
   "containerUser": "dev",
   "remoteUser": "dev",
 
-  "postCreateCommand": "dotnet --info && mono --version && dotnet restore"
+  "postCreateCommand": {
+    "ensure-dll-read-perms": "find Steam -type f -name '*.dll' -exec chmod a+r {} +",
+    "dotnet-and-mono-info": "dotnet --info && mono --version",
+    "restore-dependencies": "dotnet restore"
+  }
 }

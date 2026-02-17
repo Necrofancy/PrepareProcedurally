@@ -110,11 +110,17 @@ public static class EstimateRolling
 
         void AddBackstory(BackstoryDef backstory)
         {
-            foreach (SkillGain skillGain in backstory.skillGains)
+            foreach (var skillGain in backstory.skillGains)
             {
+#if RW1_4 // uses KeyValuePair<SkillDef, int> rather than SkillGain
+                if (skillGain.Key == skill)
+                {
+                    int value = skillGain.Value;
+#else // 1.5 and later adds a SkillGain type
                 if (skillGain.skill == skill)
                 {
                     int value = skillGain.amount;
+#endif
                     var multiplied = value > 0
                         ? backstoryMultiplier * value
                         : backstoryNegativeMultiplier * value;
@@ -149,11 +155,17 @@ public static class EstimateRolling
 
         void AddBackstory(BackstoryDef backstory)
         {
-            foreach (SkillGain skillGain in backstory.skillGains)
+            foreach (var skillGain in backstory.skillGains)
             {
-                if (skillGain.skill == skill)
-                {
-                    int value = skillGain.amount;
+#if RW1_4 // uses KeyValuePair<SkillDef, int> rather than SkillGain
+                    if (skillGain.Key == skill)
+                    {
+                        int value = skillGain.Value;
+#else // 1.5 and later adds a SkillGain type
+                    if (skillGain.skill == skill)
+                    {
+                        int value = skillGain.amount;
+#endif
                     var multiplied = value > 0
                         ? backstoryMultiplier * value
                         : backstoryNegativeMultiplier * value;
@@ -169,10 +181,17 @@ public static class EstimateRolling
         {
             if (trait.CurrentData.skillGains is { } gains)
             {
+#if RW1_4 // uses KeyValuePair<SkillDef, int> rather than SkillGain
+                foreach (var skillGain in gains.Where(x => x.Key == skill))
+                {
+                    story += skillGain.Value;
+                }
+#else // 1.5 and later adds a SkillGain type
                 foreach (var skillGain in gains.Where(x => x.skill == skill))
                 {
                     story += skillGain.amount;
                 }
+#endif
             }
         }
 

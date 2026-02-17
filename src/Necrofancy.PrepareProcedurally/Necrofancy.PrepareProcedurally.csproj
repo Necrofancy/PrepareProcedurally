@@ -2,7 +2,7 @@
     <!--Output specification-->
     <PropertyGroup>
         <AssemblyTitle>Necrofancy.PrepareProcedurally</AssemblyTitle>
-        <OutputPath>..\..\Release\$(RimWorldVersion)\Assemblies\</OutputPath>
+        <OutputPath>..\..\Release\$(RimworldVersion)\Assemblies\</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     </PropertyGroup>

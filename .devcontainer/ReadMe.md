@@ -4,7 +4,8 @@ As far as I can tell, Rider does not honor the `:z` SELinux relabel option in `w
 
 You can work around this locally by running this once to set the SELinux context to `container_file_t`:
 ```bash
-PROJECT_DIR="$HOME/RiderProjects"  # or wherever your devcontainer projects live
-sudo semanage fcontext -a -t container_file_t "${PROJECT_DIR}(/.*)?"
-sudo restorecon -Rv "$PROJECT_DIR"
+`PROJECT_DIR="$HOME/RiderProjects"`  # or wherever your devcontainer projects live
+`sudo semanage fcontext -a -t container_file_t "${PROJECT_DIR}(/.*)?"
+sudo restorecon -Rv "$PROJECT_DIR"`
 ```
+For Rimworld updates prompting new steam files, rerun the `restorecon` command with the steam directory.

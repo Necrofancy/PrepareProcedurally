@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
@@ -47,7 +46,7 @@ public static class PostPawnGenerationChanges
 
             if (bodyTypes.Any())
             {
-                pawn.story.bodyType = GeneUtility.ToBodyType(bodyTypes.RandomElement(), pawn);
+                pawn.story.bodyType = bodyTypes.RandomElement().ToBodyType(pawn);
                 bodyTypeSetByBiotech = true;
             }
         }
@@ -56,15 +55,19 @@ public static class PostPawnGenerationChanges
             pawn.story.bodyType = bodyType;
     }
 
-    internal static void AddBackstoryPossessions(BioPossibility bio, List<ThingDefCount> possessions)
+    public static void AddBackstoryPossessions(BioPossibility bio, List<ThingDefCount> possessions)
     {
         if (Find.Scenario.AllParts.Any(x => x is ScenPart_NoPossessions))
             return;
         foreach (var item in bio.Adulthood.possessions)
+#if RW1_4
+            possessions.Add(new ThingDefCount(item.key, item.value));
+#else
             possessions.Add(new ThingDefCount(item.key, item.value.RandomInRange));
+#endif
     }
 
-    internal static void RemoveBackstoryPossessions(Pawn pawn, List<ThingDefCount> possessions)
+    public static void RemoveBackstoryPossessions(Pawn pawn, List<ThingDefCount> possessions)
     {
         if (pawn.story.Adulthood != null)
         {
@@ -124,7 +127,7 @@ public static class PostPawnGenerationChanges
         List<Trait> toAddBack = new List<Trait>();
         foreach (var toAdd in traits)
         {
-            var alreadyHave = toAdd.degree is int degree
+            var alreadyHave = toAdd.degree is { } degree
                 ? pawn.story.traits.HasTrait(toAdd.def, degree)
                 : pawn.story.traits.HasTrait(toAdd.def);
 

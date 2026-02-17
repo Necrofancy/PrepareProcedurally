@@ -72,18 +72,26 @@ public class CollectSpecificPassions
             {
                 continue;
             }
+            
+#if RW1_4
+            void AddToSum(KeyValuePair<SkillDef, int> gain)
+            {
+                if (gain.Key == skill)
+                    sum += weight * gain.Value;
+            }
+#else
+            void AddToSum(SkillGain gain)
+            {
+                if (gain.skill == skill)
+                    sum += weight * gain.amount;
+            }
+#endif
 
             foreach (var gain in possibility.Childhood.skillGains)
-            {
-                if (gain.skill == skill)
-                    sum += weight * gain.amount;
-            }
+                AddToSum(gain);
             
             foreach (var gain in possibility.Adulthood.skillGains)
-            {
-                if (gain.skill == skill)
-                    sum += weight * gain.amount;
-            }
+                AddToSum(gain);
 
             foreach (var trait in possibility.Traits)
             {
@@ -91,11 +99,7 @@ public class CollectSpecificPassions
                 if (traitData.skillGains is {} traitGains)
                 {
                     foreach (var gain in traitGains)
-                    {
-                        if (gain.skill == skill)
-                            sum += weight * gain.amount;
-                    }
-
+                        AddToSum(gain);
                 }
             }
         }

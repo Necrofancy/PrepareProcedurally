@@ -11,5 +11,5 @@ riderModule.iml
 
 *DotSettings.user
 
-# don't leak Ludeon's IP
-Steam/*.dll
+# don't leak steam-downloaded dependencies
+Steam/*

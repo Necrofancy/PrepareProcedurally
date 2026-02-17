@@ -22,9 +22,9 @@ public class HarmonyPatches
         #endif
         var startingDialog = typeof(Page_ConfigureStartingPawns);
         
-        // The mod needs to set up starting state based on ideology, starting map tile, and general scenario.
+        // The mod needs to set up a starting state based on ideology, starting map tile, and general scenario.
         SetEditorStateOnOpeningCreateCharactersDialog(startingDialog, harmony);
-        // The only effects happen on interacting with mod-added UI. There are no external changes otherwise.
+        // The only effects happen on interacting with the mod-added UI. There are no external changes otherwise.
         // Add a button to open said UIs when creating characters.
         AddButtonToCreateCharactersDialog(startingDialog, harmony);
         // Clear editor state and make sure any dialogs are closed to further ensure no state changes happen mid-game.
@@ -78,8 +78,10 @@ public class HarmonyPatches
         // transpilers are colocated within the ReusingVanillaUi methods.
         // there's no way to directly locate them here and have Harmony resolve them.
         ReversePatch(typeof(SkillUI), nameof(ReusingVanillaUi.DrawSkillsOf));
-        ReversePatch(typeof(CharacterCardUtility), nameof(CharacterCardUtility.DrawCharacterCard));
+        ReversePatch(typeof(CharacterCardUtility), nameof(CharacterCardUtility.DrawCharacterCard)); 
+#if !RW1_4
         ReversePatch(typeof(StartingPawnUtility), nameof(StartingPawnUtility.DrawPortraitArea));
+#endif
     }
 
     private static void InitializeEditorState()
