@@ -1,26 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!--Output specification-->
     <PropertyGroup>
-        <TargetFramework>net48</TargetFramework>
-        <LangVersion>latest</LangVersion>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        
-        <!-- Default to Latest if no version is specified -->
-        <RimWorldVersion Condition="'$(RimWorldVersion)' == ''">1.6</RimWorldVersion>
-
-        <!-- Dynamically set the output path based on the version -->
+        <AssemblyTitle>Necrofancy.PrepareProcedurally</AssemblyTitle>
         <OutputPath>..\..\Release\$(RimWorldVersion)\Assemblies\</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-
-        <!-- Define a constant so you can use #if RW1_5 or #if RW1_6 in code -->
-        <DefineConstants>$(DefineConstants);RW$(RimWorldVersion.Replace('.', '_'))</DefineConstants>
     </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
-        <PackageReference Include="Lib.Harmony" Version="2.4.2" />
-    </ItemGroup>
-
+    
     <ItemGroup>
         <Reference Include="Assembly-CSharp">
             <HintPath>..\..\Steam\$(RimworldVersion)\Game\Assembly-CSharp.dll</HintPath>
@@ -39,11 +25,5 @@
             <HintPath>..\..\Steam\$(RimworldVersion)\Game\UnityEngine.TextRenderingModule.dll</HintPath>
             <Private>false</Private>
         </Reference>
-    </ItemGroup>
-
-    <!-- Clean up old, stinky .csproj files -->
-    <ItemGroup>
-        <Compile Remove="bin\**;obj\**" />
-        <None Remove="bin\**;obj\**" />
     </ItemGroup>
 </Project>

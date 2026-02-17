@@ -1,18 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net48</TargetFramework>
-        <LangVersion>latest</LangVersion>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        
-        <!-- Default to Latest if no version is specified -->
-        <RimWorldVersion Condition="'$(RimWorldVersion)' == ''">1.6</RimWorldVersion>
-        
+        <AssemblyTitle>Necrofancy.PrepareProcedurally.Test</AssemblyTitle>
         <OutputPath>bin\$(Configuration)\</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-
-        <!-- Define a constant so you can use #if RW1_5 or #if RW1_6 in code -->
-        <DefineConstants>$(DefineConstants);RW$(RimWorldVersion.Replace('.', '_'))</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,9 +15,6 @@
         </PackageReference>
 
         <PackageReference Include="Verify.Xunit" Version="17.0.0-beta.1" />
-
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
-
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />

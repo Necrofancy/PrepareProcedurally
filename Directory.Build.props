@@ -1,0 +1,86 @@
+<Project>
+    <!-- =========================
+         Global build defaults
+         ========================= -->
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <LangVersion>latest</LangVersion>
+         <Configurations>Debug;Debug - 1.4;Debug - 1.5;Debug - 1.6;Release;Release - 1.4;Release - 1.5;Release - 1.6</Configurations>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <!-- =========================
+         Shared assembly metadata
+         ========================= -->
+    <PropertyGroup>
+        <Description>Prepare Procedurally is a mod that enables quick automation to colony and tribal starts in the game Rimworld by Ludeon Studios</Description>
+        <Company>Necrofancy</Company>
+        <Product>Prepare Procedurally</Product>
+        <Copyright>2023 - 2026</Copyright>
+
+        <AssemblyVersion>1.2.0.0</AssemblyVersion>
+        <FileVersion>1.2.0.0</FileVersion>
+        <InformationalVersion>1.2.0.0</InformationalVersion>
+
+        <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    </PropertyGroup>
+
+    <!-- =========================
+         Universal dependencies
+         ========================= -->
+    <ItemGroup>
+        <!-- Allows building net48 without relying on machine-installed targeting packs -->
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+        <PackageReference Include="Lib.Harmony" Version="2.4.2" />
+    </ItemGroup>
+    
+    <!-- =========================
+         RimWorld version selection
+         Priority:
+           1) Explicit -p:RimWorldVersion=...
+           2) Infer from Configuration name (IDE workflow)
+           3) Default to latest version for plain Debug/Release
+         ========================= -->
+    <Choose>
+        <When Condition="'$(RimWorldVersion)' != ''">
+            <!-- Provided by build.sh or terminal explicitly; no action needed. -->
+        </When>
+        
+        <When Condition="$([System.String]::Copy('$(Configuration)').Contains(' - 1.4'))">
+            <PropertyGroup>
+                <RimWorldVersion>1.4</RimWorldVersion>
+            </PropertyGroup>
+        </When>
+
+        <When Condition="$([System.String]::Copy('$(Configuration)').Contains(' - 1.5'))">
+            <PropertyGroup>
+                <RimWorldVersion>1.5</RimWorldVersion>
+            </PropertyGroup>
+        </When>
+
+        <When Condition="$([System.String]::Copy('$(Configuration)').Contains(' - 1.6'))">
+            <PropertyGroup>
+                <RimWorldVersion>1.6</RimWorldVersion>
+            </PropertyGroup>
+        </When>
+
+        <Otherwise>
+            <PropertyGroup>
+                <RimWorldVersion>1.6</RimWorldVersion>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
+    
+    <PropertyGroup>
+        <!-- Enables #if RW1_4 / RW1_5 / RW1_6 -->
+        <DefineConstants>$(DefineConstants);RW$(RimWorldVersion.Replace('.', '_'))</DefineConstants>
+    </PropertyGroup>
+
+    <!-- =========================
+         Cleanup (legacy artifacts)
+         ========================= -->
+    <ItemGroup>
+        <Compile Remove="bin\**;obj\**" />
+        <None Remove="bin\**;obj\**" />
+    </ItemGroup>
+</Project>
