@@ -1,20 +1,41 @@
 {
-  "name": "Linux Environment",
+  "name": "PrepareProcedurally",
+
   "build": {
-    "context": "..",
-    "dockerfile": "Dockerfile"
-  },
-  "workspaceFolder": "/workspaces/PrepareProcedurally",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/PrepareProcedurally,type=bind,z",
-  "features": {
-    "ghcr.io/devcontainers/features/common-utils:1": {
-      "installZsh": true,
-      "configureZshAsDefaultShell": true,
-      "userUid": "1000",
-      "userGid": "1000",
-      "username": "vscode"
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "USER_UID": "${localEnv:UID}",
+      "USER_GID": "${localEnv:GID}",
+      "USERNAME": "dev"
     }
   },
-  "remoteUser": "root",
-  "containerUser": "vscode"
+
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+  "runArgs": [
+    "--init",
+
+    // Rootless Podman: map your host UID/GID into the container to have SELinux policies work properly.
+    "--userns=keep-id"
+  ],
+
+  "containerEnv": {
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_NOLOGO": "1",
+    "NUGET_XMLDOC_MODE": "skip"
+  },
+
+  "mounts": [
+    "source=nuget-packages,target=/home/dev/.nuget/packages,type=volume",
+
+    "source=jb-config,target=/home/dev/.config/JetBrains,type=volume",
+    "source=jb-cache,target=/home/dev/.cache/JetBrains,type=volume",
+    "source=jb-share,target=/home/dev/.local/share/JetBrains,type=volume"
+  ],
+
+  "containerUser": "dev",
+  "remoteUser": "dev",
+
+  "postCreateCommand": "dotnet --info && mono --version && dotnet restore"
 }
