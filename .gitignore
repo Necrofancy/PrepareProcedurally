@@ -9,5 +9,7 @@ riderModule.iml
 *.dll
 *.pdb
 
+*DotSettings.user
+
 # don't leak Ludeon's IP
 Steam/*.dll
