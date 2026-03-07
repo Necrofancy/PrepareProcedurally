@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
 using RimWorld;
@@ -48,7 +51,9 @@ public static class PassionButton
                 if (ModsConfig.BiotechActive && StartingPawnUtilityState.GetStartingPawnRequestList() is { } pawnGenerationRequests)
                 {
                     var request = pawnGenerationRequests[SelectedPawn.Index];
-                    foreach (var gene in request.ForcedXenotype.genes)
+                    var genes = request.ForcedXenotype?.AllGenes ?? GenesFromCustomXeno(request);
+                    
+                    foreach (var gene in genes)
                     {
                         if (gene.passionMod?.modType == PassionMod.PassionModType.DropAll && gene.passionMod.skill == skill)
                         {
@@ -62,7 +67,15 @@ public static class PassionButton
                 SelectedPawn.Requirements[idx] = (skill, newReq);
             }
         }
-    
+
+    private static IEnumerable<GeneDef> GenesFromCustomXeno(PawnGenerationRequest request)
+    {
+        foreach (var gene in request.ForcedEndogenes ?? Enumerable.Empty<GeneDef>())
+            yield return gene;
+        foreach (var gene in request.ForcedXenogenes ?? Enumerable.Empty<GeneDef>())
+            yield return gene;
+    }
+
     private static bool CanIncreaseRequirement(UsabilityRequirement req, float remainingPoints)
     {
         switch (req)
@@ -71,10 +84,10 @@ public static class PassionButton
                 return false;
             case UsabilityRequirement.Minor:
                 // cost of bumping up from minor to major passion
-                return remainingPoints > 0.5f;
+                return remainingPoints >= 0.5f;
             case UsabilityRequirement.Usable:
                 // cost of bumping up from no passion to minor passion
-                return remainingPoints > 1.0f;
+                return remainingPoints >= 1.0f;
             case UsabilityRequirement.CanBeOff:
                 return true;
             default:
