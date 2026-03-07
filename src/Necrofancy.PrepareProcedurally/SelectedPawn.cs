@@ -9,11 +9,13 @@ namespace Necrofancy.PrepareProcedurally;
 public static class SelectedPawn
 {
     public static Pawn Pawn { get; private set; }
-    
+
+    public static bool KeepCosmetics { get; set; }
+
     public static int Index { get; private set; }
-    
+
     public static List<(SkillDef Skill, UsabilityRequirement Usability)> Requirements { get; private set; }
-    
+
     public static void Select(Pawn pawn)
     {
         Editor.LockedPawns.Add(pawn);
@@ -46,12 +48,19 @@ public static class SelectedPawn
                 Requirements.Add((skill.def, req));
             }
     }
+
     public static void Deselect()
     {
         Pawn = null;
         Index = -1;
         Requirements = null;
     }
+
+    public static void ToggleCosmeticsLock()
+    {
+        KeepCosmetics = !KeepCosmetics;
+    }
+
     public static float GetPassionPoints()
     {
         var sum = 0.0f;
@@ -71,6 +80,7 @@ public static class SelectedPawn
     
     public static void Randomize()
     {
+        var cosmetics = KeepCosmetics ? new CosmeticLock(Pawn) : null;
         var dict = new Dictionary<SkillDef, int>();
         var requiredSkills = new List<SkillDef>();
         var requiredWorkTags = WorkTags.None;
@@ -106,5 +116,6 @@ public static class SelectedPawn
         var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
 
         Pawn = Compatibility.Layer.RandomizeSingularPawn(Pawn, collectSpecificPassions, Requirements);
+        cosmetics?.ApplyToPawn(Pawn);
     }
 }
