@@ -99,7 +99,7 @@ public abstract class SkillRangeBuilder<T> where T : class
             return true;
 
         var pointDiff = PointsFor(passion) - PointsFor(currentPassion);
-        if (pointDiff >= maxPassionPoints - PassionPoints)
+        if (pointDiff > maxPassionPoints - PassionPoints)
             return false;
 
         var skillRange = skillRanges[def];
