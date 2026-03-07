@@ -48,7 +48,8 @@ internal static class TraitUtilities
         foreach (var possibleTrait in DefDatabase<TraitDef>.AllDefsListForReading)
         {
             if ((possibleTrait.IsSexualityTrait() || nonSexualityCount < MaxNonSexualityTraits) 
-                && neededTraits.AllowsTrait(possibleTrait))
+                && neededTraits.AllowsTrait(possibleTrait)
+                && possibleTrait.GetGenderSpecificCommonality(Gender.None) > 0)
             {
                 foreach (var data in possibleTrait.degreeDatas)
                 {
