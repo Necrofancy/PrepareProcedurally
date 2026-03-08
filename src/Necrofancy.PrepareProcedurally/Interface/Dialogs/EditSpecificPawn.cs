@@ -26,6 +26,10 @@ public class EditSpecificPawn : Window
     private const float BackstoryX = 83f;
     private const float BackstoryY = 131f;
 
+    private bool keepAesthetics = false;
+    private bool showHeadgear = true;
+    private bool showApparel = true;
+
 #if UI_DEBUGGING
     private static int _debugX = BackstoryX;
     private static string _debugXString = BackstoryX.ToString();
@@ -50,10 +54,11 @@ public class EditSpecificPawn : Window
 
         Text.Font = GameFont.Medium;
         var titleRect = new Rect(rect.x, rect.y, rect.width, YPadding);
-        var label = "Necrofancy.PrepareProcedurally.EditSpecificPawnTitle".Translate();
-        var vec = Text.CalcSize(label);
+        var label = "EditSpecificPawnTitle".PpTranslate();
         Widgets.Label(titleRect, label);
         Text.Font = GameFont.Small;
+        
+        DrawAestheticOptions(rect);
         
 #if UI_DEBUGGING
         var debugRect = rect with { x = rect.x + 300, width = 150};
@@ -63,9 +68,10 @@ public class EditSpecificPawn : Window
 #endif
         rect.y += YPadding;
         rect.height -= YPadding;
-        ReusingVanillaUi.DrawPortraitArea(rect, pawnIndex, true, true);
+        ReusingVanillaUi.DrawPortraitArea(rect, pawnIndex, showApparel, showHeadgear);
+        SelectedPawn.KeepCosmetics = keepAesthetics;
         
-        if (Editor.ShowCompatibility)
+        if (PrepareMod.Settings.showCompatibility)
         {
             var width = 60f * (Editor.StartingPawns.Length - 1);
             var height = 75f;
@@ -88,6 +94,38 @@ public class EditSpecificPawn : Window
         DrawBackstoryRow(rect, BackstorySlot.Adulthood);
     }
     
+    private void DrawAestheticOptions(Rect rect)
+    {
+        const float checkboxSpace = 30f;
+        const float margin = 10f;
+        var aesthetics =  "KeepAesthetics".PpTranslate();
+        var aestheticsLength = Text.CalcSize(aesthetics).x + checkboxSpace;
+        var tooltip = "KeepAestheticsTooltip".PpTranslate();
+        if (!ModsConfig.IdeologyActive)
+        {
+            Rect soloRect = new Rect(rect.xMax - aestheticsLength, rect.y, aestheticsLength, Text.LineHeight);
+            Widgets.CheckboxLabeled(soloRect, aesthetics, ref keepAesthetics);
+            TooltipHandler.TipRegion(soloRect, tooltip);
+            return;
+        }
+        
+        var head = "ShowHeadgear".Translate();
+        var headLength = Text.CalcSize(head).x + checkboxSpace;
+        var apparel = "ShowApparel".Translate();
+        var apparelLength = Text.CalcSize(apparel).x + checkboxSpace;
+        
+        var totalWidth = aestheticsLength + headLength + apparelLength + margin * 3;
+        Rect align = new Rect(rect.xMax - totalWidth, rect.y, aestheticsLength, Text.LineHeight);
+        Widgets.CheckboxLabeled(align, aesthetics, ref keepAesthetics);
+        TooltipHandler.TipRegion(align, tooltip);
+        align.x += aestheticsLength + margin;
+        align.width = headLength;
+        Widgets.CheckboxLabeled(align, head, ref showHeadgear);
+        align.x += headLength + margin;
+        align.width = apparelLength;
+        Widgets.CheckboxLabeled(align, apparel, ref showApparel);
+    }
+    
     private void DrawBackstoryRow(Rect buttonRect, BackstorySlot slot)
     {
         var locked = slot switch
@@ -98,8 +136,9 @@ public class EditSpecificPawn : Window
         var button = locked ? LazyTexture.Locked : LazyTexture.Unlocked;
         BackstorySelection.ForSelectedPawn(slot, buttonRect);
         Widgets.ButtonImage(buttonRect, button.Value);
-        TooltipHandler.TipRegion(buttonRect, "ClickToSelect".Translate());
+        TooltipHandler.TipRegion(buttonRect, "ClickToSelect".PpTranslate());
     }
+    
     private void ShowRelationships(Rect areaRect)
     {
         var otherPawns = Editor.StartingPawns.Except(SelectedPawn.Pawn).ToList();

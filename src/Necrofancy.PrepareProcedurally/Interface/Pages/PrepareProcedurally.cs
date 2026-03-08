@@ -27,8 +27,10 @@ public class PrepareProcedurally : Page
 
     public PrepareProcedurally()
     {
-        // Just in case pawns were randomized outside of the editor, refresh pawn editor.
-        Editor.RefreshPawnList();
+        if (PrepareMod.Settings.preGenerate)
+        {
+            Editor.RefreshPawnList();
+        }
     }
 
     public override void DoWindowContents(Rect rect)
@@ -40,7 +42,14 @@ public class PrepareProcedurally : Page
             var uiPadding = rect.GetInnerRect();
             uiPadding.SplitHorizontally(400, out var upper, out var lower);
 
-            SkillPassionSelectionUiUtility.DoWindowContents(upper, Editor.SkillPassions);
+            var leftWidth = rect.width - SettingsUiUtility.OverallWidth;
+            rect.SplitVertically(leftWidth, out var textRect, out var skillSelectRect);
+
+            textRect.y += 24;
+            skillSelectRect.y -= 18;
+            
+            SettingsUiUtility.ForEditor.DoWindowContents(textRect);
+            SkillPassionSelectionUiUtility.DoWindowContents(skillSelectRect, Editor.SkillPassions);
 
             Text.Font = GameFont.Tiny;
             Widgets.Label(lower, CustomizePawnSkillsLabel.Translate());
@@ -63,7 +72,7 @@ public class PrepareProcedurally : Page
             void Reroll()
             {
                 SoundDefOf.Click.PlayOneShotOnCamera();
-                Editor.MakeDirty();
+                RandomizeForTeam();
             }
 
             DoBottomButtons(rect, midLabel: RerollButton.Translate(), midAct: Reroll);
@@ -139,16 +148,25 @@ public class PrepareProcedurally : Page
         if (Editor.Dirty)
         {
             CloseSubdialogs();
-
-            var backstoryFilters = Faction.OfPlayer.def.backstoryFilters;
-            var pawnCount = Find.GameInitData.startingPawnCount;
-            var situation = new BalancingSituation(string.Empty, backstoryFilters, pawnCount, Editor.SkillPassions);
-
-            Compatibility.Layer.RandomizeForTeam(situation);
-
-            Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToArray();
-
-            Editor.Dirty = false;
+            RandomizeForTeam();
         }
+    }
+
+    private void RandomizeForTeam()
+    {
+        var backstoryFilters = Faction.OfPlayer.def.backstoryFilters;
+        var pawnCount = Find.GameInitData.startingPawnCount;
+        var situation = new BalancingSituation(string.Empty, backstoryFilters, pawnCount, Editor.SkillPassions);
+
+        Compatibility.Layer.RandomizeForTeam(situation);
+
+        Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToArray();
+
+        Editor.Dirty = false;
+    }
+    
+    private static int GetOverallRowUiLength()
+    {
+        return int.Parse("Necrofancy.PrepareProcedurally.SelectSkillWidgetLength".Translate());
     }
 }

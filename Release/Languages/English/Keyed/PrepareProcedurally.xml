@@ -20,11 +20,12 @@
 	<Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyTooltip>If disabled, characters will not generate with an initial pregnancy.\n\nThis does not stop them from becoming pregnant after the game starts.</Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyTooltip>
 
 	<Necrofancy.PrepareProcedurally.BackstoryPassionLabel>Backstory and Passion Settings</Necrofancy.PrepareProcedurally.BackstoryPassionLabel>
-	<Necrofancy.PrepareProcedurally.VariationLabel>Vary Skill Weights From 100%-{0}</Necrofancy.PrepareProcedurally.VariationLabel>
+	<Necrofancy.PrepareProcedurally.VariationLabel>100%-{0} Random Weight</Necrofancy.PrepareProcedurally.VariationLabel>
 	<Necrofancy.PrepareProcedurally.SkillVariationTooltip>Procedural generation will try to pick pawn backstories and simulate randomization to quickly arrive at a certain loadout of passions. It does so by attaching a weight for each skill and picking stories by the best weight.\n\nVarying this weight by a random amount on generation gives more backstory variety and can help get out of ruts without having to specify each weight to get a specific story combination.</Necrofancy.PrepareProcedurally.SkillVariationTooltip>
 	<Necrofancy.PrepareProcedurally.SkillVariationLeft>Unvarying</Necrofancy.PrepareProcedurally.SkillVariationLeft>
 	<Necrofancy.PrepareProcedurally.SkillVariationRight>5x Variation</Necrofancy.PrepareProcedurally.SkillVariationRight>
 	<Necrofancy.PrepareProcedurally.PassionPointsLabel>Max "Passion Points" in Generating Pawns {0}</Necrofancy.PrepareProcedurally.PassionPointsLabel>
+	<Necrofancy.PrepareProcedurally.ExplainRarityOfPassionPoints>1 in ~{0} Pawns Would Have This Much Passion</Necrofancy.PrepareProcedurally.ExplainRarityOfPassionPoints>
 	<Necrofancy.PrepareProcedurally.PassionPointsTooltip>When characters are generated, they are given a range of points between 0-9, based on a normal distribution centered at five points. Outliers on the far ends (i.e. exactly 0 or 9) are exceedingly unlikely.\n\n    - Minor passions take 1 point\n    - Major passions take 1.5 points\n\nCertain traits can force or prevent passions, but otherwise a set amount of major and minor passions are given based on the skill level for the pawn generated.</Necrofancy.PrepareProcedurally.PassionPointsTooltip>
 	<Necrofancy.PrepareProcedurally.GroupwideUsageIndicator>The groupwide skill requirements make up {0} of possible passion points.</Necrofancy.PrepareProcedurally.GroupwideUsageIndicator>
 
@@ -54,10 +55,27 @@
 
 	<Necrofancy.PrepareProcedurally.CustomizePawnSkillsLabel>Click For Skill Loadout UI</Necrofancy.PrepareProcedurally.CustomizePawnSkillsLabel>
 	<Necrofancy.PrepareProcedurally.EditSpecificPawnTitle>Customize Specific Pawn:</Necrofancy.PrepareProcedurally.EditSpecificPawnTitle>
+	<Necrofancy.PrepareProcedurally.ClickToSelect>Click to select a backstory specifically\n\n\n\nThis will heavily limit the ability of generation to match pawns, so you may need to select carefully.\n\n\n\nSelecting a solid bio will override both childhood and adulthood backstories.</Necrofancy.PrepareProcedurally.ClickToSelect>
+	<Necrofancy.PrepareProcedurally.ChoosePassions>Select Passions:</Necrofancy.PrepareProcedurally.ChoosePassions>
+	<Necrofancy.PrepareProcedurally.PassionPointsLeft>{0}/{1} Points</Necrofancy.PrepareProcedurally.PassionPointsLeft>
 	<Necrofancy.PrepareProcedurally.MajorPassionTooltip>Try to make this pawn randomize with a major passion in {0}.</Necrofancy.PrepareProcedurally.MajorPassionTooltip>
 	<Necrofancy.PrepareProcedurally.MinorPassionTooltip>Try to make this pawn randomize with a minor passion or better in {0}.</Necrofancy.PrepareProcedurally.MinorPassionTooltip>
 	<Necrofancy.PrepareProcedurally.UsableTooltip>Try to make this pawn randomize so that it is capable of {0}.</Necrofancy.PrepareProcedurally.UsableTooltip>
 	<Necrofancy.PrepareProcedurally.NoEmphasisTooltip>Put no weight or emphasis on {0}.</Necrofancy.PrepareProcedurally.NoEmphasisTooltip>
+	
+	<Necrofancy.PrepareProcedurally.KeepAesthetics>Keep aesthetics</Necrofancy.PrepareProcedurally.KeepAesthetics>
+	<Necrofancy.PrepareProcedurally.KeepAestheticsTooltip>Keeps name, backstory, and as many physical appearances as reasonably possible.</Necrofancy.PrepareProcedurally.KeepAestheticsTooltip>
+
+	<Necrofancy.PrepareProcedurally.SettingsDescription>Repeated settings mostly drive the default values in the Prepare Procedurally menu.\n\nThe behaviors for team randomization happens for unlocked pawn slots can also be configured here.</Necrofancy.PrepareProcedurally.SettingsDescription>
+	<Necrofancy.PrepareProcedurally.WhenTeamRandomizationIsCalled>When to Randomize Team</Necrofancy.PrepareProcedurally.WhenTeamRandomizationIsCalled>
+	<Necrofancy.PrepareProcedurally.AutoGenerateAtStart>Generate on First Opening Window</Necrofancy.PrepareProcedurally.AutoGenerateAtStart>
+	<Necrofancy.PrepareProcedurally.AutoGenerateAtStartTooltip>Setting on whether to automatically run generation when the Prepare Procedurally window is opened.</Necrofancy.PrepareProcedurally.AutoGenerateAtStartTooltip>
+	<Necrofancy.PrepareProcedurally.AutoGenerateOnChange>Generate on Settings Change</Necrofancy.PrepareProcedurally.AutoGenerateOnChange>
+	<Necrofancy.PrepareProcedurally.AutoGenerateOnChangeTooltip>Automatically run team randomization when a setting is changed in the UI.</Necrofancy.PrepareProcedurally.AutoGenerateOnChangeTooltip>
+
+	<Necrofancy.PrepareProcedurally.HiddenMechanics>Hidden Mechanics</Necrofancy.PrepareProcedurally.HiddenMechanics>
+	<Necrofancy.PrepareProcedurally.DisplayCompatibility>Display Hidden Social Compatibility</Necrofancy.PrepareProcedurally.DisplayCompatibility>
+	<Necrofancy.PrepareProcedurally.DisplayCompatibilityTooltip>Display hidden social compatibility between pawns in the "Edit Specific Pawn" UI.\n\nThis hidden stat is used by Rimworld to determine where social interactions tend towards at neutral opinion.\n\nSince this is tied to a pawn's ID, this can't be safely changed while keeping to vanilla rules. If you want a different value, you'll have to reroll the pawns.</Necrofancy.PrepareProcedurally.DisplayCompatibilityTooltip>
 
 	<Necrofancy.PrepareProcedurally.RerollButton>Reroll</Necrofancy.PrepareProcedurally.RerollButton>
 </LanguageData>

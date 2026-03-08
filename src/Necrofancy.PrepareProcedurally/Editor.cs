@@ -12,8 +12,6 @@ namespace Necrofancy.PrepareProcedurally;
 
 public static class Editor
 {
-    private static readonly FloatRange DefaultMelaninRange = new(0.0f, 0.9f);
-    
     public static Dictionary<ThingDef, RaceAgeData> RaceAgeRanges { get; private set; }
 
     public static ThingDef SelectedRace
@@ -25,11 +23,17 @@ public static class Editor
             {
                 field = value;
 
-                AllowedAgeRange = RaceAgeRanges[value].AllowedAgeRange;
-                AgeRange = RaceAgeRanges[value].AgeRange;
+                RaceAgeData = RaceAgeRanges[value];
+                AgeRange = RaceAgeRanges[value].desiredAgeRange;
             }
         }
     }
+    
+    public static RaceAgeData RaceAgeData
+    {
+        get; private set;
+    }
+
 
     public static HashSet<TraitDef> TraitsThatDisablePassions { get; } = new();
     public static List<TraitRequirement>[] TraitRequirements { get; private set; }
@@ -47,12 +51,12 @@ public static class Editor
         set
         {
             if (SetProperty(ref field, value))
+            {
                 RaceAgeRanges[SelectedRace] = RaceAgeRanges[SelectedRace].WithUpdatedAge(value);
+            }
         }
     }
-
-    public static IntRange AllowedAgeRange { get; private set; }
-
+    
     public static float SkillWeightVariation { get; set => SetProperty(ref field, value); }= 1.5f;
 
     public static FloatRange MelaninRange
@@ -102,10 +106,18 @@ public static class Editor
     /// </summary>
     public static void SetCleanState()
     {
+        Logging.Debug("Cleaning Editor state");
         Dirty = false;
         AllowDirtying = false;
-
+        
         ClearState();
+
+        var settings = PrepareMod.Settings;
+        var (selectedRace, raceAges) = settings.GetLoadedHumanTypes();
+        
+        RaceAgeRanges = raceAges;
+
+        SelectedRace = selectedRace;
 
         foreach (var trait in DefDatabase<TraitDef>.AllDefsListForReading)
             if (trait.conflictingPassions?.Any() == true)
@@ -119,33 +131,27 @@ public static class Editor
         GenderRequirements = StartingPawns.Select(_ => GenderPossibility.Either).ToArray();
         SetChildhoods = new BackstoryDef[pawnCount];
         SetAdulthoods = new BackstoryDef[pawnCount];
-
-        var kind = Faction.OfPlayer.def.basicMemberKind;
-        var minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(kind);
-        var maximumAdulthoodAge = (int)kind.race.race.ageGenerationCurve.Last().x;
-        AllowedAgeRange = new IntRange(minimumAdulthoodAge, maximumAdulthoodAge);
-        AgeRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
-
-        var biologicalSettings = new RaceAgeData(AgeRange, AllowedAgeRange);
-        RaceAgeRanges = new Dictionary<ThingDef, RaceAgeData> { { kind.race, biologicalSettings } };
-
-        SelectedRace = kind.race;
-
+        
         foreach (var otherKind in Compatibility.Layer.GetPawnKindsThatCanAlsoGenerateFor(Faction.OfPlayer.def))
         {
-            minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(otherKind);
-            maximumAdulthoodAge = (int)otherKind.race.race.ageGenerationCurve.Last().x;
-            var allowedAgeRange = new IntRange(minimumAdulthoodAge, maximumAdulthoodAge);
-            AgeRange = new IntRange(minimumAdulthoodAge + 1, Math.Min(maximumAdulthoodAge, minimumAdulthoodAge + 9));
-            RaceAgeRanges[otherKind.race] = new RaceAgeData(AgeRange, allowedAgeRange);
+            var minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(otherKind);
+            var maximumAdulthoodAge = (int)otherKind.race.race.ageGenerationCurve.Last().x;
+            var raceAge = settings.GetOrCreateRaceAgeSetting(otherKind.race, minimumAdulthoodAge, maximumAdulthoodAge);
+            AgeRange = raceAge.desiredAgeRange;
+            RaceAgeRanges[otherKind.race] = raceAge;
         }
-
-        SkillWeightVariation = 1.5f;
-        // TODO: For tribal starts it might be fun to have this be based on latitude of the starting location.
-        MelaninRange = DefaultMelaninRange;
-        MaxPassionPoints = 7.0f;
         
-        AllowDirtying = true;
+        AgeRange = RaceAgeRanges[SelectedRace].desiredAgeRange;
+        MelaninRange = settings.defaultMelaninRange;
+        
+        AllowBadHeDiffs = settings.allowInjuries;
+        AllowRelationships = settings.allowRelationships;
+        AllowPregnancy = settings.allowPregnancy;
+        
+        SkillWeightVariation = settings.skillWeightVariation;
+        MaxPassionPoints = settings.maxPassionPoints;
+        
+        AllowDirtying = settings.autoGenerate;
     }
 
     public static void RefreshPawnList()

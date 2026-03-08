@@ -10,7 +10,23 @@ public static class SelectedPawn
 {
     public static Pawn Pawn { get; private set; }
 
-    public static bool KeepCosmetics { get; set; }
+    public static bool KeepCosmetics
+    {
+        get;
+        set
+        {
+            if (field == value) 
+                return;
+            
+            field = value;
+            
+            if (!field) 
+                return;
+            
+            Editor.SetChildhoods[Index] = Pawn.story.Childhood;
+            Editor.SetAdulthoods[Index] = Pawn.story.Adulthood;
+        }
+    }
 
     public static int Index { get; private set; }
 
@@ -47,18 +63,6 @@ public static class SelectedPawn
                             : UsabilityRequirement.Usable;
                 Requirements.Add((skill.def, req));
             }
-    }
-
-    public static void Deselect()
-    {
-        Pawn = null;
-        Index = -1;
-        Requirements = null;
-    }
-
-    public static void ToggleCosmeticsLock()
-    {
-        KeepCosmetics = !KeepCosmetics;
     }
 
     public static float GetPassionPoints()

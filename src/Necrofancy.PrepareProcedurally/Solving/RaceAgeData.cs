@@ -1,17 +1,42 @@
-﻿using Verse;
+﻿using System;
+using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving;
 
-public readonly struct RaceAgeData
+public struct RaceAgeData : IExposable, IEquatable<RaceAgeData>
 {
-    public RaceAgeData(IntRange ageRange, IntRange allowedAgeRange)
+    public RaceAgeData(IntRange desiredAgeRange, IntRange possibleAgeRange)
     {
-        AgeRange = ageRange;
-        AllowedAgeRange = allowedAgeRange;
+        this.desiredAgeRange = desiredAgeRange;
+        this.possibleAgeRange = possibleAgeRange;
     }
 
-    public IntRange AgeRange { get; }
-    public IntRange AllowedAgeRange { get; }
+    public IntRange desiredAgeRange;
+    public IntRange possibleAgeRange;
 
-    public RaceAgeData WithUpdatedAge(IntRange newRange) => new RaceAgeData(newRange, AllowedAgeRange);
+    public RaceAgeData WithUpdatedAge(IntRange newRange) => new RaceAgeData(newRange, possibleAgeRange);
+    
+    public void ExposeData()
+    {
+        Scribe_Values.Look(ref desiredAgeRange, "desiredAgeRange");
+        Scribe_Values.Look(ref possibleAgeRange, "possibleAgeRange");
+    }
+
+    public bool Equals(RaceAgeData other)
+    {
+        return desiredAgeRange.Equals(other.desiredAgeRange) && possibleAgeRange.Equals(other.possibleAgeRange);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is RaceAgeData other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            return (desiredAgeRange.GetHashCode() * 397) ^ possibleAgeRange.GetHashCode();
+        }
+    }
 }

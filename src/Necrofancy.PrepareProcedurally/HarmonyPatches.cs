@@ -83,7 +83,6 @@ public class HarmonyPatches
         ReversePatch(typeof(StartingPawnUtility), nameof(StartingPawnUtility.DrawPortraitArea));
 #endif
     }
-
     private static void InitializeEditorState()
     {
         Editor.SetCleanState();
@@ -100,7 +99,7 @@ public class HarmonyPatches
             horizontalPlacement += 175;
         }
         
-        string buttonText = "Necrofancy.PrepareProcedurally.Button".Translate();
+        string buttonText = "Button".PpTranslate();
         var buttonRect = new Rect
         {
             x = horizontalPlacement,

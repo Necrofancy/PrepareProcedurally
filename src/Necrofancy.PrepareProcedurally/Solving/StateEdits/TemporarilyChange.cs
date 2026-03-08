@@ -63,7 +63,7 @@ public static class TemporarilyChange
             var ageRange = setting.Value;
 
             var generationCurve = race.ageGenerationCurve;
-            var temporaryCurve = EstimateRolling.SubSampleCurve(generationCurve, ageRange.AgeRange);
+            var temporaryCurve = EstimateRolling.SubSampleCurve(generationCurve, ageRange.desiredAgeRange);
 
             void SetCurve(SimpleCurve curve)
             {

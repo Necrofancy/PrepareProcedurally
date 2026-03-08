@@ -21,27 +21,8 @@ public static class SkillPassionSelectionUiUtility
 {
     private const string SkillSelectWidgetLabel = "Necrofancy.PrepareProcedurally.SkillsGroupLabel";
     private const string UsableText = "Necrofancy.PrepareProcedurally.CapableOf";
-
-    private const string PawnBiology = "Necrofancy.PrepareProcedurally.BiologicalSettingsLabel";
-    private const string AgeRangeText = "Necrofancy.PrepareProcedurally.BiologicalAgeRange";
-    private const string MelaninRangeText = "Necrofancy.PrepareProcedurally.BiologicalMelaninRange";
-    private const string InjuriesLabel = "Necrofancy.PrepareProcedurally.BiologicalAllowInjuriesLabel";
-    private const string InjuriesTooltip = "Necrofancy.PrepareProcedurally.BiologicalAllowInjuriesTooltip";
-    private const string RelationshipsLabel = "Necrofancy.PrepareProcedurally.BiologicalAllowRelationshipsLabel";
-    private const string RelationshipsTooltip = "Necrofancy.PrepareProcedurally.BiologicalAllowRelationshipsTooltip";
-    private const string PregnancyLabel = "Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyLabel";
-    private const string PregnancyTooltip = "Necrofancy.PrepareProcedurally.BiologicalAllowPregnancyTooltip";
-    private const string PassionText = "Necrofancy.PrepareProcedurally.BackstoryPassionLabel";
-    private const string SkillVariationText = "Necrofancy.PrepareProcedurally.VariationLabel";
-    private const string PassionMaxText = "Necrofancy.PrepareProcedurally.PassionPointsLabel";
-    private const string PassionGroupText = "Necrofancy.PrepareProcedurally.GroupwideUsageIndicator";
-    private const string SkillVariationTooltip = "Necrofancy.PrepareProcedurally.SkillVariationTooltip";
-    private const string PassionPointsTooltip = "Necrofancy.PrepareProcedurally.PassionPointsTooltip";
-    private const string SkillVariationLeft = "Necrofancy.PrepareProcedurally.SkillVariationLeft";
-    private const string SkillVariationRight = "Necrofancy.PrepareProcedurally.SkillVariationRight";
-
+    
     private static readonly Lazy<int> SkillTitleLength = new(GetSkillTitleColumnLength);
-    private static readonly Lazy<int> OverallRowLength = new(GetOverallRowUiLength);
 
     private const int PlusMinusButtonWidth = 5;
     private const string Plus = "+";
@@ -62,146 +43,9 @@ public static class SkillPassionSelectionUiUtility
     // These are different to even balance 
     private const int GapBeforeNumeric = -3;
     private const int GapAfterNumeric = -2;
-
-    private static IntRange melaninRange = new(0, PawnSkinColors.SkinColorGenesInOrder.Count - 1);
-
-    public static void DoWindowContents(Rect rect, List<SkillPassionSelection> skillPassions)
+    
+    public static void DoWindowContents(Rect skillSelectRect, List<SkillPassionSelection> skillPassions)
     {
-        var leftWidth = rect.width - OverallRowLength.Value;
-        rect.SplitVertically(leftWidth, out var textRect, out var skillSelectRect);
-
-        textRect.y += RowHeight;
-        skillSelectRect.y -= 18;
-
-        // set up biological page section
-        var labelText = new Rect(textRect.x, textRect.y, textRect.width, RowHeight);
-        labelText.SplitVertically(200f, out var labelRect, out var right);
-        right = right.ContractedBy(2);
-        Widgets.Label(labelRect, PawnBiology.Translate());
-        if (Editor.RaceAgeRanges.Count > 1 && Widgets.ButtonText(right, Editor.SelectedRace.LabelCap))
-        {
-            var targets = Editor.RaceAgeRanges.Keys;
-
-            var selectPawnKinds = new List<FloatMenuOption>();
-            foreach (var option in targets)
-            {
-                var str = option.LabelCap;
-
-                void Select()
-                {
-                    Editor.SelectedRace = option;
-                }
-
-                selectPawnKinds.Add(new FloatMenuOption(str, Select));
-            }
-
-            Find.WindowStack.Add(new FloatMenu(selectPawnKinds));
-        }
-
-        var bioCount = ModsConfig.BiotechActive ? 8 : 7;
-        var bioRect = new Rect(textRect.x, textRect.y + RowHeight, textRect.width, RowHeight * bioCount);
-        Widgets.DrawMenuSection(bioRect);
-        var bioInnerRect = bioRect.GetInnerRect();
-
-        // age slider
-        var ageSlider = new Rect(bioInnerRect.x, bioInnerRect.y, bioInnerRect.width, RowHeight);
-        var ageRange = Editor.AgeRange;
-
-        // Age minimum is to force an adulthood backstory.
-        var minAge = Editor.AllowedAgeRange.min;
-        var maxAge = Editor.AllowedAgeRange.max;
-
-        Widgets.IntRange(ageSlider, 1235, ref ageRange, minAge, maxAge, AgeRangeText, 4);
-        Editor.AgeRange = ageRange;
-
-        // melanin slider
-        var melaninSlider = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 1.5f, bioInnerRect.width, RowHeight);
-        var genes = PawnSkinColors.SkinColorGenesInOrder;
-        var maxMelanin = genes.Count - 1;
-        Widgets.IntRange(melaninSlider, 12345, ref melaninRange, 0, maxMelanin, MelaninRangeText, 1);
-        var minSelectedMelanin = genes[melaninRange.min].minMelanin;
-        var maxSelectedMelanin = melaninRange.max >= maxMelanin ? 1 : genes[melaninRange.max + 1].minMelanin;
-        Editor.MelaninRange = new FloatRange(minSelectedMelanin, maxSelectedMelanin);
-        
-        // Allow Bad HeDiffs Checkbox
-        var allowInjuries = Editor.AllowBadHeDiffs;
-        var allowInjuriesRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 4f, bioInnerRect.width, RowHeight);
-        Widgets.CheckboxLabeled(allowInjuriesRect, InjuriesLabel.Translate(), ref allowInjuries);
-        TooltipHandler.TipRegion(allowInjuriesRect, InjuriesTooltip.Translate());
-        Editor.AllowBadHeDiffs = allowInjuries;
-        
-        // Allow Relationships checkbox
-        var allowRelationships = Editor.AllowRelationships;
-        var allowRelationshipsRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 5f, bioInnerRect.width, RowHeight);
-        Widgets.CheckboxLabeled(allowRelationshipsRect, RelationshipsLabel.Translate(), ref allowRelationships);
-        TooltipHandler.TipRegion(allowRelationshipsRect, RelationshipsTooltip.Translate());
-        Editor.AllowRelationships = allowRelationships;
-
-        if (ModsConfig.BiotechActive)
-        {
-            var allowPregnant = Editor.AllowPregnancy;
-            var allowPregnancyRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 6f, bioInnerRect.width, RowHeight);
-            Widgets.CheckboxLabeled(allowPregnancyRect, PregnancyLabel.Translate(), ref allowPregnant);
-            TooltipHandler.TipRegion(allowPregnancyRect, PregnancyTooltip.Translate());
-            Editor.AllowPregnancy = allowPregnant;
-        }
-
-        var minSkinColor = genes[melaninRange.min].IconColor;
-        var maxSkinColor = genes[melaninRange.max].IconColor;
-
-        var midPoint = bioInnerRect.x + bioInnerRect.width / 2;
-        const int size = 20;
-        var rectLeft = new Rect(midPoint - size, bioInnerRect.y + RowHeight * 3f, size, size);
-        var rectMid = new Rect(midPoint, bioInnerRect.y + RowHeight * 3f, size, size);
-        var rectRight = new Rect(midPoint + size, bioInnerRect.y + RowHeight * 3f, size, size);
-
-        Widgets.DrawRectFast(rectLeft, minSkinColor);
-        Widgets.DrawRectFast(rectRight, maxSkinColor);
-        GUI.color = minSkinColor;
-        Widgets.DrawBox(rectLeft);
-        GUI.color = maxSkinColor;
-        Widgets.DrawBox(rectRight);
-        GUI.color = new Color(0.6f, 0.6f, 0.6f);
-        Text.Anchor = TextAnchor.UpperCenter;
-        Widgets.Label(rectMid, "-");
-        Text.Anchor = TextAnchor.UpperLeft;
-
-        GUI.color = Color.white;
-
-        // label for text
-        var skillLabels = new Rect(textRect.x, textRect.y + RowHeight * 10, textRect.width, RowHeight);
-        Widgets.Label(skillLabels, PassionText.Translate());
-
-#pragma warning disable CS0612 // 1.4 marks Widgets.HorizontalSlider as obsolete, but keeps it in later versions
-        
-        // skill weight variation
-        var variationSlider = new Rect(textRect.x, textRect.y + RowHeight * 11, textRect.width, RowHeight);
-        Editor.SkillWeightVariation = Widgets.HorizontalSlider(variationSlider, Editor.SkillWeightVariation, 1f,
-            5.0f, true, SkillVariationText.Translate(Editor.SkillWeightVariation.ToString("P0")),
-            SkillVariationLeft.Translate(),
-            SkillVariationRight.Translate(), 0.1f);
-        TooltipHandler.TipRegion(variationSlider, SkillVariationTooltip.Translate());
-
-        // max passion slider and explainer
-        var passionSlider = new Rect(textRect.x, textRect.y + RowHeight * 13, textRect.width, RowHeight);
-        Editor.MaxPassionPoints = Widgets.HorizontalSlider(passionSlider, Editor.MaxPassionPoints, 0, 9.0f,
-            true, PassionMaxText.Translate(Editor.MaxPassionPoints.ToString("N1")), "0", "9", 0.5f);
-
-#pragma warning restore CS0612 // Restore obsolete warning
-
-        var textExplainer = new Rect(textRect.x, textRect.y + RowHeight * 14, textRect.width, RowHeight * 2);
-        var passionPointsNeeded = skillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
-        var passionPointsAvailable = Editor.MaxPassionPoints * Find.GameInitData.startingPawnCount;
-
-        TooltipHandler.TipRegion(passionSlider, PassionPointsTooltip.Translate());
-
-        Text.Font = GameFont.Tiny;
-        Text.Anchor = TextAnchor.UpperCenter;
-        Widgets.Label(textExplainer,
-            PassionGroupText.Translate($"{passionPointsNeeded:F1}/{passionPointsAvailable:F1}"));
-        Text.Font = GameFont.Small;
-        Text.Anchor = TextAnchor.UpperLeft;
-
         var lineHeight = new Rect(skillSelectRect.x + 20f, skillSelectRect.y, skillSelectRect.width, Text.LineHeight);
         Widgets.Label(lineHeight, SkillSelectWidgetLabel.Translate());
 
@@ -415,10 +259,5 @@ public static class SkillPassionSelectionUiUtility
     private static int GetSkillTitleColumnLength()
     {
         return int.Parse("Necrofancy.PrepareProcedurally.SkillTextLength".Translate());
-    }
-
-    private static int GetOverallRowUiLength()
-    {
-        return int.Parse("Necrofancy.PrepareProcedurally.SelectSkillWidgetLength".Translate());
     }
 }
