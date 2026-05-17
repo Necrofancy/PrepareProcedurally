@@ -112,7 +112,7 @@ public class SettingsUiUtility
 
                 void Select()
                 {
-                    selectedRace = option;
+                    Editor.SelectedRace = option;
                 }
 
                 selectPawnKinds.Add(new FloatMenuOption(str, Select));

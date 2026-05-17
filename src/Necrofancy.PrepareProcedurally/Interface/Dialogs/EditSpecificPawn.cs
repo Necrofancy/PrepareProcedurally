@@ -109,6 +109,11 @@ public class EditSpecificPawn : Window
         var tooltip = "KeepAestheticsTooltip".PpTranslate();
         if (!ModsConfig.IdeologyActive)
         {
+            if (PrepareMod.Settings.AlienRacesEnabled)
+            {
+                return;
+            }
+            
             Rect soloRect = new Rect(rect.xMax - aestheticsLength, rect.y, aestheticsLength, Text.LineHeight);
             Widgets.CheckboxLabeled(soloRect, aesthetics, ref keepAesthetics);
             TooltipHandler.TipRegion(soloRect, tooltip);
@@ -122,8 +127,11 @@ public class EditSpecificPawn : Window
         
         var totalWidth = aestheticsLength + headLength + apparelLength + margin * 3;
         Rect align = new Rect(rect.xMax - totalWidth, rect.y, aestheticsLength, Text.LineHeight);
-        Widgets.CheckboxLabeled(align, aesthetics, ref keepAesthetics);
-        TooltipHandler.TipRegion(align, tooltip);
+        if (!PrepareMod.Settings.AlienRacesEnabled)
+        {
+            Widgets.CheckboxLabeled(align, aesthetics, ref keepAesthetics);
+            TooltipHandler.TipRegion(align, tooltip);
+        }
         align.x += aestheticsLength + margin;
         align.width = headLength;
         Widgets.CheckboxLabeled(align, head, ref showHeadgear);
