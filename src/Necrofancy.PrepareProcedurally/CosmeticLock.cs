@@ -54,8 +54,12 @@ public record CosmeticLock
         public Color SkinColor { get; }
         public Color? SkinColorOverride { get; }
         public FurDef Fur { get; }
-
+        
+#if RW1_4 || RW1_5
+        public Color? FavoriteColor { get; }
+#else
         public ColorDef FavoriteColor { get; }
+#endif
         public BeardDef Beard { get; }
         public TattooDef BodyTattoo { get; }
         public TattooDef FaceTattoo { get; }
