@@ -79,6 +79,12 @@ public class EditSpecificPawn : Window
             var relationShipsRect = new Rect(xStart, rect.yMax - height, width, height);
             ShowRelationships(relationShipsRect);
         }
+        
+        if (PrepareMod.Settings.AlienRacesEnabled)
+        {
+            return;
+        }
+        
 #if UI_DEBUGGING
         rect.x += _debugX;
         rect.y += _debugY;

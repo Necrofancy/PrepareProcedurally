@@ -41,6 +41,11 @@ public abstract class Backstory : PawnColumnWorker
         var tip = new TipSignal(() => story.FullDescriptionFor(pawn), (int) rect.y * 37);
         TooltipHandler.TipRegion(rect, tip);
 
+        if (PrepareMod.Settings.AlienRacesEnabled)
+        {
+            return;
+        }
+        
         if (Widgets.ButtonInvisible(rect, doMouseoverSound: true))
         {
             SelectBackstory(pawn);

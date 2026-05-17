@@ -19,6 +19,8 @@ public class PrepareModSettings : ModSettings
     public bool showCompatibility = false;
     public bool preGenerate;
     public bool autoGenerate;
+
+    public bool AlienRacesEnabled => ModsConfig.IsActive("erdelf.humanoidalienraces");
     
     public override void ExposeData()
     {

@@ -1,5 +1,6 @@
 #if RW1_4
 
+using System;
 using System.Collections.Generic;
 using RimWorld;
 using UnityEngine;
@@ -14,54 +15,73 @@ public static partial class ReusingVanillaUi
 
     public static void DrawPortraitArea(Rect rect, int pawnIndex, bool renderClothes, bool renderHeadgear)
     {
-        var currentPawn = Editor.StartingPawns[pawnIndex];
-        Widgets.DrawMenuSection(rect);
-        rect = rect.ContractedBy(17f);
-        Rect position = new Rect(rect.center.x - Page_ConfigureStartingPawns.PawnPortraitSize.x / 2f, rect.yMin - 24f, Page_ConfigureStartingPawns.PawnPortraitSize.x, Page_ConfigureStartingPawns.PawnPortraitSize.y);
-        Pawn curPawn = currentPawn;
-        Vector2 pawnPortraitSize = Page_ConfigureStartingPawns.PawnPortraitSize;
-        Rot4 south = Rot4.South;
-        Vector3 cameraOffset = new Vector3();
-        int num1 = renderHeadgear ? 1 : 0;
-        int num2 = renderClothes ? 1 : 0;
-        RenderTexture image = PortraitsCache.Get(curPawn, pawnPortraitSize, south, cameraOffset, renderHeadgear: num1 != 0, renderClothes: num2 != 0, stylingStation: true);
-        GUI.DrawTexture(position, image);
-        Rect rect1 = rect with { width = 500f };
-        CharacterCardUtility.DrawCharacterCard(rect1, currentPawn, SelectedPawn.Randomize, rect);
-        int num3 = SocialCardUtility.AnyRelations(currentPawn) ? 1 : 0;
-        List<ThingDefCount> startingPossession = Find.GameInitData.startingPossessions[currentPawn];
-        bool flag = startingPossession.Any();
-        int num4 = 1;
-        if (num3 != 0)
-          ++num4;
-        if (flag)
-          ++num4;
-        float height = (float) (rect.height - 100.0 - (4.0 * num4 - 1.0)) / num4;
-        Rect rect2 = rect;
-        rect2.yMin += 100f;
-        rect2.xMin = rect1.xMax + 5f;
-        rect2.height = height;
-        if (!HealthCardUtility.AnyHediffsDisplayed(currentPawn, true))
-          GUI.color = Color.gray;
-        Widgets.Label(rect2, "Health".Translate().AsTipTitle());
-        GUI.color = Color.white;
-        rect2.yMin += 35f;
-        HealthCardUtility.DrawHediffListing(rect2, currentPawn, true);
-        float y2 = rect2.yMax + 4f;
-        if (num3 != 0)
+        int tracerBullet = 0;
+        try
         {
-          Rect rect3 = new Rect(rect2.x, y2, rect2.width, height);
-          Widgets.Label(rect3, "Relations".Translate().AsTipTitle());
-          rect3.yMin += 35f;
-          SocialCardUtility.DrawRelationsAndOpinions(rect3, currentPawn);
-          y2 = rect3.yMax + 4f;
+            var currentPawn = Editor.StartingPawns[pawnIndex];
+            Widgets.DrawMenuSection(rect);
+            rect = rect.ContractedBy(17f);
+            Rect position = new Rect(rect.center.x - Page_ConfigureStartingPawns.PawnPortraitSize.x / 2f, rect.yMin - 24f, Page_ConfigureStartingPawns.PawnPortraitSize.x, Page_ConfigureStartingPawns.PawnPortraitSize.y);
+            Pawn curPawn = currentPawn;
+            Vector2 pawnPortraitSize = Page_ConfigureStartingPawns.PawnPortraitSize;
+            Rot4 south = Rot4.South;
+            Vector3 cameraOffset = new Vector3();
+            int num1 = renderHeadgear ? 1 : 0;
+            int num2 = renderClothes ? 1 : 0;
+            
+            tracerBullet++; //1
+            RenderTexture image = PortraitsCache.Get(curPawn, pawnPortraitSize, south, cameraOffset, renderHeadgear: num1 != 0, renderClothes: num2 != 0, stylingStation: true);
+            GUI.DrawTexture(position, image);
+            
+            Rect rect1 = rect with { width = 500f };
+            CharacterCardUtility.DrawCharacterCard(rect1, currentPawn, SelectedPawn.Randomize, rect);
+            int num3 = SocialCardUtility.AnyRelations(currentPawn) ? 1 : 0;
+
+            tracerBullet++;
+            if (!Find.GameInitData.startingPossessions.TryGetValue(currentPawn, out var startingPossession))
+            {
+                startingPossession = new List<ThingDefCount>();
+            }
+            bool flag = startingPossession.Any();
+            int num4 = 1;
+            if (num3 != 0)
+              ++num4;
+            if (flag)
+              ++num4;
+            float height = (float) (rect.height - 100.0 - (4.0 * num4 - 1.0)) / num4;
+            Rect rect2 = rect;
+            rect2.yMin += 100f;
+            rect2.xMin = rect1.xMax + 5f;
+            rect2.height = height;
+            tracerBullet++; //3
+            if (!HealthCardUtility.AnyHediffsDisplayed(currentPawn, true))
+              GUI.color = Color.gray;
+            Widgets.Label(rect2, "Health".Translate().AsTipTitle());
+            GUI.color = Color.white;
+            rect2.yMin += 35f;
+            HealthCardUtility.DrawHediffListing(rect2, currentPawn, true);
+            float y2 = rect2.yMax + 4f;
+            if (num3 != 0)
+            {
+              Rect rect3 = new Rect(rect2.x, y2, rect2.width, height);
+              Widgets.Label(rect3, "Relations".Translate().AsTipTitle());
+              rect3.yMin += 35f;
+              SocialCardUtility.DrawRelationsAndOpinions(rect3, currentPawn);
+              y2 = rect3.yMax + 4f;
+            }
+            tracerBullet++; //4
+            if (!flag)
+              return;
+            Rect rect4 = new Rect(rect2.x, y2, rect2.width, height);
+            Widgets.Label(rect4, "Possessions".Translate().AsTipTitle());
+            rect4.yMin += 35f;
+            DrawPossessions(rect4, currentPawn);
         }
-        if (!flag)
-          return;
-        Rect rect4 = new Rect(rect2.x, y2, rect2.width, height);
-        Widgets.Label(rect4, "Possessions".Translate().AsTipTitle());
-        rect4.yMin += 35f;
-        DrawPossessions(rect4, currentPawn);
+        catch (Exception e)
+        {
+            Logging.ErrorOnce($"Tracer Bullet is at {tracerBullet}");
+            Logging.Error(e.ToString());
+        }
     }
     
     private static void DrawPossessions(Rect rect, Pawn pawn)

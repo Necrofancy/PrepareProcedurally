@@ -45,9 +45,9 @@ public static class SpecialTraitHandling
         bool Match(AlienChanceEntry<TraitWithDegree> chanceEntry)
         {
 #if RW1_4 || RW1_5
-            return chanceEntry.defName.def == trait.def;
+            return chanceEntry?.defName?.def == trait.def;
 #else
-            return chanceEntry.entry.def == trait.def;
+            return chanceEntry?.entry?.def == trait.def;
 #endif
         }
 
