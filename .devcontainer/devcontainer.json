@@ -13,11 +13,46 @@
 
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
+  // If I were sharing this with a team, I'd be stripping this out and finding a way
+  // to put these in a more personalized spin of the devcontainer.
+  // doing so with Jetbrains IDEs is a knowledge gap for me.
+  // Mainly using LLMs as a review and research tool for theory-building, not "agentic" workflows.
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  "customizations": {
+    "jetbrains": {
+      "plugins": ["com.anthropic.code.plugin", "com.intellij.ml.llm"]
+    }
+  },
+
+  // Some SELinux configurations for rootless Podman, and additional container hardening.
+  // Hilariously overkill for Rimworld modding, but valid security posture with NPM
+  // and other commonly-attack supply chains, so this is keeping up good posture.
   "runArgs": [
     "--init",
-
-    // Rootless Podman: map your host UID/GID into the container to have SELinux policies work properly.
+    "--read-only",
+    "--tmpfs", "/tmp",
+    "--tmpfs", "/run",
+    "--tmpfs", "/var/tmp",
+    "--tmpfs", "/.jbdevcontainer",
+    "--cap-drop=all",
+    "--cap-add=FOWNER",
+    "--security-opt=no-new-privileges",
     "--userns=keep-id"
+  ],
+
+  // Persistent volumes for tooling state across rebuilds.
+  // Ownership is pre-created in the Dockerfile since Rider strips SELinux/Podman :U and :z mount options.
+  // (see ReadMe.md)
+  "mounts": [
+    "source=dotnet,target=/home/dev/.dotnet,type=volume",
+    "source=nuget-packages,target=/home/dev/.nuget,type=volume",
+    "source=${localEnv:HOME}/.gitconfig,target=/home/dev/.gitconfig,type=bind",
+    "source=jb-config,target=/home/dev/.config/JetBrains,type=volume",
+    "source=jb-cache,target=/home/dev/.cache/JetBrains,type=volume",
+    "source=jb-share,target=/home/dev/.local/share/JetBrains,type=volume",
+    "source=claude-config,target=/home/dev/.claude,type=volume"
   ],
 
   "containerEnv": {
@@ -26,20 +61,11 @@
     "NUGET_XMLDOC_MODE": "skip"
   },
 
-  "mounts": [
-    "source=nuget-packages,target=/home/dev/.nuget/packages,type=volume",
-    "source=${localEnv:HOME}/SteamCMD/Rimworld,target=${localEnv:HOME}/SteamCMD/Rimworld,type=bind,Z",
-
-    "source=jb-config,target=/home/dev/.config/JetBrains,type=volume",
-    "source=jb-cache,target=/home/dev/.cache/JetBrains,type=volume",
-    "source=jb-share,target=/home/dev/.local/share/JetBrains,type=volume"
-  ],
-
   "containerUser": "dev",
   "remoteUser": "dev",
 
   "postCreateCommand": {
-    "ensure-dll-read-perms": "find Steam -type f -name '*.dll' -exec chmod a+r {} +",
+    "initialize-git": "git config",
     "dotnet-and-mono-info": "dotnet --info && mono --version",
     "restore-dependencies": "dotnet restore"
   }
