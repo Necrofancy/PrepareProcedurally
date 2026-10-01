@@ -77,5 +77,6 @@
 	<Necrofancy.PrepareProcedurally.DisplayCompatibility>Display Hidden Social Compatibility</Necrofancy.PrepareProcedurally.DisplayCompatibility>
 	<Necrofancy.PrepareProcedurally.DisplayCompatibilityTooltip>Display hidden social compatibility between pawns in the "Edit Specific Pawn" UI.\n\nThis hidden stat is used by Rimworld to determine where social interactions tend towards at neutral opinion.\n\nSince this is tied to a pawn's ID, this can't be safely changed while keeping to vanilla rules. If you want a different value, you'll have to reroll the pawns.</Necrofancy.PrepareProcedurally.DisplayCompatibilityTooltip>
 
+	<Necrofancy.PrepareProcedurally.SearchBackstory>Search backstories by name, traits, or skills</Necrofancy.PrepareProcedurally.SearchBackstory>
 	<Necrofancy.PrepareProcedurally.RerollButton>Reroll</Necrofancy.PrepareProcedurally.RerollButton>
 </LanguageData>

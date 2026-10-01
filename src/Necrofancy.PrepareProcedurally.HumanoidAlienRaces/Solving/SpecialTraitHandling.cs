@@ -21,7 +21,7 @@ public static class SpecialTraitHandling
     {
         void GainTrait(AlienChanceEntry<TraitWithDegree> chanceEntry)
         {
-#if RW1_4 || RW1_5
+#if RW1_4
             var trait = new Trait(chanceEntry.defName.def, chanceEntry.defName.degree, true);
 #else
             var trait = new Trait(chanceEntry.entry.def, chanceEntry.entry.degree, true);
@@ -44,7 +44,7 @@ public static class SpecialTraitHandling
         if (!trait.ScenForced) return false;
         bool Match(AlienChanceEntry<TraitWithDegree> chanceEntry)
         {
-#if RW1_4 || RW1_5
+#if RW1_4
             return chanceEntry?.defName?.def == trait.def;
 #else
             return chanceEntry?.entry?.def == trait.def;

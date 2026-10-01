@@ -52,7 +52,7 @@ VERSIONS=( "1.4" "1.5" "1.6" )
 # BETA version labels of Rimworld to download.
 BETAS=( "version-1.4.3901" "version-1.5" "public" )
 # HumanoidAlienRace versions versioned by which assembly to look at for PrepareProcedurally builds.
-ALIEN_RACE_COMPAT=( "1.4" "1.4" "1.6" )
+ALIEN_RACE_COMPAT=( "1.4" "1.5" "1.6" )
 
 echo "======Installing Humanoid Alien Races (HAR) for Prepare Procedurally compatibility build======"
 MODS_INSTALL_DIRECTORY="${INSTALLS_DIR}/Mods"
