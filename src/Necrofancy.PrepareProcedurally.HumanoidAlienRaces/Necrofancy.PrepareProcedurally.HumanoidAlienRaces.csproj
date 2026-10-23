@@ -5,9 +5,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Necrofancy.PrepareProcedurally\Necrofancy.PrepareProcedurally.csproj">
-            <Properties>RimworldVersion=$(RimworldVersion)</Properties>
-        </ProjectReference>
+        <ProjectReference Include="..\Necrofancy.PrepareProcedurally\Necrofancy.PrepareProcedurally.csproj" 
+                          Private="false"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -31,9 +31,7 @@
     </Choose>
 
     <ItemGroup>
-        <ProjectReference Include="..\Necrofancy.PrepareProcedurally\Necrofancy.PrepareProcedurally.csproj">
-            <Properties>RimWorldVersion=$(RimWorldVersion)</Properties>
-        </ProjectReference>
+        <ProjectReference Include="..\Necrofancy.PrepareProcedurally\Necrofancy.PrepareProcedurally.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

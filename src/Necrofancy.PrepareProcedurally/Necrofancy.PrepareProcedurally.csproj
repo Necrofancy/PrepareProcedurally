@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <!--Output specification-->
     <PropertyGroup>
         <AssemblyTitle>Necrofancy.PrepareProcedurally</AssemblyTitle>
         <OutputPath>..\..\Release\$(RimworldVersion)\Assemblies\</OutputPath>
