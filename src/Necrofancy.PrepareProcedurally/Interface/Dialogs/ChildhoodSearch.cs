@@ -1,4 +1,4 @@
-#if !RW1_4 && !RW1_5
+#if SEARCH_MENU_AVAILABLE
 
 using System.Collections.Generic;
 using RimWorld;

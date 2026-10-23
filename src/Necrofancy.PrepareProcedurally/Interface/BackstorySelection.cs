@@ -149,7 +149,7 @@ public static class BackstorySelection
                 : option.Def.TitleCapFor(Gender.Male);
     }
 
-    private static string SolidBioString(PawnBio bio)
+    public static string SolidBioString(PawnBio bio)
     {
         var name = bio.name.ToStringFull;
         return bio.gender switch
@@ -177,7 +177,7 @@ public static class BackstorySelection
         }
     }
 
-    private static TemporaryEdit<(Name, Gender)> FakeBackstory(Pawn pawn, PawnBio bio)
+    public static TemporaryEdit<(Name, Gender)> FakeBackstory(Pawn pawn, PawnBio bio)
     {
         var current = (pawn.Name, pawn.gender);
         var setGender = bio.gender switch

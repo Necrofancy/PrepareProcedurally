@@ -1,37 +1,10 @@
 <Project>
-    <!-- =========================
-         Global build defaults
-         ========================= -->
-    <PropertyGroup>
-        <TargetFramework>net48</TargetFramework>
+    <PropertyGroup Label="Common Metadata">
+        <!--TargetFramework is NOT here; check the choose/when on Waylith well below here!-->
         <LangVersion>latest</LangVersion>
-         <Configurations>Debug;Debug - 1.4;Debug - 1.5;Debug - 1.6;Release;Release - 1.4;Release - 1.5;Release - 1.6</Configurations>
+        <Configurations>Debug;Debug - 1.4;Debug - 1.5;Debug - 1.6;Debug - 1.7;Release;Release - 1.4;Release - 1.5;Release - 1.6;Release - 1.7</Configurations>
         <Platforms>AnyCPU</Platforms>
-    </PropertyGroup>
 
-    <PropertyGroup>
-        <!-- Check if the configuration starts with 'Debug' -->
-        <IsDebugConfig>$(Configuration.StartsWith('Debug'))</IsDebugConfig>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(IsDebugConfig)' == 'true'">
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
-        <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(IsDebugConfig)' != 'true'">
-        <Optimize>true</Optimize>
-        <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
-        <DebugSymbols>false</DebugSymbols>
-        <DebugType>none</DebugType>
-    </PropertyGroup>
-
-    <!-- =========================
-         Shared assembly metadata
-         ========================= -->
-    <PropertyGroup>
         <Description>Prepare Procedurally is a mod that enables quick automation to colony and tribal starts in the game Rimworld by Ludeon Studios</Description>
         <Company>Necrofancy</Company>
         <Product>Prepare Procedurally</Product>
@@ -42,24 +15,36 @@
         <InformationalVersion>1.2.1.0</InformationalVersion>
 
         <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
-    <!-- =========================
-         Universal dependencies
-         ========================= -->
-    <ItemGroup>
-        <!-- Allows building net48 without relying on machine-installed targeting packs -->
-        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
-        <PackageReference Include="Lib.Harmony" Version="2.4.2" />
-    </ItemGroup>
+    <!--Debug is just inferred based on config-->
+    <Choose>
+        <When Condition="$(Configuration.StartsWith('Debug'))">
+            <PropertyGroup Label="Debug Settings">
+                <DebugSymbols>true</DebugSymbols>
+                <DebugType>full</DebugType>
+                <Optimize>false</Optimize>
+                <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup Label="Release Settings">
+                <Optimize>true</Optimize>
+                <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+                <DebugSymbols>false</DebugSymbols>
+                <DebugType>none</DebugType>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
     
-    <!-- =========================
-         RimWorld version selection
+    <!-- RimWorld version selection
          Priority:
            1) Explicit -p:RimworldVersion=...
            2) Infer from Configuration name (IDE workflow)
-           3) Default to latest version for plain Debug/Release
-         ========================= -->
+           3) Default to latest version for plain Debug/Release -->
     <Choose>
         <When Condition="'$(RimworldVersion)' != ''">
             <!-- Provided by build.sh or terminal explicitly; no action needed. -->
@@ -83,9 +68,15 @@
             </PropertyGroup>
         </When>
 
+        <When Condition="$([System.String]::Copy('$(Configuration)').Contains('1.7'))">
+            <PropertyGroup>
+                <RimworldVersion>1.7</RimworldVersion>
+            </PropertyGroup>
+        </When>
+
         <Otherwise>
             <PropertyGroup>
-                <RimworldVersion>1.6</RimworldVersion>
+                <RimworldVersion>1.7</RimworldVersion>
             </PropertyGroup>
         </Otherwise>
     </Choose>
@@ -95,11 +86,69 @@
         <DefineConstants>$(DefineConstants);RW$(RimworldVersion.Replace('.', '_'))</DefineConstants>
     </PropertyGroup>
 
-    <!-- =========================
-         Cleanup (legacy artifacts)
-         ========================= -->
-    <ItemGroup>
-        <Compile Remove="bin\**;obj\**" />
-        <None Remove="bin\**;obj\**" />
-    </ItemGroup>
+    <PropertyGroup Label="Version Floors">
+        <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(RimworldVersion)','1.5'))">$(DefineConstants);RW1_5_OR_GREATER</DefineConstants>
+        <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(RimworldVersion)','1.6'))">$(DefineConstants);RW1_6_OR_GREATER;SEARCH_MENU_AVAILABLE</DefineConstants>
+        <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(RimworldVersion)','1.7'))">$(DefineConstants);RW1_7_OR_GREATER;WAYLITH</DefineConstants>
+        <IsWaylith>$([MSBuild]::VersionGreaterThanOrEquals('$(RimworldVersion)','1.7'))</IsWaylith>
+    </PropertyGroup>
+    
+    <Choose>
+        <When Condition="'$(IsWaylith)' == 'true'">
+            <PropertyGroup Label="Waylith Properties">
+                <TargetFramework>net10.0</TargetFramework>
+                <GenerateDependencyFile>false</GenerateDependencyFile>
+            </PropertyGroup>
+            <ItemGroup Label="Waylith Package References">
+                <PackageReference Include="Lib.Harmony" Version="3.0.0-rc.2" />
+            </ItemGroup>
+            <ItemGroup Label="Waylith Assembly References">
+                <Reference Include="Assembly-CSharp">
+                    <HintPath>..\..\Steam\$(RimworldVersion)\Game\Assembly-CSharp.dll</HintPath>
+                    <Private>false</Private>
+                </Reference>
+                <Reference Include="UnityStubs">
+                    <HintPath>..\..\Steam\$(RimworldVersion)\Game\UnityStubs.dll</HintPath>
+                    <Private>false</Private>
+                </Reference>
+                <Reference Include="Waylith">
+                    <HintPath>..\..\Steam\$(RimworldVersion)\Game\Waylith.dll</HintPath>
+                    <Private>false</Private>
+                </Reference>
+            </ItemGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup Label="Unity Properties">
+                <TargetFramework>net48</TargetFramework>
+            </PropertyGroup>
+            <ItemGroup Label="Unity Package References">
+                <!-- Allows building net48 without relying on machine-installed targeting packs -->
+                <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+                <PackageReference Include="Lib.Harmony" Version="2.4.2" />
+            </ItemGroup>
+            <ItemGroup Label="Unity Assembly References">
+                <Reference Include="Assembly-CSharp">
+                    <HintPath>..\..\Steam\$(RimworldVersion)\Game\Assembly-CSharp.dll</HintPath>
+                    <Private>false</Private>
+                </Reference>
+                <Reference Include="UnityEngine.CoreModule">
+                    <HintPath>..\..\Steam\$(RimworldVersion)\Game\UnityEngine.CoreModule.dll</HintPath>
+                    <Private>false</Private>
+                </Reference>
+                <Reference Include="UnityEngine.IMGUIModule">
+                    <HintPath>..\..\Steam\$(RimworldVersion)\Game\UnityEngine.IMGUIModule.dll</HintPath>
+                    <Private>false</Private>
+                </Reference>
+                <Reference Include="UnityEngine.TextRenderingModule">
+                    <HintPath>..\..\Steam\$(RimworldVersion)\Game\UnityEngine.TextRenderingModule.dll</HintPath>
+                    <Private>false</Private>
+                </Reference>
+            </ItemGroup>
+        </Otherwise>
+    </Choose>
+    
+    <PropertyGroup Label="Version-Specifying Intermediates">
+        <BaseIntermediateOutputPath>obj\$(RimworldVersion)\</BaseIntermediateOutputPath>
+        <DefaultItemExcludes>$(DefaultItemExcludes);bin\**;obj\**</DefaultItemExcludes>
+    </PropertyGroup>
 </Project>

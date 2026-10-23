@@ -16,7 +16,7 @@ public class Adulthood : Backstory
     }
     protected override void SelectBackstory(Pawn pawn)
     {
-#if !RW1_4 && !RW1_5
+#if RW1_6_OR_GREATER
         var selector = Compatibility.Layer.GetBackstorySelection(pawn);
         var index = StartingPawnUtility.PawnIndex(pawn);
         var traitRequirements = Editor.TraitRequirements[index];

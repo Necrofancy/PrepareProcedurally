@@ -18,7 +18,7 @@ namespace Necrofancy.PrepareProcedurally;
 
 public static partial class ReusingVanillaUi
 {
-#if !RW1_4
+#if RW1_5_OR_GREATER
     internal static void DrawPortraitArea(
         Rect rect,
         int pawnIndex,

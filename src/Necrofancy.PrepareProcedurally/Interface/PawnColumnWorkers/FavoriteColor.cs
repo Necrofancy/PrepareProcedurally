@@ -16,7 +16,7 @@ public class FavoriteColor : PawnColumnWorker_Icon
         
     protected override Texture2D GetIconFor(Pawn pawn) => BaseContent.WhiteTex;
 
-#if RW1_6
+#if RW1_6_OR_GREATER
     protected override Color GetIconColor(Pawn pawn) => pawn.story.favoriteColor?.color ?? Color.black;
 #else 
     protected override Color GetIconColor(Pawn pawn) => pawn.story.favoriteColor ?? Color.black;
@@ -58,7 +58,7 @@ public class FavoriteColor : PawnColumnWorker_Icon
         {
             void ApplyColor()
             {
-#if !(RW1_4 || RW1_5)
+#if RW1_6_OR_GREATER
                 pawn.story.favoriteColor = color;
 #else 
                 pawn.story.favoriteColor = color.color;

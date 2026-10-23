@@ -48,11 +48,11 @@ if [[ -z "${STEAM_USER}" ]]; then
 fi
 
 # Each version supported by Prepare Procedurally.
-VERSIONS=( "1.4" "1.5" "1.6" )
+VERSIONS=( "1.4" "1.5" "1.6" "1.7" )
 # BETA version labels of Rimworld to download.
-BETAS=( "version-1.4.3901" "version-1.5" "public" )
+BETAS=( "version-1.4.3901" "version-1.5" "public" "unstable" )
 # HumanoidAlienRace versions versioned by which assembly to look at for PrepareProcedurally builds.
-ALIEN_RACE_COMPAT=( "1.4" "1.5" "1.6" )
+ALIEN_RACE_COMPAT=( "1.4" "1.5" "1.6" "1.7" )
 
 echo "======Installing Humanoid Alien Races (HAR) for Prepare Procedurally compatibility build======"
 MODS_INSTALL_DIRECTORY="${INSTALLS_DIR}/Mods"
@@ -83,7 +83,9 @@ for i in "${!VERSIONS[@]}"; do
            +quit
   
   echo "======Symlinking PrepareProcedurally's Release so the install can use it as a local mod======"
-  LOCAL_MOD_DESTINATION="${VERSION_DIR}/Mods/PrepareProcedurally"
+  LOCAL_MODS_FOLDER="${VERSION_DIR}/Mods"
+  mkdir -p "${LOCAL_MODS_FOLDER}"
+  LOCAL_MOD_DESTINATION="${LOCAL_MODS_FOLDER}/PrepareProcedurally"
   ln -snf "${PROJECT_ROOT}/Release" "${LOCAL_MOD_DESTINATION}"
   
   echo "=====Adding a local launch script to test without messing with the main steam install on your host OS====="
@@ -115,6 +117,10 @@ EOF
   echo "======Copying Rimworld v${VERSION} assemblies for PrepareProcedurally v${VERSION} build======"
   DEPENDENCY_DIR="${PROJECT_ROOT}/Steam/${VERSION}"
   SOURCE_ASSEMBLIES="${VERSION_DIR}/RimWorldLinux_Data/Managed"
+  if [ ! -d "$SOURCE_ASSEMBLIES" ]; then
+     echo "Waylith detected - new file path retarget"
+     SOURCE_ASSEMBLIES="${VERSION_DIR}"
+  fi
   DESTINATION="${DEPENDENCY_DIR}/Game"
   mkdir -p "${DESTINATION}"
   cp -r "${SOURCE_ASSEMBLIES}"/. "${DESTINATION}"

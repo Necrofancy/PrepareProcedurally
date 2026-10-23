@@ -55,7 +55,7 @@ public record CosmeticLock
         public Color? SkinColorOverride { get; }
         public FurDef Fur { get; }
         
-#if RW1_4 || RW1_5
+#if !RW1_6_OR_GREATER
         public Color? FavoriteColor { get; }
 #else
         public ColorDef FavoriteColor { get; }

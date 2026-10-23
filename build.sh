@@ -4,7 +4,7 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SLN_PATH="${PROJECT_ROOT}/Necrofancy.PrepareProcedurally.sln"
 CONFIG="Release"
-VERSIONS=( "1.4" "1.5" "1.6" )
+VERSIONS=( "1.4" "1.5" "1.6" "1.7" )
 
 for v in "${VERSIONS[@]}"; do
   echo "=== Building PrepareProcedurally for Rimworld ${v} (${CONFIG}) ==="

@@ -129,7 +129,7 @@ public static class BackstorySolver
             this.def = def;
         }
 
-        public int Compare(PawnBuilder x, PawnBuilder y)
+        public int Compare(PawnBuilder? x, PawnBuilder? y)
         {
             if (ReferenceEquals(x, y)) return 0;
             if (ReferenceEquals(null, y)) return -1;

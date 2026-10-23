@@ -15,32 +15,25 @@
         </PackageReference>
 
         <PackageReference Include="Verify.Xunit" Version="17.0.0-beta.1" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
-        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
+    
+    <Choose>
+        <When Condition="'$(IsWaylith)' == 'true'">
+            <!--Deliberately blank for now-->
+        </When>
+        <Otherwise>
+            <ItemGroup>
+                <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+                <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+            </ItemGroup>
+        </Otherwise>
+    </Choose>
 
     <ItemGroup>
         <ProjectReference Include="..\Necrofancy.PrepareProcedurally\Necrofancy.PrepareProcedurally.csproj">
             <Properties>RimWorldVersion=$(RimWorldVersion)</Properties>
         </ProjectReference>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="Assembly-CSharp">
-            <HintPath>..\..\Steam\$(RimWorldVersion)\Game\Assembly-CSharp.dll</HintPath>
-            <Private>true</Private>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>..\..\Steam\$(RimWorldVersion)\Game\UnityEngine.CoreModule.dll</HintPath>
-            <Private>true</Private>
-        </Reference>
-        <Reference Include="UnityEngine.IMGUIModule">
-            <HintPath>..\..\Steam\$(RimWorldVersion)\Game\UnityEngine.IMGUIModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.TextRenderingModule">
-            <HintPath>..\..\Steam\$(RimWorldVersion)\Game\UnityEngine.TextRenderingModule.dll</HintPath>
-        </Reference>
     </ItemGroup>
 
     <ItemGroup>
