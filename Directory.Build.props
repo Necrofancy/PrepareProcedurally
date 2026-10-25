@@ -29,20 +29,22 @@
         <When Condition="$(Configuration.StartsWith('Debug'))">
             <PropertyGroup Label="Debug Settings">
                 <Optimize>false</Optimize>
+                <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
             </PropertyGroup>
         </When>
         <Otherwise>
             <PropertyGroup Label="Release Settings">
                 <Optimize>true</Optimize>
+                <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
             </PropertyGroup>
         </Otherwise>
     </Choose>
     
-    <PropertyGroup Label="Defining Rimworld Versions for ifdef">
+    <PropertyGroup Label="Defining Rimworld Versions for Defines">
         <DefineConstants>$(DefineConstants);RW$(RimworldVersion.Replace('.', '_'))</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Label="Version Floors">
+    <PropertyGroup Label="Version Floor Defines">
         <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(RimworldVersion)','1.5'))">$(DefineConstants);RW1_5_OR_GREATER</DefineConstants>
         <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(RimworldVersion)','1.6'))">$(DefineConstants);RW1_6_OR_GREATER;SEARCH_MENU_AVAILABLE</DefineConstants>
         <DefineConstants Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(RimworldVersion)','1.7'))">$(DefineConstants);RW1_7_OR_GREATER;WAYLITH</DefineConstants>
