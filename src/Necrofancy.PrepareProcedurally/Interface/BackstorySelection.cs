@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -19,10 +18,13 @@ public static class BackstorySelection
         var selector = Compatibility.Layer.GetBackstorySelection(pawn);
         var index = StartingPawnUtility.PawnIndex(pawn);
         var traitRequirements = Editor.TraitRequirements[index];
-        
         var possibleBackstories = selector.PossibleAdulthoods(traitRequirements);
         
+#if SEARCH_MENU_AVAILABLE
+        Find.WindowStack.Add(new BackstorySearch(pawn, possibleBackstories));
+#else
         ShowBackstories(possibleBackstories, Editor.SetAdulthoods, Editor.SetChildhoods, index, onSelect);
+#endif
     }
 
     public static void PossibleChildhoods(Pawn pawn, Action onSelect)
@@ -30,10 +32,13 @@ public static class BackstorySelection
         var selector = Compatibility.Layer.GetBackstorySelection(pawn);
         var index = StartingPawnUtility.PawnIndex(pawn);
         var traitRequirements = Editor.TraitRequirements[index];
-        
         var possibleBackstories = selector.PossibleChildhoods(traitRequirements);
         
+#if SEARCH_MENU_AVAILABLE
+        Find.WindowStack.Add(new BackstorySearch(pawn, possibleBackstories));
+#else
         ShowBackstories(possibleBackstories, Editor.SetChildhoods, Editor.SetAdulthoods, index, onSelect);
+#endif
     }
 
     public static void ForSelectedPawn(BackstorySlot slot, Rect rect)
@@ -43,24 +48,23 @@ public static class BackstorySelection
             return;
         }
         
+        var pawn = SelectedPawn.Pawn;
         var index = SelectedPawn.Index;
         var selector = Compatibility.Layer.GetBackstorySelection(SelectedPawn.Pawn);
         var traitRequirements = Editor.TraitRequirements[index];
 
-        switch (slot)
+        List<BackstoryOption> possibleBackstories = slot switch
         {
-            case BackstorySlot.Childhood:
-                var possibleBackstories = selector.PossibleChildhoods(traitRequirements);
-                ShowBackstories(possibleBackstories, Editor.SetChildhoods, Editor.SetAdulthoods, index, SelectedPawn.Randomize);
-                break;
-            case BackstorySlot.Adulthood:
-                possibleBackstories = selector.PossibleAdulthoods(traitRequirements);
-                ShowBackstories(possibleBackstories, Editor.SetAdulthoods, Editor.SetChildhoods, index, SelectedPawn.Randomize);
-                break;
-            default:
-                Logging.ErrorOnce("Unknown backstory slot: " + slot);
-                break;
-        }
+            BackstorySlot.Childhood => selector.PossibleChildhoods(traitRequirements),
+            BackstorySlot.Adulthood => selector.PossibleAdulthoods(traitRequirements),
+            _                       => throw new ArgumentOutOfRangeException(nameof(slot), "Invalid backstory slot")
+        };
+        
+#if SEARCH_MENU_AVAILABLE
+        Find.WindowStack.Add(new BackstorySearch(pawn, possibleBackstories));
+#else
+        ShowBackstories(possibleBackstories, Editor.SetAdulthoods, Editor.SetChildhoods, index, SelectedPawn.Randomize);
+#endif
     }
     
     private static void ShowBackstories(
@@ -103,96 +107,13 @@ public static class BackstorySelection
                 && option.ForcedGender != fixedGender)
                 continue;
             
-            var label = CreateLabel(option);
             var disabled = option.Def == currentSelection;
-            var tooltip = CreateTooltip(pawn, option);
-            void Add()
-            {
-                if (option.ForcedBio is not null)
-                {
-                    Editor.SetChildhoods[pawnIndex] = option.ForcedBio.childhood;
-                    Editor.SetAdulthoods[pawnIndex] = option.ForcedBio.adulthood;
-                }
-                else
-                {
-                    array[pawnIndex] = option.Def;
-                    if (otherArray[pawnIndex]?.shuffleable == false)
-                    {
-                        otherArray[pawnIndex] = null;
-                    }
-                }
-                
-                onSelect();
-            }
-            void ShowTooltip(Rect draw)
-            {
-                TooltipHandler.TipRegion(draw, tooltip);
-            }
-
-            var floatOption = new FloatMenuOption(label, Add, mouseoverGuiAction: ShowTooltip)
-            {
-                Disabled = disabled
-            };
+            
+            var floatOption = option.CreateFloatOption(pawn, pawnIndex, disabled, onSelect);
 
             options.Add(floatOption);
         }
 
         Find.WindowStack.Add(new FloatMenu(options));
-    }
-
-    private static string CreateLabel(BackstoryOption option)
-    {
-        return option.ForcedBio is not null
-            ? SolidBioString(option.ForcedBio)
-            : option.ForcedGender == GenderPossibility.Female
-                ? option.Def.TitleCapFor(Gender.Female)
-                : option.Def.TitleCapFor(Gender.Male);
-    }
-
-    public static string SolidBioString(PawnBio bio)
-    {
-        var name = bio.name.ToStringFull;
-        return bio.gender switch
-        {
-            GenderPossibility.Male => $"<color=#06c2ac>{name}</color>",
-            GenderPossibility.Female => $"<color=#c79fef>{name}</color>",
-            _ => bio.name.ToStringFull
-        };
-    }
-
-    private static string CreateTooltip(Pawn pawn, BackstoryOption option)
-    {
-        if (option.ForcedBio is null)
-        {
-            return option.Def.FullDescriptionFor(pawn);
-        }
-
-        using (FakeBackstory(pawn, option.ForcedBio))
-        {
-            StringBuilder builder = new();
-            builder.AppendLine(option.ForcedBio.childhood.FullDescriptionFor(pawn));
-            builder.AppendLine();
-            builder.AppendLine(option.ForcedBio.adulthood.FullDescriptionFor(pawn));
-            return builder.ToString();
-        }
-    }
-
-    public static TemporaryEdit<(Name, Gender)> FakeBackstory(Pawn pawn, PawnBio bio)
-    {
-        var current = (pawn.Name, pawn.gender);
-        var setGender = bio.gender switch
-        {
-            GenderPossibility.Male => Gender.Male,
-            GenderPossibility.Female => Gender.Female,
-            _ => pawn.gender
-        };
-        var setForBackstoryDesc = (bio.name, setGender);
-        void Set((Name name, Gender gender) pawnFacts)
-        {
-            pawn.Name = pawnFacts.name;
-            pawn.gender = pawnFacts.gender;
-        }
-
-        return new TemporaryEdit<(Name, Gender)>(current, setForBackstoryDesc, Set);
     }
 }

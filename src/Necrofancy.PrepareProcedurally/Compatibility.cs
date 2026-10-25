@@ -28,7 +28,9 @@ public class Compatibility
     
     public virtual SelectBackstorySpecifically GetBackstorySelection(Pawn pawn)
     {
-        return new SelectBackstorySpecifically(pawn.Faction.def.backstoryFilters, GenderPossibility.Either, pawn);
+        var index = StartingPawnUtility.PawnIndex(pawn);
+        var genderRequirement = Editor.GenderRequirements[index];
+        return new SelectBackstorySpecifically(pawn.Faction.def.backstoryFilters, genderRequirement, pawn);
     }
 
     public virtual Pawn RandomizeSingularPawn(Pawn pawn, CollectSpecificPassions collector,

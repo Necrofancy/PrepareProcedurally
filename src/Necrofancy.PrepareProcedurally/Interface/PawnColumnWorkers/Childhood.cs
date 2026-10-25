@@ -15,20 +15,7 @@ public class Childhood : Backstory
     }
     protected override void SelectBackstory(Pawn pawn)
     {
-#if RW1_6_OR_GREATER
-        var selector = Compatibility.Layer.GetBackstorySelection(pawn);
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        var traitRequirements = Editor.TraitRequirements[index];
-        var possibleBackstories = selector.PossibleChildhoods(traitRequirements);
-        
-        var storyDefs = possibleBackstories.Select(x => x.Def)
-            .Where(x => x.shuffleable)
-            .ToList();
-        
-        Find.WindowStack.Add(new ChildhoodSearch(pawn, storyDefs));
-#else
         BackstorySelection.PossibleChildhoods(pawn, () => OnceSelected(pawn));
-#endif
     }
     
     protected override bool Locked(Pawn pawn)

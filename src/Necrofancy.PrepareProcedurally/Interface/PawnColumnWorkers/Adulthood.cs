@@ -16,21 +16,7 @@ public class Adulthood : Backstory
     }
     protected override void SelectBackstory(Pawn pawn)
     {
-#if RW1_6_OR_GREATER
-        var selector = Compatibility.Layer.GetBackstorySelection(pawn);
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        var traitRequirements = Editor.TraitRequirements[index];
-        var possibleBackstories = selector.PossibleAdulthoods(traitRequirements);
-        
-        var storyDefs = possibleBackstories
-            .Select(x => x.Def)
-            .Where(x => x.shuffleable)
-            .ToList();
-        
-        Find.WindowStack.Add(new AdulthoodSearch(pawn, storyDefs));
-#else        
         BackstorySelection.PossibleAdulthoods(pawn, () => OnceSelected(pawn));
-#endif
     }
 
     protected override bool Locked(Pawn pawn)

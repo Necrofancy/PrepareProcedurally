@@ -2,13 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Interface.Dialogs;
 
-public abstract class BackstorySearch : Dialog_Search<BackstoryDef>
+public class BackstorySearch : Dialog_Search<BackstoryOption>
 {
     private static readonly char[] Separators = [',', '，', '、', '،', ';', '；'];
     private static readonly Vector2 CreationOffset = new (0, 40);
@@ -18,15 +19,15 @@ public abstract class BackstorySearch : Dialog_Search<BackstoryDef>
     private readonly HashSet<string> listedBackstories = new();
     private readonly Vector2 position;
 
-    protected BackstorySearch(Pawn referencePawn, List<BackstoryDef> backstories)
+    public BackstorySearch(Pawn referencePawn, List<BackstoryOption> backstories)
     {
         this.referencePawn = referencePawn;
         position = UI.MousePositionOnUIInverted + CreationOffset;
-        searchResults = new SortedList<string, BackstoryDef>(StringComparer.InvariantCultureIgnoreCase);
+        searchResults = new SortedList<string, BackstoryOption>(StringComparer.InvariantCultureIgnoreCase);
         SearchSet = backstories;
     }
 
-    private static WorkTags ExpectedSearchTraits => 
+    private static WorkTags ExpectedSearchWorkTags => 
         WorkTags.ManualDumb 
         | WorkTags.ManualSkilled 
         | WorkTags.Violent                                                    
@@ -51,32 +52,31 @@ public abstract class BackstorySearch : Dialog_Search<BackstoryDef>
         }
     }
     
-    protected override List<BackstoryDef> SearchSet { get; }
+    protected override List<BackstoryOption> SearchSet { get; }
 
     protected override bool ShouldClose => workflowEnded;
 
     protected override TaggedString SearchLabel => "Necrofancy.PrepareProcedurally.SearchBackstory".Translate();
-    
-    protected abstract void BackstorySelected(Pawn referencePawn, BackstoryDef element);
 
-    protected override void TryAddElement(BackstoryDef def)
+    protected override void TryAddElement(BackstoryOption option)
     {
-        if (listedBackstories.Add(def.defName) && BackstoryMatch(def))
+        var key = LookupString(option);
+        if (listedBackstories.Add(key) && BackstoryOptionMatches(option))
         {
-            searchResults.Add(def.defName, def);
+            searchResults.Add(key, option);
             // looks strange in this context, but this is using Dialog_Search<T>'s SetInitialSizeAndPosition
             // and that is overriding off of the dialog implementation which assumed static window size.
             SetInitialSizeAndPosition();
         }
     }
 
-    protected override void TryRemoveElement(BackstoryDef def)
+    protected override void TryRemoveElement(BackstoryOption option)
     {
-        searchResults.Remove(def.defName);
-        listedBackstories.Remove(def.defName);
+        searchResults.Remove(LookupString(option));
+        listedBackstories.Remove(LookupString(option));
     }
 
-    protected override void DoIcon(BackstoryDef element, Rect iconRect)
+    protected override void DoIcon(BackstoryOption element, Rect iconRect)
     {
         // no operation needed
     }
@@ -93,22 +93,17 @@ public abstract class BackstorySearch : Dialog_Search<BackstoryDef>
         windowRect = new Rect(centeredX, centeredY, size.x, size.y).Rounded();
     }
 
-    protected override void DoLabel(BackstoryDef element, Rect labelRect)
+    protected override void DoLabel(BackstoryOption element, Rect labelRect)
     {
-        var text = element.titleFemale is not null
-            ? $"{element.TitleCapFor(Gender.Male)} / {element.TitleCapFor(Gender.Female)}"
-            : element.TitleCapFor(Gender.Male);
-
-        Widgets.Label(labelRect, text);
-        TooltipHandler.TipRegion(labelRect, element.FullDescriptionFor(referencePawn));
+        element.DrawLabel(labelRect, referencePawn);
     }
 
-    protected override bool ShouldSkipElement(BackstoryDef element)
+    protected override bool ShouldSkipElement(BackstoryOption option)
     {
         return false;
     }
 
-    protected override void OnHighlightUpdate(BackstoryDef element)
+    protected override void OnHighlightUpdate(BackstoryOption option)
     {
         // no operation needed
     }
@@ -125,10 +120,38 @@ public abstract class BackstorySearch : Dialog_Search<BackstoryDef>
     }
 
     // cliked
-    protected override void ClikedOnElement(BackstoryDef element)
+    protected override void ClikedOnElement(BackstoryOption option)
     {
-        BackstorySelected(referencePawn, element);
+        int index = StartingPawnUtility.PawnIndex(referencePawn);
+        option.Apply(index, OnApply);
         workflowEnded = true;
+        void OnApply()
+        {
+            Editor.LockedPawns.Remove(referencePawn);
+            Editor.MakeDirty();
+        }
+    }
+    
+    private bool BackstoryOptionMatches(BackstoryOption option)
+    {
+        return option.ForcedBio is not null
+            ? SolidBioMatch(option.ForcedBio)
+            : BackstoryMatch(option.Def);
+    }
+    
+    private bool SolidBioMatch(PawnBio bio)
+    {
+        var search = CommonSearchWidget.filter.Text;
+        var split = search.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+        foreach (var searchPart in split)
+        {
+            if (!MatchesAgainst(searchPart.Trim(), bio))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private bool BackstoryMatch(BackstoryDef backstoryDef)
@@ -146,26 +169,44 @@ public abstract class BackstorySearch : Dialog_Search<BackstoryDef>
         return true;
     }
 
+    private static bool MatchesAgainst(string search, PawnBio bio)
+    {
+        // disqualifiers disqualify both, whereas searching positively may refer to either childhood or adulthood
+        return !(MatchesADisablingFactor(search, bio.childhood) || MatchesADisablingFactor(search, bio.adulthood))
+               && (MatchesADirectSearch(search, bio.childhood) 
+                   || MatchesADirectSearch(search, bio.adulthood) 
+                   || MatchesFallbackGenericWorkTypes(search)
+               );
+    }
+
     private static bool MatchesAgainst(string search, BackstoryDef backstoryDef)
     {
         return
-                  // disqualify invalidating matches
-                  !MatchAgainstWorkTags(search, backstoryDef.workDisables)
-               && !MatchesWorkTypeDefGerund(search, backstoryDef.DisabledWorkTypes)
-               && !MatchestTraitList(search, backstoryDef.disallowedTraits)
-                  && 
-                  (
-                      // qualify direct matches
-                      SearchMatch(search, backstoryDef.TitleFor(Gender.Male))
-                   || SearchMatch(search, backstoryDef.TitleFor(Gender.Female))
-                   || SearchMatch(search, backstoryDef.TitleShortFor(Gender.Male))
-                   || SearchMatch(search, backstoryDef.TitleShortFor(Gender.Female))
-                   || MatchesASkillBonus(search, backstoryDef)
-                   || MatchestTraitList(search, backstoryDef.forcedTraits)
-                      // qualify against generic work types
-                   || MatchAgainstWorkTags(search, ExpectedSearchTraits) 
-                   || MatchesWorkTypeDefGerund(search, ExpectedSearchWorkTypes)
-                  );
+            !MatchesADisablingFactor(search, backstoryDef)
+            && (MatchesADirectSearch(search, backstoryDef) || MatchesFallbackGenericWorkTypes(search));
+    }
+    
+    private static bool MatchesADisablingFactor(string search, BackstoryDef backstoryDef)
+    {
+        return MatchAgainstWorkTags(search, backstoryDef.workDisables)
+               || MatchesWorkTypeDefGerund(search, backstoryDef.DisabledWorkTypes)
+               || MatchestTraitList(search, backstoryDef.disallowedTraits);
+    }
+
+    private static bool MatchesADirectSearch(string search, BackstoryDef backstoryDef)
+    {
+        return SearchMatch(search, backstoryDef.TitleFor(Gender.Male))
+               || SearchMatch(search, backstoryDef.TitleFor(Gender.Female))
+               || SearchMatch(search, backstoryDef.TitleShortFor(Gender.Male))
+               || SearchMatch(search, backstoryDef.TitleShortFor(Gender.Female))
+               || MatchesASkillBonus(search, backstoryDef)
+               || MatchestTraitList(search, backstoryDef.forcedTraits);
+    }
+    
+    private static bool MatchesFallbackGenericWorkTypes(string search)
+    {
+        return MatchAgainstWorkTags(search, ExpectedSearchWorkTags)
+               || MatchesWorkTypeDefGerund(search, ExpectedSearchWorkTypes);
     }
 
     private static bool MatchesASkillBonus(string search, BackstoryDef backstoryDef)
@@ -239,6 +280,13 @@ public abstract class BackstorySearch : Dialog_Search<BackstoryDef>
     private static bool SearchMatch(string searchFor, string withinText)
     {
         return !withinText.NullOrEmpty() && withinText.IndexOf(searchFor, StringComparison.InvariantCultureIgnoreCase) >= 0;
+    }
+
+    private static string LookupString(BackstoryOption option)
+    {
+        return option.ForcedBio is not null 
+            ? $"Bio_{option.ForcedBio.name.ToStringFull}" 
+            : $"Backstory_{option.Def.TitleCapFor(Gender.Male)}";
     }
 }
 

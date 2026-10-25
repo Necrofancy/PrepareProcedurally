@@ -6,6 +6,7 @@
         <LangVersion>latest</LangVersion>
         <Configurations>Debug;Debug - 1.4;Debug - 1.5;Debug - 1.6;Debug - 1.7;Release;Release - 1.4;Release - 1.5;Release - 1.6;Release - 1.7</Configurations>
         <Platforms>AnyCPU</Platforms>
+        <DebugType>embedded</DebugType>
 
         <Description>Prepare Procedurally is a mod that enables quick automation to colony and tribal starts in the game Rimworld by Ludeon Studios</Description>
         <Company>Necrofancy</Company>
@@ -27,18 +28,12 @@
     <Choose>
         <When Condition="$(Configuration.StartsWith('Debug'))">
             <PropertyGroup Label="Debug Settings">
-                <DebugSymbols>true</DebugSymbols>
-                <DebugType>portable</DebugType>
                 <Optimize>false</Optimize>
-                <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
             </PropertyGroup>
         </When>
         <Otherwise>
             <PropertyGroup Label="Release Settings">
                 <Optimize>true</Optimize>
-                <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
-                <DebugSymbols>false</DebugSymbols>
-                <DebugType>none</DebugType>
             </PropertyGroup>
         </Otherwise>
     </Choose>

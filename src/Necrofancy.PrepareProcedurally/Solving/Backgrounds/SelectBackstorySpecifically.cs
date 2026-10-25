@@ -91,7 +91,7 @@ public class SelectBackstorySpecifically
     
     
 
-    public IReadOnlyList<BackstoryOption> PossibleChildhoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef adulthood = null)
+    public List<BackstoryOption> PossibleChildhoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef adulthood = null)
     {
         var possibleChildhoods = new List<BackstoryOption>();
 
@@ -129,7 +129,7 @@ public class SelectBackstorySpecifically
         return possibleChildhoods;
     }
     
-    public IReadOnlyList<BackstoryOption> PossibleAdulthoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef childhood = null)
+    public List<BackstoryOption> PossibleAdulthoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef childhood = null)
     {
         var possibleAdulthoods = new List<BackstoryOption>();
         
