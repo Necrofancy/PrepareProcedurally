@@ -65,19 +65,17 @@ public record BackstoryOption(
 
     public FloatMenuOption CreateFloatOption(Pawn pawn, int pawnIndex, bool disabled, Action onSelect)
     {
-        var option = this;
-
         void Add()
         {
-            option.Apply(pawnIndex, onSelect);
+            Apply(pawnIndex, onSelect);
         }
         
         void ShowTooltip(Rect draw)
         {
-            TooltipHandler.TipRegion(draw, option.CreateTooltip(pawn));
+            TooltipHandler.TipRegion(draw, CreateTooltip(pawn));
         }
         
-        return new FloatMenuOption(this.CreateTooltip(pawn), Add, mouseoverGuiAction: ShowTooltip)
+        return new FloatMenuOption(Label(), Add, mouseoverGuiAction: ShowTooltip)
         {
             Disabled = disabled
         };

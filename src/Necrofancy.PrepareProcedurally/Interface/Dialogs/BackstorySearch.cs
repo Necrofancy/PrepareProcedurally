@@ -15,13 +15,15 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
     private static readonly Vector2 CreationOffset = new (0, 40);
 
     private readonly Pawn referencePawn;
+    private readonly Action onSelect;
     private bool workflowEnded;
     private readonly HashSet<string> listedBackstories = new();
     private readonly Vector2 position;
 
-    public BackstorySearch(Pawn referencePawn, List<BackstoryOption> backstories)
+    public BackstorySearch(Pawn referencePawn, List<BackstoryOption> backstories, Action onSelect)
     {
         this.referencePawn = referencePawn;
+        this.onSelect = onSelect;
         position = UI.MousePositionOnUIInverted + CreationOffset;
         searchResults = new SortedList<string, BackstoryOption>(StringComparer.InvariantCultureIgnoreCase);
         SearchSet = backstories;
@@ -123,13 +125,11 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
     protected override void ClikedOnElement(BackstoryOption option)
     {
         int index = StartingPawnUtility.PawnIndex(referencePawn);
-        option.Apply(index, OnApply);
-        workflowEnded = true;
-        void OnApply()
+        if (index >= 0)
         {
-            Editor.LockedPawns.Remove(referencePawn);
-            Editor.MakeDirty();
+            option.Apply(index, onSelect);
         }
+        workflowEnded = true;
     }
     
     private bool BackstoryOptionMatches(BackstoryOption option)

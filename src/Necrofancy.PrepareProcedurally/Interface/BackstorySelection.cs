@@ -21,9 +21,9 @@ public static class BackstorySelection
         var possibleBackstories = selector.PossibleAdulthoods(traitRequirements);
         
 #if SEARCH_MENU_AVAILABLE
-        Find.WindowStack.Add(new BackstorySearch(pawn, possibleBackstories));
+        Find.WindowStack.Add(new BackstorySearch(pawn, possibleBackstories, onSelect));
 #else
-        ShowBackstories(possibleBackstories, Editor.SetAdulthoods, Editor.SetChildhoods, index, onSelect);
+        ShowBackstories(possibleBackstories, index, BackstorySlot.Adulthood, onSelect);
 #endif
     }
 
@@ -35,9 +35,9 @@ public static class BackstorySelection
         var possibleBackstories = selector.PossibleChildhoods(traitRequirements);
         
 #if SEARCH_MENU_AVAILABLE
-        Find.WindowStack.Add(new BackstorySearch(pawn, possibleBackstories));
+        Find.WindowStack.Add(new BackstorySearch(pawn, possibleBackstories, onSelect));
 #else
-        ShowBackstories(possibleBackstories, Editor.SetChildhoods, Editor.SetAdulthoods, index, onSelect);
+        ShowBackstories(possibleBackstories, index, BackstorySlot.Childhood, onSelect);
 #endif
     }
 
@@ -61,38 +61,41 @@ public static class BackstorySelection
         };
         
 #if SEARCH_MENU_AVAILABLE
-        Find.WindowStack.Add(new BackstorySearch(pawn, possibleBackstories));
+        Find.WindowStack.Add(new BackstorySearch(pawn, possibleBackstories, SelectedPawn.Randomize));
 #else
-        ShowBackstories(possibleBackstories, Editor.SetAdulthoods, Editor.SetChildhoods, index, SelectedPawn.Randomize);
+        ShowBackstories(possibleBackstories, index, slot, SelectedPawn.Randomize);
 #endif
     }
     
     private static void ShowBackstories(
         IEnumerable<BackstoryOption> backstories, 
-        BackstoryDef[] array, 
-        BackstoryDef[] otherArray, 
         int pawnIndex,
+        BackstorySlot slot,
         Action onSelect)
     {
         var pawn = Editor.StartingPawns[pawnIndex];
         var options = new List<FloatMenuOption>();
         var fixedGender = Editor.GenderRequirements[pawnIndex];
         
-        var currentSelection = array[pawnIndex];
-
+        var currentArray = slot == BackstorySlot.Childhood
+            ? Editor.SetChildhoods
+            : Editor.SetAdulthoods;
+        
+        var currentSelection = currentArray[pawnIndex];
+        
         if (currentSelection is not null)
         {
             void Remove()
             {
                 if (!currentSelection.shuffleable)
                 {
-                    // remove both for a shuffleable
-                    array[pawnIndex] = null;
-                    otherArray[pawnIndex] = null;
+                    // remove both for a solid bio
+                    Editor.SetChildhoods[pawnIndex] = null;
+                    Editor.SetAdulthoods[pawnIndex] = null;
                 }
                 else
                 {
-                    array[pawnIndex] = null;
+                    currentArray[pawnIndex] = null;
                 }
                 
                 onSelect();
