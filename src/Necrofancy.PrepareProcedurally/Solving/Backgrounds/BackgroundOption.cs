@@ -38,8 +38,8 @@ public record BackstoryOption(
     {
         return ForcedBio is not null
             ? SolidBioString(ForcedBio)
-            : ForcedGender == GenderPossibility.Female
-                ? Def.TitleCapFor(Gender.Female)
+            : Def.titleFemale is not null
+                ? $"{Def.TitleCapFor(Gender.Male)} / {Def.TitleCapFor(Gender.Female)}"
                 : Def.TitleCapFor(Gender.Male);
     }
     

@@ -284,9 +284,9 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
 
     private static string LookupString(BackstoryOption option)
     {
-        return option.ForcedBio is not null 
-            ? $"Bio_{option.ForcedBio.name.ToStringFull}" 
-            : $"Backstory_{option.Def.TitleCapFor(Gender.Male)}";
+        return option.ForcedBio is null
+            ? $"Backstory_{option.Def.defName}" // deliberately sorted first
+            : $"Bio_{option.ForcedBio.name.ToStringFull}_{option.ForcedBio.childhood.defName}";
     }
 }
 
