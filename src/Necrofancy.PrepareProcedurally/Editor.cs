@@ -172,6 +172,7 @@ public static class Editor
         StartingPawns = null;
         LockedPawns.Clear();
         TraitsThatDisablePassions.Clear();
+        SelectedPawn.Clear();
     }
 
     // ReSharper disable once UnusedParameter.Local

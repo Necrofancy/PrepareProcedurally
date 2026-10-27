@@ -80,7 +80,7 @@ public class EditSpecificPawn : Window
             ShowRelationships(relationShipsRect);
         }
         
-        if (PrepareMod.Settings.AlienRacesEnabled)
+        if (PrepareMod.Settings.AlienRacesEnabled || ReusingVanillaUi.BackstoryButtonsInCard)
         {
             return;
         }

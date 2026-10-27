@@ -122,4 +122,10 @@ public static class SelectedPawn
         Pawn = Compatibility.Layer.RandomizeSingularPawn(Pawn, collectSpecificPassions, Requirements);
         cosmetics?.ApplyToPawn(Pawn);
     }
+
+    public static void Clear()
+    {
+        Pawn = null;
+        Requirements = null;
+    }
 }

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using RimWorld;
 using UnityEngine;
@@ -16,18 +17,26 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
 
     private readonly Pawn referencePawn;
     private readonly Action onSelect;
+    private readonly BackstorySlot slot;
+    private readonly BackstoryDef existing;
     private bool workflowEnded;
     private readonly HashSet<string> listedBackstories = new();
     private readonly Vector2 position;
+    
+    private const float RemoveRowHeight = 30f;
 
-    public BackstorySearch(Pawn referencePawn, List<BackstoryOption> backstories, Action onSelect)
+    public BackstorySearch(Pawn referencePawn, BackstorySlot slot, BackstoryDef existing, List<BackstoryOption> backstories, Action onSelect)
     {
         this.referencePawn = referencePawn;
+        this.slot = slot;
+        this.existing = existing;
         this.onSelect = onSelect;
         position = UI.MousePositionOnUIInverted + CreationOffset;
         searchResults = new SortedList<string, BackstoryOption>(StringComparer.InvariantCultureIgnoreCase);
         SearchSet = backstories;
     }
+    
+    private bool ShowRemove => existing is not null && !searchResults.Any();
 
     private static WorkTags ExpectedSearchWorkTags => 
         WorkTags.ManualDumb 
@@ -60,6 +69,22 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
 
     protected override TaggedString SearchLabel => "Necrofancy.PrepareProcedurally.SearchBackstory".Translate();
 
+    public override void DoWindowContents(Rect inRect)
+    {
+        if (ShowRemove)
+        {
+            var removeRect = new Rect(inRect.x, inRect.y, inRect.width, RemoveRowHeight);
+            if (Widgets.ButtonText(removeRect, "Remove".Translate()))
+            {
+                BackstoryOption.Remove(StartingPawnUtility.PawnIndex(referencePawn), slot, onSelect);
+                workflowEnded = true;
+            }
+            inRect.yMin += RemoveRowHeight + 4f;
+        }
+        
+        base.DoWindowContents(inRect);
+    }
+
     protected override void TryAddElement(BackstoryOption option)
     {
         var key = LookupString(option);
@@ -86,12 +111,14 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
     protected override void SetInitialSizeAndPosition()
     {
         scrollHeight = searchResults.Count * 26f;
+
         Vector2 size = InitialSize;
         size.y = Mathf.Clamp(size.y + scrollHeight, InitialSize.y, UI.screenHeight - position.y);
-
+        size.y += ShowRemove ? RemoveRowHeight + 4f : 0f;
+        
         var centeredX = position.x - size.x / 2;
         var centeredY = position.y - size.y / 2;
-
+        
         windowRect = new Rect(centeredX, centeredY, size.x, size.y).Rounded();
     }
 

@@ -89,24 +89,23 @@ public class SelectBackstorySpecifically
         return best;
     }
     
-    
-
-    public List<BackstoryOption> PossibleChildhoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef adulthood = null)
+    public List<BackstoryOption> PossibleChildhoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef adulthood)
     {
         var possibleChildhoods = new List<BackstoryOption>();
 
-        foreach (var category in this.categoryFilters)
+        foreach (var category in categoryFilters)
         {
-            foreach (var backstory in DefDatabase<BackstoryDef>.AllDefsListForReading)
+            foreach (var childhood in DefDatabase<BackstoryDef>.AllDefsListForReading)
             {
                 bool matches = 
-                    backstory.shuffleable 
-                    && category.Matches(backstory) 
-                    && backstory.slot == BackstorySlot.Childhood;
+                    childhood.shuffleable
+                    && category.Matches(childhood) 
+                    && childhood.slot == BackstorySlot.Childhood
+                    && CompatibleForcedBackstories(childhood, adulthood);
                 
                 if (matches)
                 {
-                    possibleChildhoods.Add(new BackstoryOption(backstory));
+                    possibleChildhoods.Add(new BackstoryOption(childhood));
                 }
             }
         }
@@ -129,22 +128,23 @@ public class SelectBackstorySpecifically
         return possibleChildhoods;
     }
     
-    public List<BackstoryOption> PossibleAdulthoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef childhood = null)
+    public List<BackstoryOption> PossibleAdulthoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef childhood)
     {
         var possibleAdulthoods = new List<BackstoryOption>();
         
         foreach (var category in this.categoryFilters)
         {
-            foreach (var backstory in DefDatabase<BackstoryDef>.AllDefsListForReading)
+            foreach (var adulthood in DefDatabase<BackstoryDef>.AllDefsListForReading)
             {
                 bool matches = 
-                    backstory.shuffleable 
-                    && category.Matches(backstory) 
-                    && backstory.slot == BackstorySlot.Adulthood;
+                    adulthood.shuffleable 
+                    && category.Matches(adulthood) 
+                    && adulthood.slot == BackstorySlot.Adulthood
+                    && CompatibleForcedBackstories(childhood, adulthood);
                 
                 if (matches)
                 {
-                    possibleAdulthoods.Add(new BackstoryOption(backstory));
+                    possibleAdulthoods.Add(new BackstoryOption(adulthood));
                 }
             }
         }
@@ -178,6 +178,38 @@ public class SelectBackstorySpecifically
             var bio = SolidBioDatabase.allBios.First(x => x.childhood == childhood);
             ForceBio(bio);
         }
+    }
+    
+    private static bool CompatibleForcedBackstories(BackstoryDef childhood, BackstoryDef adulthood)
+    {
+        if (childhood is null || adulthood is null) 
+            return true;
+
+        var conflict = (childhood.requiredWorkTags & adulthood.workDisables) |
+                       (adulthood.requiredWorkTags & childhood.workDisables);
+
+        if (conflict != WorkTags.None)
+            return false;
+
+        if (childhood.forcedTraits is { } childhoodForcedTraits)
+        {
+            foreach (var trait in childhoodForcedTraits)
+            {
+                if (adulthood.DisallowsTrait(trait.def, trait.degree))
+                    return false;
+            }
+        }
+        
+        if (adulthood.forcedTraits is { } adulthoodForcedTraits)
+        {
+            foreach (var trait in adulthoodForcedTraits)
+            {
+                if (childhood.DisallowsTrait(trait.def, trait.degree))
+                    return false;
+            }
+        }
+        
+        return true;
     }
 
     public void ForceAdulthood(BackstoryDef adulthood)

@@ -32,7 +32,25 @@ public record BackstoryOption(
                 
         onSelect();
     }
-    
+
+    public static void Remove(int pawnIndex, BackstorySlot slot, Action onSelect)
+    {
+        var currentArray = slot == BackstorySlot.Childhood ? Editor.SetChildhoods : Editor.SetAdulthoods;
+        var currentSelection = currentArray[pawnIndex];
+        
+        if (!currentSelection.shuffleable)
+        {
+            // remove both for a solid bio
+            Editor.SetChildhoods[pawnIndex] = null;
+            Editor.SetAdulthoods[pawnIndex] = null;
+        }
+        else
+        {
+            currentArray[pawnIndex] = null;
+        }
+                
+        onSelect();
+    }
     
     private string Label()
     {

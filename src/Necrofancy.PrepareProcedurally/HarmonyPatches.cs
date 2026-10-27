@@ -78,10 +78,11 @@ public class HarmonyPatches
         // transpilers are colocated within the ReusingVanillaUi methods.
         // there's no way to directly locate them here and have Harmony resolve them.
         ReversePatch(typeof(SkillUI), nameof(ReusingVanillaUi.DrawSkillsOf));
-        ReversePatch(typeof(CharacterCardUtility), nameof(CharacterCardUtility.DrawCharacterCard)); 
-#if !RW1_4
+#if RW1_5_OR_GREATER
+        ReusingVanillaUi.CreateBackstoryButtonPatches(harmony);
         ReversePatch(typeof(StartingPawnUtility), nameof(StartingPawnUtility.DrawPortraitArea));
 #endif
+        ReversePatch(typeof(CharacterCardUtility), nameof(CharacterCardUtility.DrawCharacterCard)); 
     }
     private static void InitializeEditorState()
     {

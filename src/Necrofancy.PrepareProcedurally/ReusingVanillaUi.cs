@@ -76,6 +76,11 @@ public static partial class ReusingVanillaUi
             StartTranspile();
 
             var vanillaDrawSkills = AccessMethod(typeof(SkillUI), nameof(SkillUI.DrawSkillsOf));
+#if RW1_5_OR_GREATER
+            var vanillaLeftSection = leftSectionPatched
+                ? AccessTools.Method(typeof(CharacterCardUtility), DoLeftSectionName)
+                : null;
+#endif
 
             foreach (var instruction in instructions)
             {
@@ -85,6 +90,16 @@ public static partial class ReusingVanillaUi
                     yield return new CodeInstruction(OpCodes.Call,
                         AccessTools.Method(typeof(ReusingVanillaUi), nameof(ReusingVanillaUi.DrawSkillsOf)));
                 }
+#if RW1_5_OR_GREATER
+                else if (vanillaLeftSection is not null && instruction.Calls(vanillaLeftSection))
+                {
+                    Logging.Debug($"Swapping call for {DoLeftSectionName}");
+                    instruction.opcode = OpCodes.Call;
+                    instruction.operand = AccessTools.Method(typeof(ReusingVanillaUi), nameof(ReusingVanillaUi.DoLeftSection));
+                    leftSectionSwapped = true;
+                    yield return instruction;
+                }
+#endif
                 else
                 {
                     yield return instruction;
