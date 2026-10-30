@@ -1,6 +1,10 @@
 # Features probably along this order:
 
-* Access features on the table in the [PrepareProcedurally](../src/Necrofancy.PrepareProcedurally/) page inside the [EditSpecificCharacter](../src/Necrofancy.PrepareProcedurally/Interface/Dialogs/EditSpecificPawn.cs) dialog. This is going to involve maintaining a version of the character card UI and adding a few other features outside of that window section.
+* Explore an alternative way to Randomize Pawns (hopefully sunsetting or deleting the PostPawnChanges usage)
+
+* More UI clarity in [EditSpecificCharacter](../src/Necrofancy.PrepareProcedurally/Interface/Dialogs/EditSpecificPawn.cs) dialog.
+    * Total Passion Indicator (e.g. "4.5 out of 5 Passion Points used")
+    * Reset buttons on skills
 
 * Specify work tags required for the colony.
     * e.g. All characters must be capable of Cleaning/Dumb Labor
