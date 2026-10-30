@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -54,12 +55,11 @@ public class HarmonyPatches
     }
 
     private static void ClearEditorStateOnProceedingFromCreateCharactersDialog(Type startingDialog, Harmony harmony)
-    {
-        const string doNext = "DoNext"; // not publicly available.
-        var doNextMethod = AccessTools.Method(startingDialog, doNext);
+    { 
+        var close = AccessTools.Method(typeof(Window), nameof(Window.PostClose));
         var clearStateMethod = AccessTools.Method(typeof(HarmonyPatches), nameof(ClearStateAndCloseWindows));
         var clearState = new HarmonyMethod(clearStateMethod);
-        harmony.Patch(doNextMethod, postfix: clearState);
+        harmony.Patch(close, postfix: clearState);
     }
     
     private static void CreateReversePatchesOfVanillaUi(Harmony harmony)
@@ -121,12 +121,16 @@ public class HarmonyPatches
             }
     }
     
-    public static void ClearStateAndCloseWindows()
+    public static void ClearStateAndCloseWindows(Window __instance)
     {
+        if (__instance is not Page_ConfigureStartingPawns)
+            return;
+        
         Editor.ClearState();
-
-        while (Find.WindowStack.WindowOfType<Interface.Dialogs.EditSpecificPawn>() is { } dialog) dialog.Close(false);
-
-        while (Find.WindowStack.WindowOfType<Interface.Pages.PrepareProcedurally>() is { } page) page.Close(false);
+        
+        foreach (var window in Find.WindowStack.Windows.Where(w => w.GetType().Assembly == Assembly.GetExecutingAssembly()).ToList())
+            window.Close(false);
+        
+        Logging.Debug("ClearStateAndCloseWindows");
     }
 }
