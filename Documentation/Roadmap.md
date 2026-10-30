@@ -1,6 +1,6 @@
 # Features probably along this order:
 
-* Explore an alternative way to Randomize Pawns (hopefully sunsetting or deleting the PostPawnChanges usage)
+* Explore an alternative way to Randomize Pawns (hopefully sunsetting or deleting the [PostPawnGenerationChanges](../src/Necrofancy.PrepareProcedurally/Solving/StateEdits/PostPawnGenerationChanges.cs) class)
 
 * More UI clarity in [EditSpecificCharacter](../src/Necrofancy.PrepareProcedurally/Interface/Dialogs/EditSpecificPawn.cs) dialog.
     * Total Passion Indicator (e.g. "4.5 out of 5 Passion Points used")

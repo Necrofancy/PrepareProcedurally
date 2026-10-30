@@ -7,11 +7,10 @@ Despite first hitting the workshop in late December of 2023, this mod has been o
 There's a couple areas that are worth noting for other modders or developers.
 * [Harmony Patches](../src/Necrofancy.PrepareProcedurally/HarmonyPatches.cs) are almost entirely limited to just changes adjacent to the Create Character page (`Page_ConfigureStartingPawns`). It sets some initial state when that page opens, clears that state when the player proceeds from the dialog, and as far as behavioral changes just adds a button to open the prepare procedurally page. All pawn changes are limited to that window.
     * When Humanoid Alien Races is loaded, there is a secondary patch to `StartingPawnUtility` - see the HAR specific documentation in a later section.
-* Reverse Patches are used to have specific splices of UI in [ReusingVanillaUi](../src/Necrofancy.PrepareProcedurally/UI/ReusingVanillaUi.cs).  
+* Reverse Patches are used to have specific splices of UI in [ReusingVanillaUi](../src/Necrofancy.PrepareProcedurally/ReusingVanillaUi.cs).  
 * Procedural Generation will make a few edits to defs, or `PawnGenerationRequests`, to force pawn generation to be biased for the duration of pawn randomization. These changes are immediately reverted after procedural generation is done randomizing pawns in-place.
     * The class responsible for those kinds of edits is in [the TemporarilyChange class](../src/Necrofancy.PrepareProcedurally/Solving/StateEdits/TemporarilyChange.cs). 
     * Troubleshooters and testers can confirm that these changes don't persist after procedural generation by hitting "Randomize" at the Create Characters page - this mod does not patch any behavior on the randomize button in `Page_ConfigureStartingPawns`.
-    * [Harmony Patches](../src/Necrofancy.PrepareProcedurally/HarmonyPatches.cs)
 * After the pawn is generated, procgen's further state edits are limited to skills, traits, and passions. 
     * This mod will not try to change the `ThingDef` of the pawn or any other complex operation. Backstory-solving in [AlienProcGen](../src/Necrofancy.PrepareProcedurally.HumanoidAlienRaces/Solving/AlienProcGen.cs) specifically generates pawns first, and then tries to solve for backstories to prevent having to deal with this.
     * [PostPawnGenerationChanges](../src/Necrofancy.PrepareProcedurally/Solving/StateEdits/PostPawnGenerationChanges.cs) is used for Vanilla.
