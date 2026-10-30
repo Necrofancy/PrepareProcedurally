@@ -38,7 +38,8 @@ public static class SelectedPawn
         Pawn = pawn;
         Index = StartingPawnUtility.PawnIndex(pawn);
         Requirements = new List<(SkillDef Skill, UsabilityRequirement Usability)>();
-        if (Editor.LastResults?.Count > Index - 1
+        if (Index >= 0
+            && Editor.LastResults?.Count > Index
             && Editor.LastResults[Index] is { } existing)
             foreach (var skill in DefDatabase<SkillDef>.AllDefsListForReading)
             {
@@ -114,7 +115,7 @@ public static class SelectedPawn
             }
 
         foreach (var workType in DefDatabase<WorkTypeDef>.AllDefsListForReading)
-            if (requiredSkills.Any(requiredSkills.Contains))
+            if (workType.relevantSkills.Any(requiredSkills.Contains))
                 requiredWorkTags |= workType.workTags;
 
         var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
