@@ -72,6 +72,8 @@
 	<Necrofancy.PrepareProcedurally.AutoGenerateAtStartTooltip>Setting on whether to automatically run generation when the Prepare Procedurally window is opened.</Necrofancy.PrepareProcedurally.AutoGenerateAtStartTooltip>
 	<Necrofancy.PrepareProcedurally.AutoGenerateOnChange>Generate on Settings Change</Necrofancy.PrepareProcedurally.AutoGenerateOnChange>
 	<Necrofancy.PrepareProcedurally.AutoGenerateOnChangeTooltip>Automatically run team randomization when a setting is changed in the UI.</Necrofancy.PrepareProcedurally.AutoGenerateOnChangeTooltip>
+	<Necrofancy.PrepareProcedurally.DebounceAutoUpdate>Debounce Delay (ms)</Necrofancy.PrepareProcedurally.DebounceAutoUpdate>
+	<Necrofancy.PrepareProcedurally.DebounceAutoUpdateTooltip>Time (in milliseconds) between making a change in the editor, and automated randomization running.</Necrofancy.PrepareProcedurally.DebounceAutoUpdateTooltip>
 
 	<Necrofancy.PrepareProcedurally.HiddenMechanics>Hidden Mechanics</Necrofancy.PrepareProcedurally.HiddenMechanics>
 	<Necrofancy.PrepareProcedurally.DisplayCompatibility>Display Hidden Social Compatibility</Necrofancy.PrepareProcedurally.DisplayCompatibility>
@@ -79,4 +81,5 @@
 
 	<Necrofancy.PrepareProcedurally.SearchBackstory>Search backstories by name, traits, or skills</Necrofancy.PrepareProcedurally.SearchBackstory>
 	<Necrofancy.PrepareProcedurally.RerollButton>Reroll</Necrofancy.PrepareProcedurally.RerollButton>
+	<Necrofancy.PrepareProcedurally.ManageModSettings>Mod Settings</Necrofancy.PrepareProcedurally.ManageModSettings>
 </LanguageData>

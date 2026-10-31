@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Necrofancy.PrepareProcedurally.Solving;
@@ -12,6 +13,9 @@ namespace Necrofancy.PrepareProcedurally;
 
 public static class Editor
 {
+#if !WAYLITH
+    private static Stopwatch stopwatch;
+#endif
     public static Dictionary<ThingDef, RaceAgeData> RaceAgeRanges { get; private set; }
 
     public static ThingDef SelectedRace
@@ -71,7 +75,40 @@ public static class Editor
         set => SetProperty(ref field, value);
     }
 
-    public static bool Dirty { get; set; }
+    public static bool Dirty
+    {
+        get;
+        set
+        {
+            field = value;
+            if (value)
+            {
+#if !WAYLITH
+                stopwatch.Restart();
+#else
+                LastEditTime = Stopwatch.GetTimestamp();
+#endif                
+            }
+        }
+    }
+
+    public static bool ReadyForEdit
+    {
+        get
+        {
+#if !WAYLITH
+                var elapsed = stopwatch.ElapsedMilliseconds;
+                return Dirty && elapsed > PrepareMod.Settings.debounceDelay;
+#else
+                var elapsed = Stopwatch.GetElapsedTime(LastEditTime);
+                return Dirty && elapsed.Milliseconds > PrepareMod.Settings.debounceDelay;
+#endif
+        }
+    }
+    
+#if WAYLITH
+    private static long LastEditTime { get; set; }
+#endif
 
     public static bool AllowDirtying { get; set; }
 
@@ -152,6 +189,9 @@ public static class Editor
         MaxPassionPoints = settings.maxPassionPoints;
         
         AllowDirtying = settings.autoGenerate;
+#if !WAYLITH
+        stopwatch = new Stopwatch();
+#endif
     }
 
     public static void RefreshPawnList()
@@ -173,6 +213,9 @@ public static class Editor
         LockedPawns.Clear();
         TraitsThatDisablePassions.Clear();
         SelectedPawn.Clear();
+#if !WAYLITH
+        stopwatch = null;
+#endif
     }
 
     // ReSharper disable once UnusedParameter.Local

@@ -14,11 +14,12 @@ public class PrepareModSettings : ModSettings
     public bool allowRelationships = true;
     public bool allowPregnancy = true;
     public float skillWeightVariation = 1.5f;
-    
+
     public float maxPassionPoints = 7.0f;
     public bool showCompatibility = false;
-    public bool preGenerate;
-    public bool autoGenerate;
+    public bool preGenerate = false;
+    public bool autoGenerate = true;
+    public int debounceDelay = 250;
 
     public bool AlienRacesEnabled => ModsConfig.IsActive("erdelf.humanoidalienraces");
     
@@ -35,6 +36,7 @@ public class PrepareModSettings : ModSettings
         Scribe_Values.Look(ref showCompatibility, "showCompatibility");
         Scribe_Values.Look(ref preGenerate, "generateOnOpen");
         Scribe_Values.Look(ref autoGenerate, "autoGenerate");
+        Scribe_Values.Look(ref debounceDelay, "debounceDelay");
     }
 
     public (ThingDef humanTarget, Dictionary<ThingDef, RaceAgeData> ageRangesByHumanType) GetLoadedHumanTypes()

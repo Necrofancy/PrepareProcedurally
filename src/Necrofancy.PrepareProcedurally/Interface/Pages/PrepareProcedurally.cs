@@ -35,13 +35,13 @@ public class PrepareProcedurally : Page
         try
         {
             DrawPageTitle(rect);
-
+            
             var uiPadding = rect.GetInnerRect();
             uiPadding.SplitHorizontally(400, out var upper, out var lower);
 
             var leftWidth = rect.width - SettingsUiUtility.OverallWidth;
             rect.SplitVertically(leftWidth, out var textRect, out var skillSelectRect);
-
+            
             textRect.y += 24;
             skillSelectRect.y -= 18;
             
@@ -72,7 +72,8 @@ public class PrepareProcedurally : Page
                 RandomizeForTeam();
             }
 
-            DoBottomButtons(rect, midLabel: RerollButton.Translate(), midAct: Reroll);
+            DoBottomButtons(rect);
+            DoCenterButtons(rect, Reroll);
         }
         catch (Exception e)
         {
@@ -83,6 +84,25 @@ public class PrepareProcedurally : Page
             var window = new Dialog_MessageBox(errorMessage);
             Find.WindowStack.Add(window);
         }
+    }
+
+    private void DoCenterButtons(Rect rect, Action reroll)
+    {
+        const float gap = 16f;
+        Text.Font = GameFont.Small;
+
+        var size = BottomButSize;
+        var startX = rect.x + (rect.width - (size.x * 2f + gap)) / 2f;
+        var y = rect.yMax - size.y;
+
+        var settingsRect = new Rect(startX, y, size.x, size.y);
+        var rerollRect = new Rect(startX + size.x + gap, y, size.x, size.y);
+
+        if (Widgets.ButtonText(settingsRect, "ManageModSettings".PpTranslate()))
+            Find.WindowStack.Add(new PrepareSettingsDialog());
+
+        if (Widgets.ButtonText(rerollRect, RerollButton.Translate()))
+            reroll();
     }
 
     private static IEnumerable<Pawn> GetStartingPawns()
@@ -142,7 +162,7 @@ public class PrepareProcedurally : Page
 
     private void PropagateToEditor()
     {
-        if (Editor.Dirty)
+        if (Editor.ReadyForEdit)
         {
             CloseSubdialogs();
             RandomizeForTeam();

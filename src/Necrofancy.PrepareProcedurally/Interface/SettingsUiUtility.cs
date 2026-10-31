@@ -133,14 +133,14 @@ public class SettingsUiUtility
         var minAge = allowedAdultRaceAgeRange.min;
         var maxAge = allowedAdultRaceAgeRange.max;
 
-        Widgets.IntRange(ageSlider, 1235, ref selectedRaceAgeRange, minAge, maxAge, AgeRangeText, 4);
+        Widgets.IntRange(ageSlider, 696969, ref selectedRaceAgeRange, minAge, maxAge, AgeRangeText, 4);
         ageRanges[selectedRace] = new RaceAgeData(selectedRaceAgeRange, allowedAdultRaceAgeRange);
 
         // melanin slider
         var melaninSlider = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 1.5f, bioInnerRect.width, RowHeight);
         var genes = PawnSkinColors.SkinColorGenesInOrder;
         var maxMelanin = genes.Count - 1;
-        Widgets.IntRange(melaninSlider, 12345, ref discretizedMelaninRange, 0, maxMelanin, MelaninRangeText, 1);
+        Widgets.IntRange(melaninSlider, 676767, ref discretizedMelaninRange, 0, maxMelanin, MelaninRangeText, 1);
         var minSelectedMelanin = genes[discretizedMelaninRange.min].minMelanin;
         var maxSelectedMelanin = discretizedMelaninRange.max >= maxMelanin ? 1 : genes[discretizedMelaninRange.max + 1].minMelanin;
         melaninRange = new FloatRange(minSelectedMelanin, maxSelectedMelanin);
