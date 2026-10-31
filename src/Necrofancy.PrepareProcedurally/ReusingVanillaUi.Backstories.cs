@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 
 using HarmonyLib;
 using Necrofancy.PrepareProcedurally.Interface;
@@ -99,6 +100,7 @@ public static partial class ReusingVanillaUi
         }
     }
     
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void DoLeftSection(Rect rect, Rect leftRect, Pawn pawn)
     {
         IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -138,6 +140,7 @@ public static partial class ReusingVanillaUi
         }
     }
     
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void DrawBackstorySection(object closure, Rect sectionRect)
     {
         IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)

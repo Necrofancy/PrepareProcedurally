@@ -77,12 +77,15 @@ public class HarmonyPatches
 
         // transpilers are colocated within the ReusingVanillaUi methods.
         // there's no way to directly locate them here and have Harmony resolve them.
+        // Order is to preserve a fallback path in case buttons end up breaking in the reverse patching madness
         ReversePatch(typeof(SkillUI), nameof(ReusingVanillaUi.DrawSkillsOf));
 #if RW1_5_OR_GREATER
         ReusingVanillaUi.CreateBackstoryButtonPatches(harmony);
+#endif
+        ReversePatch(typeof(CharacterCardUtility), nameof(CharacterCardUtility.DrawCharacterCard));
+#if RW1_5_OR_GREATER
         ReversePatch(typeof(StartingPawnUtility), nameof(StartingPawnUtility.DrawPortraitArea));
 #endif
-        ReversePatch(typeof(CharacterCardUtility), nameof(CharacterCardUtility.DrawCharacterCard)); 
     }
     private static void InitializeEditorState()
     {

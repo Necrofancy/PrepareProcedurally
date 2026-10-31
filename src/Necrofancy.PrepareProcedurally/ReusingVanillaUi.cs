@@ -19,6 +19,7 @@ namespace Necrofancy.PrepareProcedurally;
 public static partial class ReusingVanillaUi
 {
 #if RW1_5_OR_GREATER
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void DrawPortraitArea(
         Rect rect,
         int pawnIndex,
@@ -64,6 +65,7 @@ public static partial class ReusingVanillaUi
         _ = Transpiler(null);
     }
 #endif
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void DrawCharacterCard(
         Rect rect,
         Pawn pawn,
@@ -113,6 +115,7 @@ public static partial class ReusingVanillaUi
     /// <summary>
     /// Similar to <see cref="SkillUI.DrawSkillsOf"/> but adding character controls for UI
     /// </summary>
+    [MethodImpl(MethodImplOptions.NoInlining)]
     internal static void DrawSkillsOf(Pawn p, Vector2 offset, SkillUI.SkillDrawMode mode, Rect container)
     {
         IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
