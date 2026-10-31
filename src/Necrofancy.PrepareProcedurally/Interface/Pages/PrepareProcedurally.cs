@@ -27,10 +27,7 @@ public class PrepareProcedurally : Page
 
     public PrepareProcedurally()
     {
-        if (PrepareMod.Settings.preGenerate)
-        {
-            Editor.RefreshPawnList();
-        }
+        Editor.RefreshPawnList();
     }
 
     public override void DoWindowContents(Rect rect)
@@ -158,6 +155,9 @@ public class PrepareProcedurally : Page
         var pawnCount = Find.GameInitData.startingPawnCount;
         var situation = new BalancingSituation(string.Empty, backstoryFilters, pawnCount, Editor.SkillPassions);
 
+        // Compatibility layers (e.g. HAR) index into Editor.StartingPawns and pass those pawns to
+        // StartingPawnUtility.RandomizeInPlace, which throws if a pawn is no longer in GameInitData.
+        Editor.RefreshPawnList();
         Compatibility.Layer.RandomizeForTeam(situation);
 
         Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToArray();
