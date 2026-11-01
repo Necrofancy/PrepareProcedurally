@@ -19,24 +19,45 @@ public static class SpecialTraitHandling
 
     public static void RerollForBackstoryForcedTraits(Pawn pawn)
     {
+        bool unknownChanceEntry = false;
         void GainTrait(AlienChanceEntry<TraitWithDegree> chanceEntry)
         {
 #if RW1_4
             var trait = new Trait(chanceEntry.defName.def, chanceEntry.defName.degree, true);
 #else
+            if (chanceEntry.entry is null)
+            {
+                unknownChanceEntry = true;
+                return;
+            }
+            
             var trait = new Trait(chanceEntry.entry.def, chanceEntry.entry.degree, true);
 #endif
             pawn.story.traits.GainTrait(trait);
         }
         
         if (pawn.story.Childhood is AlienBackstoryDef childhood)
+        {
             foreach (var trait in childhood.forcedTraitsChance)
                 if (trait.Approved(pawn))
                     GainTrait(trait);
+
+            if (unknownChanceEntry)
+            {
+                Logging.ErrorOnce($"Childhood '{childhood.defName}' has AlienChanceEntry<TraitWithDegree> but no entry");
+                unknownChanceEntry = false;
+            }
+        }
+        
         if (pawn.story.Adulthood is AlienBackstoryDef adulthood)
+        {
             foreach (var trait in adulthood.forcedTraitsChance)
                 if (trait.Approved(pawn))
                     GainTrait(trait);
+            
+            if (unknownChanceEntry)
+                Logging.ErrorOnce($"Adulthood '{adulthood.defName}' has AlienChanceEntry<TraitWithDegree> but no entry");
+        }
     }
 
     public static bool ForcedByBackstory(Trait trait, Pawn pawn)
