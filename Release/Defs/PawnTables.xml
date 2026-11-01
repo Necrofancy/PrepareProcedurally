@@ -10,7 +10,7 @@
       <li>ReviewAndSelectGender</li>
       <li MayRequire="Ludeon.RimWorld.Ideology">FavoriteColor</li>
       <li MayRequire="Ludeon.RimWorld.Biotech">SelectXeno</li>
-      <li MayRequire="erdelf.humanoidalienraces_steam">Race</li>
+      <li MayRequire="erdelf.humanoidalienraces">Race</li>
       <li>StoryChild</li>
       <li>StoryAdult</li>
       <li>Age</li>

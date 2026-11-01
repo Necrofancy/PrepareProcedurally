@@ -22,5 +22,6 @@
 	</modDependencies>
 	<loadAfter>
 		<li>brrainz.harmony</li>
+		<li>erdelf.humanoidalienraces</li>
 	</loadAfter>
 </ModMetaData>

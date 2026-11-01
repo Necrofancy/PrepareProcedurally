@@ -18,9 +18,9 @@ public class HarmonyPatches
     static HarmonyPatches()
     {
         var harmony = new Harmony("Necrofancy.PrepareProcedurally");
-        #if DEBUG
+#if DEBUG
         Harmony.DEBUG = true;
-        #endif
+#endif
         var startingDialog = typeof(Page_ConfigureStartingPawns);
         
         // The mod needs to set up a starting state based on ideology, starting map tile, and general scenario.
@@ -69,9 +69,12 @@ public class HarmonyPatches
         {
             Logging.Debug($"Reverse patching {rimworldClass.Name}.{functionName} into {baseType.Name}.{functionName}");
             var source = AccessTools.Method(rimworldClass, functionName, parameters);
+            var patchType = Harmony.GetPatchInfo(source) is {Transpilers.Count: > 0}
+                ? HarmonyReversePatchType.Snapshot
+                : HarmonyReversePatchType.Original;
             var destination = AccessTools.Method(baseType, functionName, parameters);
             var method = new HarmonyMethod(destination);
-            harmony.CreateReversePatcher(source, method).Patch();
+            harmony.CreateReversePatcher(source, method).Patch(patchType);
             Logging.Debug($"End reverse patching.");
         }
 

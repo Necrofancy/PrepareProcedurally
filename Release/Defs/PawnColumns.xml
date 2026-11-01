@@ -21,7 +21,7 @@
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.FavoriteColor</workerClass>
   </PawnColumnDef>
 
-  <PawnColumnDef MayRequire="erdelf.humanoidalienraces_steam">
+  <PawnColumnDef MayRequire="erdelf.humanoidalienraces">
     <defName>Race</defName>
     <workerClass>Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers.Race</workerClass>
   </PawnColumnDef>
