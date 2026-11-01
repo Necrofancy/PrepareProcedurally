@@ -82,4 +82,10 @@
 	<Necrofancy.PrepareProcedurally.SearchBackstory>Search backstories by name, traits, or skills</Necrofancy.PrepareProcedurally.SearchBackstory>
 	<Necrofancy.PrepareProcedurally.RerollButton>Reroll</Necrofancy.PrepareProcedurally.RerollButton>
 	<Necrofancy.PrepareProcedurally.ManageModSettings>Mod Settings</Necrofancy.PrepareProcedurally.ManageModSettings>
+
+	<Necrofancy.PrepareProcedurally.StorySelection>Story Selection:</Necrofancy.PrepareProcedurally.StorySelection>
+	<Necrofancy.PrepareProcedurally.SelectFromTopXBackgrounds>Backstory Candidate Selection Size</Necrofancy.PrepareProcedurally.SelectFromTopXBackgrounds>
+	<Necrofancy.PrepareProcedurally.SelectFromTopXBackgroundsToolTip>When choosing a backstory combo, these amount backstories will be considered\n\nThe selection within this amount is a weighted roll.</Necrofancy.PrepareProcedurally.SelectFromTopXBackgroundsToolTip>
+	<Necrofancy.PrepareProcedurally.MinimumRatioOfBest>Relative Quality Threshold</Necrofancy.PrepareProcedurally.MinimumRatioOfBest>
+	<Necrofancy.PrepareProcedurally.MinimumRatioOfBestTooltip>When comparing to the best-scoring backstory combo, what's the lowest amount that the algorithm considers "good enough" to consider weighing it.</Necrofancy.PrepareProcedurally.MinimumRatioOfBestTooltip>
 </LanguageData>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
@@ -73,20 +74,39 @@ public class SelectBackstorySpecifically
     public BioPossibility GetBestBio(WeightBackgroundAlgorithm weightingSystem,
         IReadOnlyList<TraitRequirement> requiredTraits)
     {
-        (BioPossibility? Bio, float Ranking) bestSoFar = (default, float.MinValue);
-        foreach (var poss in GetPawnPossibilities(weightingSystem, requiredTraits))
+        var top = new List<(BioPossibility Bio, float Ranking)>(PrepareMod.Settings.candidatePoolSize + 1);
+        foreach (var (bio, ranking) in GetPawnPossibilities(weightingSystem, requiredTraits))
         {
-            if (poss.Ranking >= bestSoFar.Ranking)
-                bestSoFar = poss;
+            var candidate = (bio, ranking);
+            if (top.Count == PrepareMod.Settings.candidatePoolSize && top[top.Count-1].Ranking > ranking)
+                continue;
+
+            var insertAt = top.Count;
+            while (insertAt > 0 
+                   && (ranking > top[insertAt - 1].Ranking 
+                       || (Mathf.Approximately(ranking, top[insertAt-1].Ranking) && Rand.Bool)))
+                insertAt--;
+            top.Insert(insertAt, candidate);
+            if (top.Count > PrepareMod.Settings.candidatePoolSize)
+                top.RemoveAt(top.Count - 1);
         }
 
-        var best = bestSoFar.Bio
-                   ?? throw new InvalidOperationException("No valid pawn possibilities were found.");
+        if (top.Count == 0)
+            throw new InvalidOperationException("No valid pawn possibilities were found.");
+        
+        var bestRanking = top[0].Ranking;
+        var goodOptionsExist = bestRanking > 0;
+        var floor = goodOptionsExist ? bestRanking * PrepareMod.Settings.minimumRatioOfBest : bestRanking;
+        var eligible = top.Where(x => x.Ranking >= floor).ToList();
 
-        alreadyUsed.Add(best.Childhood);
-        alreadyUsed.Add(best.Adulthood);
+        var picked = goodOptionsExist 
+            ? eligible.RandomElementByWeight(x => x.Ranking).Bio
+            : eligible.RandomElement().Bio;
 
-        return best;
+        alreadyUsed.Add(picked.Childhood);
+        alreadyUsed.Add(picked.Adulthood);
+
+        return picked;
     }
     
     public List<BackstoryOption> PossibleChildhoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef adulthood)

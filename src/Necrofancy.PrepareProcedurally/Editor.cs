@@ -217,6 +217,7 @@ public static class Editor
     {
         LastResults = null;
         StartingPawns = null;
+        SkillPassions = null;
         LockedPawns.Clear();
         TraitsThatDisablePassions.Clear();
         SelectedPawn.Clear();

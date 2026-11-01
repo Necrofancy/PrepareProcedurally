@@ -14,6 +14,8 @@ public class PrepareModSettings : ModSettings
     public bool allowRelationships = true;
     public bool allowPregnancy = true;
     public float skillWeightVariation = 1.5f;
+    public int candidatePoolSize = 6;
+    public float minimumRatioOfBest = 0.6f;
 
     public float maxPassionPoints = 7.0f;
     public bool showCompatibility = false;
@@ -32,6 +34,8 @@ public class PrepareModSettings : ModSettings
         Scribe_Values.Look(ref allowRelationships, "allowRelationships");
         Scribe_Values.Look(ref allowPregnancy, "allowPregnancy");
         Scribe_Values.Look(ref skillWeightVariation, "skillWeightVariation");
+        Scribe_Values.Look(ref candidatePoolSize, "candidatePoolSize");
+        Scribe_Values.Look(ref minimumRatioOfBest, "minimumRatioOfBest");
         Scribe_Values.Look(ref maxPassionPoints, "defaultPassionPoints");
         Scribe_Values.Look(ref showCompatibility, "showCompatibility");
         Scribe_Values.Look(ref preGenerate, "generateOnOpen");
