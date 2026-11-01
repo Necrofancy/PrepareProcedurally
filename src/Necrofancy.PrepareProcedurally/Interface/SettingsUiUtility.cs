@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using Necrofancy.PrepareProcedurally.Solving;
-using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -45,7 +43,6 @@ public class SettingsUiUtility
     private IntRange allowedAdultRaceAgeRange;
     private IntRange discretizedMelaninRange;
     private FloatRange melaninRange;
-    [CanBeNull] private List<SkillPassionSelection> skillPassions;
     private bool allowInjuries;
     private bool allowRelationships;
     private bool allowPregnancy;
@@ -64,7 +61,6 @@ public class SettingsUiUtility
         selectedRaceAgeRange = Editor.AgeRange;
         melaninRange = Editor.MelaninRange;
         discretizedMelaninRange = GetDiscreteMelaninRange(melaninRange);
-        skillPassions = Editor.SkillPassions;
         allowInjuries = Editor.AllowBadHeDiffs;
         allowRelationships = Editor.AllowRelationships;
         allowPregnancy = Editor.AllowPregnancy;
@@ -78,7 +74,6 @@ public class SettingsUiUtility
         PullChanges = DoNothing;
         PushChanges = () => PropagateToSettings(settings);
         
-        skillPassions = null;
         (selectedRace, ageRanges) = settings.GetLoadedHumanTypes();
         var ageRangeByRace = ageRanges[selectedRace];
         selectedRaceAgeRange = ageRangeByRace.desiredAgeRange;
@@ -210,13 +205,13 @@ public class SettingsUiUtility
 
         PushChanges();
 
-        if (skillPassions is null)
+        if (Editor.SkillPassions is null)
         {
             return;
         }
 
         var textExplainer = new Rect(rect.x, rect.y + RowHeight * 14, rect.width, RowHeight * 2);
-        var passionPointsNeeded = skillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
+        var passionPointsNeeded = Editor.SkillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
         var passionPointsAvailable = maxPassionPoints * Find.GameInitData.startingPawnCount;
 
         Text.Font = GameFont.Tiny;

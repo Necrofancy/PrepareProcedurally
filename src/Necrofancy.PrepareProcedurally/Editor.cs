@@ -95,12 +95,16 @@ public static class Editor
     {
         get
         {
+#if DEBUG
+            if (StressTestMode)
+                return true;
+#endif
 #if !WAYLITH
-                var elapsed = stopwatch.ElapsedMilliseconds;
-                return Dirty && elapsed > PrepareMod.Settings.debounceDelay;
+            var elapsed = stopwatch.ElapsedMilliseconds;
+            return Dirty && elapsed > PrepareMod.Settings.debounceDelay;
 #else
-                var elapsed = Stopwatch.GetElapsedTime(LastEditTime);
-                return Dirty && elapsed.Milliseconds > PrepareMod.Settings.debounceDelay;
+            var elapsed = Stopwatch.GetElapsedTime(LastEditTime);
+            return Dirty && elapsed.Milliseconds > PrepareMod.Settings.debounceDelay;
 #endif
         }
     }
@@ -108,6 +112,10 @@ public static class Editor
 #if WAYLITH
     private static long LastEditTime { get; set; }
 #endif
+    
+#if DEBUG
+    internal static bool StressTestMode { get; set; }
+#endif                
 
     public static bool AllowDirtying { get; set; }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
@@ -14,6 +15,9 @@ namespace Necrofancy.PrepareProcedurally.Interface.Pages;
 
 public class PrepareProcedurally : Page
 {
+#if DEBUG
+    int stressTestModeRuns, requirementSuccesses;
+#endif
     private const string CustomizePawnSkillsLabel = "Necrofancy.PrepareProcedurally.CustomizePawnSkillsLabel";
     private const string RerollButton = "Necrofancy.PrepareProcedurally.RerollButton";
 
@@ -35,6 +39,7 @@ public class PrepareProcedurally : Page
         try
         {
             DrawPageTitle(rect);
+            DrawStressTestCheckmark(rect);
             
             var uiPadding = rect.GetInnerRect();
             uiPadding.SplitHorizontally(400, out var upper, out var lower);
@@ -58,6 +63,8 @@ public class PrepareProcedurally : Page
             {
                 width = lower.width - 50
             };
+            
+            DrawStressTestOngoingResults(lower);
             lower.height -= 45;
 
             Widgets.BeginScrollView(lower, ref scrollPosition, viewSize);
@@ -86,6 +93,44 @@ public class PrepareProcedurally : Page
         }
     }
 
+    [Conditional("DEBUG")]
+    private void DrawStressTestCheckmark(Rect rect)
+    {
+#if DEBUG
+        // stres test mode will repeatedly roll randomization on every call of DrawWindowContents
+        const float checkboxSpace = 30f;
+        var labelText =  "Stress Test Mode";
+        var rectLength = Text.CalcSize(labelText).x + checkboxSpace;
+
+        bool stressTesting = Editor.StressTestMode;
+        Rect soloRect = new Rect(rect.xMax - rectLength, rect.y - 5, rectLength, Text.LineHeight);
+        Widgets.CheckboxLabeled(soloRect, labelText, ref stressTesting);
+        Editor.StressTestMode = stressTesting;
+#endif
+    }
+
+    [Conditional("DEBUG")]
+    private void DrawStressTestOngoingResults(Rect rect)
+    {
+#if DEBUG
+        if (!Editor.StressTestMode && stressTestModeRuns <= 0)
+        {
+            return;
+        }
+        
+        float rate = (float)requirementSuccesses / stressTestModeRuns;
+        Widgets.Label(rect, $"{stressTestModeRuns} runs, ({rate:P2} success)");
+        
+        if (Editor.StressTestMode)
+        {
+            var requirementsUnmet = GetUnsatisfiedRequirements();
+            if (!requirementsUnmet.Any())
+                requirementSuccesses++;
+            stressTestModeRuns++;
+        }
+#endif
+    }
+
     private void DoCenterButtons(Rect rect, Action reroll)
     {
         const float gap = 16f;
@@ -112,11 +157,7 @@ public class PrepareProcedurally : Page
 
     protected override void DoNext()
     {
-        var unsatisfiedRequirements =
-            new List<(SkillDef Skill, int MajorMissing, int MinorMissing, int UsableMissing)>();
-        foreach (var requirement in Editor.SkillPassions)
-            if (!requirement.StartingGroupSatisfies(Editor.StartingPawns, out var major, out var minor, out var usable))
-                unsatisfiedRequirements.Add((requirement.Skill, major, minor, usable));
+        var unsatisfiedRequirements = GetUnsatisfiedRequirements();
 
         if (unsatisfiedRequirements.Any())
         {
@@ -141,6 +182,16 @@ public class PrepareProcedurally : Page
         {
             FullyClose();
         }
+    }
+
+    private static List<(SkillDef Skill, int MajorMissing, int MinorMissing, int UsableMissing)> GetUnsatisfiedRequirements()
+    {
+        var unsatisfiedRequirements =
+            new List<(SkillDef Skill, int MajorMissing, int MinorMissing, int UsableMissing)>();
+        foreach (var requirement in Editor.SkillPassions)
+            if (!requirement.StartingGroupSatisfies(Editor.StartingPawns, out var major, out var minor, out var usable))
+                unsatisfiedRequirements.Add((requirement.Skill, major, minor, usable));
+        return unsatisfiedRequirements;
     }
 
     public override bool OnCloseRequest()
