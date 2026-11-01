@@ -51,7 +51,16 @@ public class SettingsUiUtility
 
     public static SettingsUiUtility ForSettings { get; } = new(PrepareMod.Settings);
 
-    public static SettingsUiUtility ForEditor { get; } = new();
+    public static SettingsUiUtility ForEditor
+    {
+        get
+        {
+            field ??= new SettingsUiUtility();
+            return field;
+        }
+
+        private set;
+    }
     
     private SettingsUiUtility()
     {
@@ -86,6 +95,8 @@ public class SettingsUiUtility
         skillWeightVariation = settings.skillWeightVariation;
         maxPassionPoints = settings.maxPassionPoints;
     }
+    
+    public static void ClearEditor() => ForEditor = null;
     
     public void DoWindowContents(Rect rect)
     {

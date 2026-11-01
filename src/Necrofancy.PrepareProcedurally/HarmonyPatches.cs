@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Necrofancy.PrepareProcedurally.Interface;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -93,6 +94,7 @@ public class HarmonyPatches
     private static void InitializeEditorState()
     {
         Editor.SetCleanState();
+        SettingsUiUtility.ClearEditor();
     }
 
     private static void AddButtonToDialog(Rect rect, Page_ConfigureStartingPawns __instance)
