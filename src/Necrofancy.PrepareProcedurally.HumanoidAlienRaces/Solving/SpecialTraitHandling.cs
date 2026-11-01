@@ -14,72 +14,65 @@ public static class SpecialTraitHandling
             if (ForcedByBackstory(trait, pawn))
                 traitsToRemove.Add(trait);
 
-        foreach (var trait in traitsToRemove) pawn.story.traits.RemoveTrait(trait);
+        foreach (var trait in traitsToRemove) 
+            pawn.story.traits.RemoveTrait(trait);
     }
 
     public static void RerollForBackstoryForcedTraits(Pawn pawn)
     {
-        bool unknownChanceEntry = false;
-        void GainTrait(AlienChanceEntry<TraitWithDegree> chanceEntry)
+        foreach (var backstory in pawn.story.AllBackstories)
         {
-#if RW1_4
-            var trait = new Trait(chanceEntry.defName.def, chanceEntry.defName.degree, true);
-#else
-            if (chanceEntry.entry is null)
-            {
-                unknownChanceEntry = true;
-                return;
-            }
-            
-            var trait = new Trait(chanceEntry.entry.def, chanceEntry.entry.degree, true);
-#endif
-            pawn.story.traits.GainTrait(trait);
-        }
-        
-        if (pawn.story.Childhood is AlienBackstoryDef childhood)
-        {
-            foreach (var trait in childhood.forcedTraitsChance)
-                if (trait.Approved(pawn))
-                    GainTrait(trait);
+            if (backstory is not AlienBackstoryDef alienBackstory || alienBackstory.forcedTraitsChance.NullOrEmpty())
+                continue;
 
-            if (unknownChanceEntry)
+            foreach (var chanceEntry in alienBackstory.forcedTraitsChance)
             {
-                Logging.ErrorOnce($"Childhood '{childhood.defName}' has AlienChanceEntry<TraitWithDegree> but no entry");
-                unknownChanceEntry = false;
+#if RW1_4
+                if (!chanceEntry.Approved(pawn) || chanceEntry.defName?.def is null)
+                    continue;
+                TryGainForcedTrait(pawn, chanceEntry.defName.def, chanceEntry.defName.degree);
+#else
+                // for readers: AlienChoiceEntry<T>.Select(Pawn) rolls for the traits here
+                // LINQ is -NOT- being used here if you're wondering WTF happened to rolling
+                foreach (var traitWithDegree in chanceEntry.Select(pawn))
+                    if (traitWithDegree?.def is not null)
+                        TryGainForcedTrait(pawn, traitWithDegree.def, traitWithDegree.degree);
+#endif
             }
         }
-        
-        if (pawn.story.Adulthood is AlienBackstoryDef adulthood)
-        {
-            foreach (var trait in adulthood.forcedTraitsChance)
-                if (trait.Approved(pawn))
-                    GainTrait(trait);
-            
-            if (unknownChanceEntry)
-                Logging.ErrorOnce($"Adulthood '{adulthood.defName}' has AlienChanceEntry<TraitWithDegree> but no entry");
-        }
+    }
+
+    private static void TryGainForcedTrait(Pawn pawn, TraitDef def, int degree)
+    {
+        if (!pawn.story.traits.HasTrait(def))
+            pawn.story.traits.GainTrait(new Trait(def, degree, true));
     }
 
     public static bool ForcedByBackstory(Trait trait, Pawn pawn)
     {
         if (!trait.ScenForced) return false;
-        bool Match(AlienChanceEntry<TraitWithDegree> chanceEntry)
-        {
-#if RW1_4
-            return chanceEntry?.defName?.def == trait.def;
-#else
-            return chanceEntry?.entry?.def == trait.def;
-#endif
-        }
 
-        if (pawn.story.Childhood is AlienBackstoryDef childhood)
-            if (childhood.forcedTraitsChance.Any(Match))
-                return true;
-
-        if (pawn.story.Adulthood is AlienBackstoryDef adulthood)
-            if (adulthood.forcedTraitsChance.Any(Match))
-                return true;
+        foreach (var backstory in pawn.story.AllBackstories)
+            if (backstory is AlienBackstoryDef alienBackstory && !alienBackstory.forcedTraitsChance.NullOrEmpty())
+                foreach (var chanceEntry in alienBackstory.forcedTraitsChance)
+                    if (CouldForce(chanceEntry, trait.def))
+                        return true;
 
         return false;
+    }
+
+    private static bool CouldForce(AlienChanceEntry<TraitWithDegree> chanceEntry, TraitDef def)
+    {
+        if (chanceEntry is null) return false;
+#if RW1_4
+        return chanceEntry.defName?.def == def;
+#else
+        if (chanceEntry.entry?.def == def) return true;
+        if (chanceEntry.options is null) return false;
+        foreach (var option in chanceEntry.options)
+            if (CouldForce(option, def))
+                return true;
+        return false;
+#endif
     }
 }
