@@ -10,7 +10,7 @@ Prepare Procedurally v1.3 is here, with the following:
 	* Backstory Candidate Selection Size: the maximum amount of backstory combinations to consider for making a weighted roll.
 	* Relative Quality Threshold - Filter anything under this score relative to the "best" option for creating the above list.
 
-![[https://raw.githubusercontent.com/Necrofancy/PrepareProcedurally/blob/main/Documentation/PatchNotes/1.3/Images/Settings.png]]
+![Mod settings](https://raw.githubusercontent.com/Necrofancy/PrepareProcedurally/main/Documentation/PatchNotes/1.3/Images/Settings.png)
 
 ### Specific Backstory Selection
 
@@ -18,12 +18,11 @@ The following is currently only active when you do NOT have Humanoid Alien Races
 
 The Specific Pawn Customization more prominently shows the ability to select your own backstory:
 
-![[https://raw.githubusercontent.com/Necrofancy/PrepareProcedurally/blob/main/Documentation/PatchNotes/1.3/Images/BackstoryButtons.png]
+![Backstory buttons](https://raw.githubusercontent.com/Necrofancy/PrepareProcedurally/main/Documentation/PatchNotes/1.3/Images/BackstoryButtons.png)
 
 When selecting a backstory in 1.6 or later, you are now able to search for traits, childhood or adulthood story titles (e.g. Bodyguard), or skills and labor in order to find an appropriate backstory for what you are looking for!
 
-![[https://raw.githubusercontent.com/Necrofancy/PrepareProcedurally/blob/main/Documentation/PatchNotes/1.3/Images/Search.png]]
-
+![Backstory search](https://raw.githubusercontent.com/Necrofancy/PrepareProcedurally/main/Documentation/PatchNotes/1.3/Images/Search.png)
 You can search for the following:
 * Traits forced by a backstory
 * Skills (e.g. Plants)
