@@ -8,9 +8,9 @@ namespace Necrofancy.PrepareProcedurally;
 public class PrepareModSettings : ModSettings
 {
     // the actual possible range of human ages includes newborns, teenagers, and geriatrics
-    private static readonly IntRange DefaultHumanAgeRange = new (0, 120);
     // we need adulthoods for pawn generation, and most users probably don't want to play around dementia/frail.
-    private static readonly IntRange DefaultSelectedHumanAgeRange = new (21, 50);
+    private static readonly IntRange PossibleAdultHumanAgeRange = new (21, 120);
+    private static readonly IntRange DefaultedSelectedAdultHumanRange = new (21, 50);
     // otherwise the default settings should match vanilla generation
     private static readonly FloatRange DefaultMelaninRange = new (0f, 0.9f); // all human skin colors
     private const bool DefaultAllowInjuries = true;
@@ -122,7 +122,7 @@ public class PrepareModSettings : ModSettings
         ageRangeByRace = new Dictionary<string, RaceAgeData>
         {
             // this is based on the default age curve for the starting rimworld colony
-            { selectedRace, new RaceAgeData(DefaultSelectedHumanAgeRange, DefaultHumanAgeRange) }
+            { selectedRace, new RaceAgeData(DefaultedSelectedAdultHumanRange, PossibleAdultHumanAgeRange) }
         };
     }
 
