@@ -48,17 +48,14 @@ public class SettingsUiUtility
     private bool allowPregnancy;
     private float skillWeightVariation;
     private float maxPassionPoints;
+    
+    private readonly bool drawPassionStats;
 
     public static SettingsUiUtility ForSettings { get; } = new(PrepareMod.Settings);
 
     public static SettingsUiUtility ForEditor
     {
-        get
-        {
-            field ??= new SettingsUiUtility();
-            return field;
-        }
-
+        get => field ??= new SettingsUiUtility();
         private set;
     }
     
@@ -75,6 +72,8 @@ public class SettingsUiUtility
         allowPregnancy = Editor.AllowPregnancy;
         skillWeightVariation = Editor.SkillWeightVariation;
         maxPassionPoints = Editor.MaxPassionPoints;
+
+        drawPassionStats = true;
     }
     
     private SettingsUiUtility(PrepareModSettings settings)
@@ -216,7 +215,7 @@ public class SettingsUiUtility
 
         PushChanges();
 
-        if (Editor.SkillPassions is null)
+        if (!drawPassionStats)
         {
             return;
         }
