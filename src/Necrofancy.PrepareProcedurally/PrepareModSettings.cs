@@ -12,7 +12,7 @@ public class PrepareModSettings : ModSettings
     private static readonly IntRange PossibleAdultHumanAgeRange = new (21, 120);
     private static readonly IntRange DefaultedSelectedAdultHumanRange = new (21, 50);
     // otherwise the default settings should match vanilla generation
-    private static readonly FloatRange DefaultMelaninRange = new (0f, 0.9f); // all human skin colors
+    private static readonly FloatRange DefaultMelaninRange = new (0f, 1f);
     private const bool DefaultAllowInjuries = true;
     private const bool DefaultAllowRelationships = true;
     private const bool DefaultAllowPregnancy = true;
