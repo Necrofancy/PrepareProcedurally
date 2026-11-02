@@ -37,8 +37,10 @@ public static class AlienProcGen
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))
         {
+            int attempts = 0;
+            const int maxAttempts = 100;
             var foundBackstoryToWorkWith = false;
-            while (!foundBackstoryToWorkWith)
+            while (!foundBackstoryToWorkWith && attempts++ < maxAttempts)
             {
                 PawnGenerationRequestTransforms.SetBasedOnEditorSettings(index);
                 pawn = StartingPawnUtility.RandomizeInPlace(pawn);
@@ -52,6 +54,9 @@ public static class AlienProcGen
                     foundBackstoryToWorkWith = true;
                 }
             }
+            
+            if (attempts >= maxAttempts)
+                Logging.Error("Failed to find a backstory to work with");
         }
 
         var backstoryFilter = new BackstoryCategoryFilter
