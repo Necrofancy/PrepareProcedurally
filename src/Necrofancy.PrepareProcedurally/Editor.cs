@@ -207,12 +207,8 @@ public static class Editor
         StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToArray();
         var pawnsToRemove = LockedPawns.Where(pawn => !StartingPawns.Contains(pawn)).ToList();
 
-        foreach (var pawn in pawnsToRemove) LockedPawns.Remove(pawn);
-        
-        if (PrepareMod.Settings.preGenerate)
-            MakeDirty();
-        else
-            Dirty = false;
+        foreach (var pawn in pawnsToRemove)
+            LockedPawns.Remove(pawn);
     }
 
     /// <summary>

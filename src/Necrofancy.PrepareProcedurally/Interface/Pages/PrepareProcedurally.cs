@@ -32,6 +32,7 @@ public class PrepareProcedurally : Page
     public PrepareProcedurally()
     {
         Editor.RefreshPawnList();
+        Editor.Dirty = PrepareMod.Settings.preGenerate;
     }
 
     public override void DoWindowContents(Rect rect)
