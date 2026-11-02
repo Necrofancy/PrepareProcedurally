@@ -55,8 +55,10 @@ public static class AlienProcGen
                 }
             }
             
-            if (attempts >= maxAttempts)
-                Logging.Error("Failed to find a backstory to work with");
+            if (!foundBackstoryToWorkWith)
+            {
+                Logging.Error($"HAR Compat - Failed to find a backstory to work with for {pawn.def.LabelCap}");
+            }
         }
 
         var backstoryFilter = new BackstoryCategoryFilter
@@ -125,8 +127,11 @@ public static class AlienProcGen
                     }
                 }
                 
-                if (attempts >= maxAttempts)
-                    Logging.Error("Failed to find a backstory to work with");
+                if (!foundBackstoryToWorkWith)
+                {
+                    Logging.Error($"HAR Compat - Failed to find a backstory to work with for {pawn.def.LabelCap}");
+                    categories.Add(default);
+                }
             }
         }
 
