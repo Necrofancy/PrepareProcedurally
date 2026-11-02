@@ -105,7 +105,9 @@ public static class AlienProcGen
                 }
 
                 var foundBackstoryToWorkWith = false;
-                while (!foundBackstoryToWorkWith)
+                int attempts = 0;
+                const int maxAttempts = 100;
+                while (!foundBackstoryToWorkWith && attempts++ < maxAttempts)
                 {
                     WorldPawnDestruction.DestroyRelationships(pawn);
 
@@ -122,6 +124,9 @@ public static class AlienProcGen
                         foundBackstoryToWorkWith = true;
                     }
                 }
+                
+                if (attempts >= maxAttempts)
+                    Logging.Error("Failed to find a backstory to work with");
             }
         }
 

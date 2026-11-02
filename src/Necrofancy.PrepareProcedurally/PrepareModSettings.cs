@@ -122,7 +122,7 @@ public class PrepareModSettings : ModSettings
         ageRangeByRace = new Dictionary<string, RaceAgeData>
         {
             // this is based on the default age curve for the starting rimworld colony
-            { selectedRace, new RaceAgeData(new IntRange(21, 25), new IntRange(20, 120)) }
+            { selectedRace, new RaceAgeData(DefaultSelectedHumanAgeRange, DefaultHumanAgeRange) }
         };
     }
 
