@@ -104,7 +104,7 @@ public static class Editor
             return Dirty && elapsed > PrepareMod.Settings.debounceDelay;
 #else
             var elapsed = Stopwatch.GetElapsedTime(LastEditTime);
-            return Dirty && elapsed.Milliseconds > PrepareMod.Settings.debounceDelay;
+            return Dirty && elapsed.TotalMilliseconds > PrepareMod.Settings.debounceDelay;
 #endif
         }
     }
