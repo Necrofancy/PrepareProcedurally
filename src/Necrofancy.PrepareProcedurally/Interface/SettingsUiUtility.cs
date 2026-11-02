@@ -242,21 +242,15 @@ public class SettingsUiUtility
     
     private static IntRange GetDiscreteMelaninRange(FloatRange melaninRange)
     {
-        var range = new IntRange(0, PawnSkinColors.SkinColorGenesInOrder.Count - 1);
-        for (var index = 0; index < PawnSkinColors.SkinColorGenesInOrder.Count; index++)
+        var genes = PawnSkinColors.SkinColorGenesInOrder;
+        var range = new IntRange(0, genes.Count - 1);
+        for (var i = 0; i < genes.Count; i++)
         {
-            var gene = PawnSkinColors.SkinColorGenesInOrder[index];
-            
-            if (Mathf.Approximately(gene.minMelanin, melaninRange.min))
-            {
-                range.min = index;
-            }
-            else if (Mathf.Approximately(gene.minMelanin, melaninRange.max))
-            {
-                range.max = index;
-            }
+            if (Mathf.Approximately(genes[i].minMelanin, melaninRange.min))
+                range.min = i;
+            if (i + 1 < genes.Count && Mathf.Approximately(genes[i + 1].minMelanin, melaninRange.max))
+                range.max = i;
         }
-
         return range;
     }
 
