@@ -208,6 +208,11 @@ public static class Editor
         var pawnsToRemove = LockedPawns.Where(pawn => !StartingPawns.Contains(pawn)).ToList();
 
         foreach (var pawn in pawnsToRemove) LockedPawns.Remove(pawn);
+        
+        if (PrepareMod.Settings.preGenerate)
+            MakeDirty();
+        else
+            Dirty = false;
     }
 
     /// <summary>
