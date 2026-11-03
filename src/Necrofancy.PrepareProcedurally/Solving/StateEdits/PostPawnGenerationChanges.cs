@@ -10,7 +10,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 /// <summary>
 /// Almost all changes made to pawns post-generation as part of procedural generation will be put here.
 /// Traits will go in either <see cref="Interface.PawnColumnWorkers.Traits"/> or <see cref="TraitUtilities"/>
-/// Because the fixups for those will also apply to 
+/// Because the fixups for those will also apply to
 /// </summary>
 public static class PostPawnGenerationChanges
 {
@@ -59,6 +59,7 @@ public static class PostPawnGenerationChanges
     {
         if (Find.Scenario.AllParts.Any(x => x is ScenPart_NoPossessions))
             return;
+
         foreach (var item in bio.Adulthood.possessions)
 #if RW1_4
             possessions.Add(new ThingDefCount(item.key, item.value));
@@ -84,7 +85,8 @@ public static class PostPawnGenerationChanges
     /// <summary>
     /// Apply simulated skill ranges to the pawn's given stats.
     /// </summary>
-    public static void ApplySimulatedSkillsTo(this IReadOnlyDictionary<SkillDef, PassionAndLevel> finalRanges,
+    public static void ApplySimulatedSkillsTo(
+        this IReadOnlyDictionary<SkillDef, PassionAndLevel> finalRanges,
         Pawn pawn)
     {
         var passionsModdedByGenes = new Dictionary<SkillDef, PassionMod.PassionModType>();
@@ -160,7 +162,7 @@ public static class PostPawnGenerationChanges
             pawn.story.traits.GainTrait(new Trait(toAdd.def, toAdd.degree ?? 0));
             foreach (var trait in toAddBack)
             {
-                pawn.story.traits.GainTrait(trait, suppressConflicts:true);
+                pawn.story.traits.GainTrait(trait, suppressConflicts: true);
             }
         }
 
@@ -176,7 +178,7 @@ public static class PostPawnGenerationChanges
             if (diff.def.isBad && diff.def.everCurableByItem)
                 badThings.Add(diff);
         }
-        
+
         foreach (var bad in badThings)
             pawn.health.RemoveHediff(bad);
     }

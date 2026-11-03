@@ -10,8 +10,10 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 public static class BackstorySolver
 {
-    public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(BalancingSituation situation,
-        SimpleCurve ageRange, IntRange variation)
+    public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(
+        BalancingSituation situation,
+        SimpleCurve ageRange,
+        IntRange variation)
     {
         var currentBackgrounds = new List<BackgroundPossibility>(situation.Pawns);
 
@@ -35,15 +37,18 @@ public static class BackstorySolver
             var age = Rand.ByCurve(ageRange);
 
             var skillWeightingSystem = new SpecificSkillWeights(weights);
-            var specifier = new SelectBackstorySpecifically(situation.CategoryFilters, Editor.GenderRequirements[i], currentBackgrounds);
+            var specifier = new SelectBackstorySpecifically(situation.CategoryFilters, Editor.GenderRequirements[i],
+                currentBackgrounds);
             if (Editor.SetChildhoods[i] is not null)
             {
                 specifier.ForceChildhood(Editor.SetChildhoods[i]);
             }
+
             if (Editor.SetAdulthoods[i] is not null)
             {
                 specifier.ForceAdulthood(Editor.SetAdulthoods[i]);
             }
+
             var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
             var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
             currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, age, true));

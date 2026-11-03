@@ -13,6 +13,7 @@ namespace Necrofancy.PrepareProcedurally.Test
         {
             this.testOutputHelper = testOutputHelper;
         }
+
         [Fact]
         public void BruteForcingDistributions()
         {

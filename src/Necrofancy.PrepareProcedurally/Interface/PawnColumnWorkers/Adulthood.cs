@@ -14,6 +14,7 @@ public class Adulthood : Backstory
     {
         return pawn.story.Adulthood;
     }
+
     protected override void SelectBackstory(Pawn pawn)
     {
         BackstorySelection.PossibleAdulthoods(pawn, () => OnceSelected(pawn));

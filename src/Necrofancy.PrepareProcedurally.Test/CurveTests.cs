@@ -17,7 +17,7 @@ namespace Necrofancy.PrepareProcedurally.Test
             new CurvePoint(70f, 1f),
             new CurvePoint(80, 0)
         };
-        
+
         private readonly ITestOutputHelper testOutputHelper;
 
         public CurveTests(ITestOutputHelper testOutputHelper)
@@ -36,6 +36,7 @@ namespace Necrofancy.PrepareProcedurally.Test
             {
                 testOutputHelper.WriteLine($"{point.x}: {point.y}");
             }
+
             for (int i = 0; i < Attempts; i++)
             {
                 float age = Rand.ByCurve(curve);

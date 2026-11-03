@@ -6,8 +6,11 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 public readonly struct BackgroundPossibility
 {
-    public BackgroundPossibility(BioPossibility background, IReadOnlyDictionary<SkillDef, IntRange> skillRanges,
-        float assumedAge, bool canChange)
+    public BackgroundPossibility(
+        BioPossibility background,
+        IReadOnlyDictionary<SkillDef, IntRange> skillRanges,
+        float assumedAge,
+        bool canChange)
     {
         Background = background;
         SkillRanges = skillRanges;

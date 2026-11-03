@@ -23,7 +23,7 @@ public class HarmonyPatches
         Harmony.DEBUG = true;
 #endif
         var startingDialog = typeof(Page_ConfigureStartingPawns);
-        
+
         // The mod needs to set up a starting state based on ideology, starting map tile, and general scenario.
         SetEditorStateOnOpeningCreateCharactersDialog(startingDialog, harmony);
         // The only effects happen on interacting with the mod-added UI. There are no external changes otherwise.
@@ -32,7 +32,7 @@ public class HarmonyPatches
         // Clear editor state and make sure any dialogs are closed to further ensure no state changes happen mid-game.
         ClearEditorStateOnProceedingFromCreateCharactersDialog(startingDialog, harmony);
         CreateReversePatchesOfVanillaUi(harmony);
-        
+
         var assembly = Assembly.GetExecutingAssembly();
         Logging.Info($"release v{assembly.GetName().Version} patches loaded");
     }
@@ -56,21 +56,22 @@ public class HarmonyPatches
     }
 
     private static void ClearEditorStateOnProceedingFromCreateCharactersDialog(Type startingDialog, Harmony harmony)
-    { 
+    {
         var close = AccessTools.Method(typeof(Window), nameof(Window.PostClose));
         var clearStateMethod = AccessTools.Method(typeof(HarmonyPatches), nameof(ClearStateAndCloseWindows));
         var clearState = new HarmonyMethod(clearStateMethod);
         harmony.Patch(close, postfix: clearState);
     }
-    
+
     private static void CreateReversePatchesOfVanillaUi(Harmony harmony)
     {
         var baseType = typeof(ReusingVanillaUi);
+
         void ReversePatch(Type rimworldClass, string functionName, Type[] parameters = null)
         {
             Logging.Debug($"Reverse patching {rimworldClass.Name}.{functionName} into {baseType.Name}.{functionName}");
             var source = AccessTools.Method(rimworldClass, functionName, parameters);
-            var patchType = Harmony.GetPatchInfo(source) is {Transpilers.Count: > 0}
+            var patchType = Harmony.GetPatchInfo(source) is { Transpilers.Count: > 0 }
                 ? HarmonyReversePatchType.Snapshot
                 : HarmonyReversePatchType.Original;
             var destination = AccessTools.Method(baseType, functionName, parameters);
@@ -91,6 +92,7 @@ public class HarmonyPatches
         ReversePatch(typeof(StartingPawnUtility), nameof(StartingPawnUtility.DrawPortraitArea));
 #endif
     }
+
     private static void InitializeEditorState()
     {
         Editor.SetCleanState();
@@ -107,15 +109,9 @@ public class HarmonyPatches
         {
             horizontalPlacement += 175;
         }
-        
+
         string buttonText = "Button".PpTranslate();
-        var buttonRect = new Rect
-        {
-            x = horizontalPlacement,
-            y = verticalPlacement,
-            width = width,
-            height = height
-        };
+        var buttonRect = new Rect { x = horizontalPlacement, y = verticalPlacement, width = width, height = height };
 
         if (Widgets.ButtonText(buttonRect, buttonText))
             try
@@ -128,17 +124,18 @@ public class HarmonyPatches
                 Log.Error(e.ToString());
             }
     }
-    
+
     public static void ClearStateAndCloseWindows(Window __instance)
     {
         if (__instance is not Page_ConfigureStartingPawns)
             return;
-        
+
         Editor.ClearState();
-        
-        foreach (var window in Find.WindowStack.Windows.Where(w => w.GetType().Assembly == Assembly.GetExecutingAssembly()).ToList())
+
+        foreach (var window in Find.WindowStack.Windows
+                     .Where(w => w.GetType().Assembly == Assembly.GetExecutingAssembly()).ToList())
             window.Close(false);
-        
+
         Logging.Debug("ClearStateAndCloseWindows");
     }
 }

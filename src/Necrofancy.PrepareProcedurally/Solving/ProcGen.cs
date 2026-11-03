@@ -45,14 +45,15 @@ public static class ProcGen
             Pawn pawn;
 
             var age = backstory.AssumedAge;
-            
+
             var gender = backstory.Background.Gender != GenderPossibility.Either
                 ? backstory.Background.Gender
                 : GenderRequirements[i];
-            
+
             WorldPawnDestruction.DestroyRelationships(pawnList[i]);
-            
-            using (TemporarilyChange.SetSpecificRequest(i, age, gender, AllowBadHeDiffs, AllowRelationships, AllowPregnancy))
+
+            using (TemporarilyChange.SetSpecificRequest(i, age, gender, AllowBadHeDiffs, AllowRelationships,
+                       AllowPregnancy))
             using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
             using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
             {
@@ -74,7 +75,9 @@ public static class ProcGen
         }
     }
 
-    public static Pawn RandomizeSingularPawn(Pawn pawn, CollectSpecificPassions collector,
+    public static Pawn RandomizeSingularPawn(
+        Pawn pawn,
+        CollectSpecificPassions collector,
         List<(SkillDef Skill, UsabilityRequirement Usability)> reqs)
     {
         var generationCurve = Faction.OfPlayer.def.basicMemberKind.race.race.ageGenerationCurve;
@@ -83,7 +86,7 @@ public static class ProcGen
 
         var index = StartingPawnUtility.PawnIndex(pawn);
         var backstoryFilters = Faction.OfPlayer.def.backstoryFilters;
-        
+
         var specifier = new SelectBackstorySpecifically(backstoryFilters, GenderRequirements[index], pawn);
         if (SetChildhoods[index] is not null)
         {
@@ -94,7 +97,7 @@ public static class ProcGen
         {
             specifier.ForceAdulthood(SetAdulthoods[index]);
         }
-        
+
         var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
 
@@ -119,7 +122,8 @@ public static class ProcGen
 
         using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
-        using (TemporarilyChange.SetSpecificRequest(index, age, gender, AllowBadHeDiffs, AllowRelationships, AllowPregnancy))
+        using (TemporarilyChange.SetSpecificRequest(index, age, gender, AllowBadHeDiffs, AllowRelationships,
+                   AllowPregnancy))
         {
             pawn = StartingPawnUtility.RandomizeInPlace(pawn);
             OnPawnChanged(pawn);

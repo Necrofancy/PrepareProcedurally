@@ -7,11 +7,11 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 internal static class TraitUtilities
 {
     private static readonly int MaxNonSexualityTraits = 3;
-        
+
     internal static List<TraitRequirement> RequiredTraitsForUnlockedPawn(Pawn pawn)
     {
         var requiredTraits = new List<TraitRequirement>();
-        
+
         var index = StartingPawnUtility.PawnIndex(pawn);
         if (index < Editor.TraitRequirements.Length && Editor.TraitRequirements[index] is { } traits)
         {
@@ -24,7 +24,7 @@ internal static class TraitUtilities
     internal static List<TraitRequirement> RequiredTraitsForLockedPawn(Pawn pawn)
     {
         var requiredTraits = new List<TraitRequirement>();
-        
+
         foreach (var trait in pawn.story.traits.allTraits)
         {
             if (IsBackstoryTraitOfPawn(trait, pawn))
@@ -47,17 +47,13 @@ internal static class TraitUtilities
         var nonSexualityCount = neededTraits.Count(x => !x.def.IsSexualityTrait());
         foreach (var possibleTrait in DefDatabase<TraitDef>.AllDefsListForReading)
         {
-            if ((possibleTrait.IsSexualityTrait() || nonSexualityCount < MaxNonSexualityTraits) 
+            if ((possibleTrait.IsSexualityTrait() || nonSexualityCount < MaxNonSexualityTraits)
                 && neededTraits.AllowsTrait(possibleTrait)
                 && possibleTrait.GetGenderSpecificCommonality(Gender.None) > 0)
             {
                 foreach (var data in possibleTrait.degreeDatas)
                 {
-                    yield return new TraitRequirement
-                    {
-                        def = possibleTrait, 
-                        degree = data.degree
-                    };
+                    yield return new TraitRequirement { def = possibleTrait, degree = data.degree };
                 }
             }
         }
@@ -79,7 +75,7 @@ internal static class TraitUtilities
             // Biotech-forced traits won't count towards the limit.
             // Post-1.4, sexuality traits are rolled separately from the 1~3 trait count
             // Scenario-forced traits are weird, and having enough of them will absolutely put you over 3 traits.
-                
+
             // So best to ignore all of these when seeing what traits 'need' to be cut for normal pawn generation.
             if (trait.sourceGene != null || trait.def.IsSexualityTrait() || trait.ScenForced)
             {
@@ -92,7 +88,7 @@ internal static class TraitUtilities
             {
                 continue;
             }
-                
+
             candidates.Add(trait);
         }
 
@@ -109,7 +105,7 @@ internal static class TraitUtilities
     {
         return Compatibility.Layer.GetMaximumGeneratedTraits(pawn);
     }
-        
+
     internal static bool IsBackstoryTraitOfPawn(Trait trait, Pawn pawn)
     {
         bool isChildHoodBackstory = pawn.story.Adulthood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;

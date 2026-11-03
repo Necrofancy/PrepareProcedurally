@@ -13,11 +13,12 @@ public class Childhood : Backstory
     {
         return pawn.story.Childhood;
     }
+
     protected override void SelectBackstory(Pawn pawn)
     {
         BackstorySelection.PossibleChildhoods(pawn, () => OnceSelected(pawn));
     }
-    
+
     protected override bool Locked(Pawn pawn)
     {
         var index = StartingPawnUtility.PawnIndex(pawn);

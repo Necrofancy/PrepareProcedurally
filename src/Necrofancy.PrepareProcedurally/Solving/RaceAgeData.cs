@@ -15,7 +15,7 @@ public struct RaceAgeData : IExposable, IEquatable<RaceAgeData>
     public IntRange possibleAgeRange;
 
     public RaceAgeData WithUpdatedAge(IntRange newRange) => new RaceAgeData(newRange, possibleAgeRange);
-    
+
     public void ExposeData()
     {
         Scribe_Values.Look(ref desiredAgeRange, "desiredAgeRange");

@@ -21,8 +21,13 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 /// </summary>
 public static class TemporarilyChange
 {
-    public static TemporaryEdit<PawnGenerationRequest> SetSpecificRequest(int pawnIndex, float age,
-         GenderPossibility gender, bool allowAddictions, bool allowRelationships, bool allowPregnant)
+    public static TemporaryEdit<PawnGenerationRequest> SetSpecificRequest(
+        int pawnIndex,
+        float age,
+        GenderPossibility gender,
+        bool allowAddictions,
+        bool allowRelationships,
+        bool allowPregnant)
     {
         var startingPawnRequests = StartingPawnUtilityState.GetStartingPawnRequestList();
 
@@ -36,7 +41,7 @@ public static class TemporarilyChange
         editedRequest.AllowAddictions = allowAddictions;
         editedRequest.CanGeneratePawnRelations = allowRelationships;
         editedRequest.AllowPregnant = allowPregnant;
-        
+
         editedRequest.FixedGender = gender switch
         {
             GenderPossibility.Male => Gender.Male,

@@ -19,7 +19,7 @@ public readonly struct BioPossibility
         AddIfAny(Childhood);
         AddIfAny(Adulthood);
     }
-        
+
     public BioPossibility(BackstoryDef childhood, BackstoryDef adulthood)
     {
         Childhood = childhood;
@@ -33,16 +33,15 @@ public readonly struct BioPossibility
     }
 
     public BackstoryDef Childhood { get; }
-        
+
     public BackstoryDef Adulthood { get; }
-        
+
     public List<TraitRequirement> Traits { get; }
 
-    [CanBeNull]
-    public NameTriple Name { get; }
-        
+    [CanBeNull] public NameTriple Name { get; }
+
     public GenderPossibility Gender { get; }
-        
+
     public bool DisablesWorkType(SkillDef skill)
     {
         var disables = Adulthood.workDisables | Childhood.workDisables;
@@ -60,7 +59,7 @@ public readonly struct BioPossibility
 
         return false;
     }
-        
+
     public bool PassionConflictsWith(SkillDef def)
     {
         foreach (var trait in Traits.Where(x => x.def.conflictingPassions != null))
@@ -71,7 +70,7 @@ public readonly struct BioPossibility
 
         return false;
     }
-        
+
     public bool HasConflictingPassions(SkillDef def)
     {
         foreach (var trait in Traits.Where(x => x.def.conflictingPassions != null))
@@ -82,7 +81,7 @@ public readonly struct BioPossibility
 
         return false;
     }
-        
+
     private void AddIfAny(BackstoryDef story)
     {
         if (story.forcedTraits != null)
@@ -91,7 +90,7 @@ public readonly struct BioPossibility
             {
                 if (!Traits.Any(req => req.def == trait.def && req.degree == trait.degree))
                 {
-                    Traits.Add(new TraitRequirement{def = trait.def, degree = trait.degree});
+                    Traits.Add(new TraitRequirement { def = trait.def, degree = trait.degree });
                 }
             }
         }

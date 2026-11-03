@@ -12,7 +12,7 @@ public static class BackstorySelection
 {
     internal const string ThisBackstoryIsUnlocked = "Necrofancy.PrepareProcedurally.BackstoryUnlocked";
     internal const string ThisBackstoryIsLocked = "Necrofancy.PrepareProcedurally.BackstoryLocked";
-    
+
     public static void PossibleAdulthoods(Pawn pawn, Action onSelect)
     {
         var selector = Compatibility.Layer.GetBackstorySelection(pawn);
@@ -20,9 +20,10 @@ public static class BackstorySelection
         var traitRequirements = Editor.TraitRequirements[index];
         var childhood = Editor.SetChildhoods[index];
         var possibleBackstories = selector.PossibleAdulthoods(traitRequirements, childhood);
-        
+
 #if SEARCH_MENU_AVAILABLE
-        Find.WindowStack.Add(new BackstorySearch(pawn, BackstorySlot.Adulthood, Editor.SetAdulthoods[index], possibleBackstories, onSelect));
+        Find.WindowStack.Add(new BackstorySearch(pawn, BackstorySlot.Adulthood, Editor.SetAdulthoods[index],
+            possibleBackstories, onSelect));
 #else
         ShowBackstories(possibleBackstories, index, BackstorySlot.Adulthood, onSelect);
 #endif
@@ -35,9 +36,10 @@ public static class BackstorySelection
         var traitRequirements = Editor.TraitRequirements[index];
         var adulthood = Editor.SetAdulthoods[index];
         var possibleBackstories = selector.PossibleChildhoods(traitRequirements, adulthood);
-        
+
 #if SEARCH_MENU_AVAILABLE
-        Find.WindowStack.Add(new BackstorySearch(pawn, BackstorySlot.Childhood, Editor.SetChildhoods[index], possibleBackstories, onSelect));
+        Find.WindowStack.Add(new BackstorySearch(pawn, BackstorySlot.Childhood, Editor.SetChildhoods[index],
+            possibleBackstories, onSelect));
 #else
         ShowBackstories(possibleBackstories, index, BackstorySlot.Childhood, onSelect);
 #endif
@@ -57,7 +59,7 @@ public static class BackstorySelection
         var index = SelectedPawn.Index;
         var selector = Compatibility.Layer.GetBackstorySelection(SelectedPawn.Pawn);
         var traitRequirements = Editor.TraitRequirements[index];
-        
+
         var childhood = Editor.SetChildhoods[index];
         var adulthood = Editor.SetAdulthoods[index];
 
@@ -77,16 +79,16 @@ public static class BackstorySelection
             default:
                 throw new ArgumentOutOfRangeException(nameof(slot), "Invalid backstory slot");
         }
-        
+
 #if SEARCH_MENU_AVAILABLE
         Find.WindowStack.Add(new BackstorySearch(pawn, slot, current, possibleBackstories, SelectedPawn.Randomize));
 #else
         ShowBackstories(possibleBackstories, index, slot, SelectedPawn.Randomize);
 #endif
     }
-    
+
     private static void ShowBackstories(
-        IEnumerable<BackstoryOption> backstories, 
+        IEnumerable<BackstoryOption> backstories,
         int pawnIndex,
         BackstorySlot slot,
         Action onSelect)
@@ -94,13 +96,13 @@ public static class BackstorySelection
         var pawn = Editor.StartingPawns[pawnIndex];
         var options = new List<FloatMenuOption>();
         var fixedGender = Editor.GenderRequirements[pawnIndex];
-        
+
         var currentArray = slot == BackstorySlot.Childhood
             ? Editor.SetChildhoods
             : Editor.SetAdulthoods;
-        
+
         var currentSelection = currentArray[pawnIndex];
-        
+
         if (currentSelection is not null)
         {
             void Remove()
@@ -110,15 +112,15 @@ public static class BackstorySelection
 
             options.Add(new FloatMenuOption("Remove".Translate(), Remove));
         }
-        
+
         foreach (var option in backstories)
         {
             if (fixedGender != GenderPossibility.Either && option.ForcedGender != GenderPossibility.Either
-                && option.ForcedGender != fixedGender)
+                                                        && option.ForcedGender != fixedGender)
                 continue;
-            
+
             var disabled = option.Def == currentSelection;
-            
+
             var floatOption = option.CreateFloatOption(pawn, pawnIndex, disabled, onSelect);
 
             options.Add(floatOption);

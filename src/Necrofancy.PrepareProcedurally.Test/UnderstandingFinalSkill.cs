@@ -72,7 +72,7 @@ namespace Necrofancy.PrepareProcedurally.Test
 
             return Verifier.Verify(values);
         }
-        
+
         [Fact]
         public Task VerifyFloatRanges()
         {

@@ -11,6 +11,6 @@ public class XenotypeSelection : PawnColumnWorker_Xenotype
     {
         // TODO: Steal Selectable Window From Pawn Page
     }
-        
+
     public override int GetMinWidth(PawnTable table) => 50;
 }

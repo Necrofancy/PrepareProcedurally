@@ -41,30 +41,28 @@ public class PrepareProcedurally : Page
         {
             DrawPageTitle(rect);
             DrawStressTestCheckmark(rect);
-            
+
             var uiPadding = rect.GetInnerRect();
             uiPadding.SplitHorizontally(400, out var upper, out var lower);
 
             var leftWidth = rect.width - SettingsUiUtility.OverallWidth;
             rect.SplitVertically(leftWidth, out var textRect, out var skillSelectRect);
-            
+
             textRect.y += 24;
             skillSelectRect.y -= 18;
-            
+
             SettingsUiUtility.ForEditor.DoWindowContents(textRect);
             SkillPassionSelectionUiUtility.DoWindowContents(skillSelectRect, Editor.SkillPassions);
 
             Text.Font = GameFont.Tiny;
             Widgets.Label(lower, CustomizePawnSkillsLabel.Translate());
 
-            var table = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns, (int)rect.width,
+            var table = new MaplessPawnTable(PawnTableDefOf.PrepareProcedurallyResults, GetStartingPawns,
+                (int)rect.width,
                 800);
             lower.y += 15;
-            var viewSize = new Rect(lower.position, table.Size)
-            {
-                width = lower.width - 50
-            };
-            
+            var viewSize = new Rect(lower.position, table.Size) { width = lower.width - 50 };
+
             DrawStressTestOngoingResults(lower);
             lower.height -= 45;
 
@@ -100,7 +98,7 @@ public class PrepareProcedurally : Page
 #if DEBUG
         // stres test mode will repeatedly roll randomization on every call of DrawWindowContents
         const float checkboxSpace = 30f;
-        var labelText =  "Stress Test Mode";
+        var labelText = "Stress Test Mode";
         var rectLength = Text.CalcSize(labelText).x + checkboxSpace;
 
         bool stressTesting = Editor.StressTestMode;
@@ -118,10 +116,10 @@ public class PrepareProcedurally : Page
         {
             return;
         }
-        
+
         float rate = (float)requirementSuccesses / stressTestModeRuns;
         Widgets.Label(rect, $"{stressTestModeRuns} runs, ({rate:P2} success)");
-        
+
         if (Editor.StressTestMode)
         {
             var requirementsUnmet = GetUnsatisfiedRequirements();
@@ -185,7 +183,8 @@ public class PrepareProcedurally : Page
         }
     }
 
-    private static List<(SkillDef Skill, int MajorMissing, int MinorMissing, int UsableMissing)> GetUnsatisfiedRequirements()
+    private static List<(SkillDef Skill, int MajorMissing, int MinorMissing, int UsableMissing)>
+        GetUnsatisfiedRequirements()
     {
         var unsatisfiedRequirements =
             new List<(SkillDef Skill, int MajorMissing, int MinorMissing, int UsableMissing)>();
@@ -236,7 +235,7 @@ public class PrepareProcedurally : Page
 
         Editor.Dirty = false;
     }
-    
+
     private static int GetOverallRowUiLength()
     {
         return int.Parse("Necrofancy.PrepareProcedurally.SelectSkillWidgetLength".Translate());

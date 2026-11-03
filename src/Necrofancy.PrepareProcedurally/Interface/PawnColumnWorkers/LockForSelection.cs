@@ -12,6 +12,7 @@ public class LockForSelection : PawnColumnWorker_Icon
 {
     private const string LockedDesc = "Necrofancy.PrepareProcedurally.LockedPawnTooltip";
     private const string UnlockedDesc = "Necrofancy.PrepareProcedurally.UnlockedPawnTooltip";
+
     protected override Texture2D GetIconFor(Pawn pawn)
     {
         return IsLocked(pawn) ? LazyTexture.Locked.Value : LazyTexture.Unlocked.Value;

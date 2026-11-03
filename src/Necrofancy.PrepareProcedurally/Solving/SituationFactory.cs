@@ -18,11 +18,12 @@ public static class SituationFactory
         var ideoligion = Faction.OfPlayer.ideos.PrimaryIdeo;
         var tile = Find.GameInitData.startingTile;
         var terrain = Find.World.grid[tile];
-        
+
 #if !RW1_6_OR_GREATER // before Odyssey, there was only ever one biome.
         requirements.AddRange(BySetupOf.Basic.GetRequirements(terrain.biome, terrain.hilliness).Where(Relevant));
 #else
-        requirements.AddRange(BySetupOf.Basic.GetRequirements(terrain.Biomes.FirstOrDefault(), terrain.hilliness).Where(Relevant));
+        requirements.AddRange(BySetupOf.Basic.GetRequirements(terrain.Biomes.FirstOrDefault(), terrain.hilliness)
+            .Where(Relevant));
 #endif
 
         if (ideoligion is not null)
@@ -33,7 +34,7 @@ public static class SituationFactory
                     requirements.AddRange(preceptLink.skillRequirements.Where(Relevant));
             }
         }
-        
+
         var selections = SkillPassionSelection.FromReqs(requirements, pawnCount);
 
         return new BalancingSituation(string.Empty, backstoryCategories, pawnCount, selections);

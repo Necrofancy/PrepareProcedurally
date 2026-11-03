@@ -22,7 +22,7 @@ public class EditSpecificPawn : Window
     private const float YPadding = 30f;
 
     private readonly int pawnIndex;
-    
+
     private const float BackstoryX = 83f;
     private const float BackstoryY = 131f;
 
@@ -44,11 +44,12 @@ public class EditSpecificPawn : Window
         SelectedPawn.Select(pawn);
         doCloseX = true;
     }
+
     public override void DoWindowContents(Rect rect)
     {
         if (SelectedPawn.Pawn is null || SelectedPawn.Pawn.Destroyed || SelectedPawn.Pawn.Discarded)
         {
-            Close(doCloseSound:false);
+            Close(doCloseSound: false);
             return;
         }
 
@@ -57,9 +58,9 @@ public class EditSpecificPawn : Window
         var label = "EditSpecificPawnTitle".PpTranslate();
         Widgets.Label(titleRect, label);
         Text.Font = GameFont.Small;
-        
+
         DrawAestheticOptions(rect);
-        
+
 #if UI_DEBUGGING
         var debugRect = rect with { x = rect.x + 300, width = 150};
         Widgets.IntEntry(debugRect, ref _debugX, ref _debugXString);
@@ -70,7 +71,7 @@ public class EditSpecificPawn : Window
         rect.height -= YPadding;
         ReusingVanillaUi.DrawPortraitArea(rect, pawnIndex, showApparel, showHeadgear);
         SelectedPawn.KeepCosmetics = keepAesthetics;
-        
+
         if (PrepareMod.Settings.showCompatibility)
         {
             var width = 60f * (Editor.StartingPawns.Length - 1);
@@ -79,12 +80,12 @@ public class EditSpecificPawn : Window
             var relationShipsRect = new Rect(xStart, rect.yMax - height, width, height);
             ShowRelationships(relationShipsRect);
         }
-        
+
         if (PrepareMod.Settings.AlienRacesEnabled || ReusingVanillaUi.BackstoryButtonsInCard)
         {
             return;
         }
-        
+
 #if UI_DEBUGGING
         rect.x += _debugX;
         rect.y += _debugY;
@@ -94,17 +95,17 @@ public class EditSpecificPawn : Window
 #endif
         rect.width = 22f;
         rect.height = 22f;
-        
+
         DrawBackstoryRow(rect, BackstorySlot.Childhood);
         rect.y += 26f; // additional 4px padding added in DoLeftSection
         DrawBackstoryRow(rect, BackstorySlot.Adulthood);
     }
-    
+
     private void DrawAestheticOptions(Rect rect)
     {
         const float checkboxSpace = 30f;
         const float margin = 10f;
-        var aesthetics =  "KeepAesthetics".PpTranslate();
+        var aesthetics = "KeepAesthetics".PpTranslate();
         var aestheticsLength = Text.CalcSize(aesthetics).x + checkboxSpace;
         var tooltip = "KeepAestheticsTooltip".PpTranslate();
         if (!ModsConfig.IdeologyActive)
@@ -113,18 +114,18 @@ public class EditSpecificPawn : Window
             {
                 return;
             }
-            
+
             Rect soloRect = new Rect(rect.xMax - aestheticsLength, rect.y, aestheticsLength, Text.LineHeight);
             Widgets.CheckboxLabeled(soloRect, aesthetics, ref keepAesthetics);
             TooltipHandler.TipRegion(soloRect, tooltip);
             return;
         }
-        
+
         var head = "ShowHeadgear".Translate();
         var headLength = Text.CalcSize(head).x + checkboxSpace;
         var apparel = "ShowApparel".Translate();
         var apparelLength = Text.CalcSize(apparel).x + checkboxSpace;
-        
+
         var totalWidth = aestheticsLength + headLength + apparelLength + margin * 3;
         Rect align = new Rect(rect.xMax - totalWidth, rect.y, aestheticsLength, Text.LineHeight);
         if (!PrepareMod.Settings.AlienRacesEnabled)
@@ -132,6 +133,7 @@ public class EditSpecificPawn : Window
             Widgets.CheckboxLabeled(align, aesthetics, ref keepAesthetics);
             TooltipHandler.TipRegion(align, tooltip);
         }
+
         align.x += aestheticsLength + margin;
         align.width = headLength;
         Widgets.CheckboxLabeled(align, head, ref showHeadgear);
@@ -139,7 +141,7 @@ public class EditSpecificPawn : Window
         align.width = apparelLength;
         Widgets.CheckboxLabeled(align, apparel, ref showApparel);
     }
-    
+
     private void DrawBackstoryRow(Rect buttonRect, BackstorySlot slot)
     {
         var locked = slot switch
@@ -152,7 +154,7 @@ public class EditSpecificPawn : Window
         Widgets.ButtonImage(buttonRect, button.Value);
         TooltipHandler.TipRegion(buttonRect, "ClickToSelect".PpTranslate());
     }
-    
+
     private void ShowRelationships(Rect areaRect)
     {
         var otherPawns = Editor.StartingPawns.Except(SelectedPawn.Pawn).ToList();
@@ -171,9 +173,9 @@ public class EditSpecificPawn : Window
             Text.Anchor = TextAnchor.MiddleCenter;
             Widgets.Label(textRect, SelectedPawn.Pawn.relations.CompatibilityWith(otherPawn).ToString("F"));
             Text.Anchor = anchor;
-            
+
             TooltipHandler.TipRegion(left, otherPawn.LabelCap);
-            
+
             areaRect = remainder;
         }
     }

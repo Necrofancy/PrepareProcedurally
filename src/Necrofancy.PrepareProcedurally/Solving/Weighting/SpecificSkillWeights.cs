@@ -23,7 +23,8 @@ public class SpecificSkillWeights
     public float Weight(BioPossibility possibility)
     {
         var disables = possibility.Childhood.workDisables | possibility.Adulthood.workDisables;
-        var workDisables = possibility.Childhood.DisabledWorkTypes.Concat(possibility.Adulthood.DisabledWorkTypes).Distinct().ToList();
+        var workDisables = possibility.Childhood.DisabledWorkTypes.Concat(possibility.Adulthood.DisabledWorkTypes)
+            .Distinct().ToList();
         float weightProgressCount = 0;
         foreach (var (requirement, weight) in Requirements)
         {
@@ -43,10 +44,10 @@ public class SpecificSkillWeights
                     added += gain.amount;
             }
 #endif
-            
+
             foreach (var gain in possibility.Childhood.skillGains)
                 AddIfMatch(gain);
-            
+
             foreach (var gain in possibility.Adulthood.skillGains)
                 AddIfMatch(gain);
 
@@ -55,13 +56,14 @@ public class SpecificSkillWeights
                 weightProgressCount -= weight * 4;
                 continue;
             }
+
             if (added <= 0)
             {
                 continue;
             }
 
-            var weightMultiplier = Math.Min(added, 1.0f) * weight; 
-                
+            var weightMultiplier = Math.Min(added, 1.0f) * weight;
+
             weightProgressCount += weightMultiplier;
         }
 

@@ -27,9 +27,9 @@ public class SettingsUiUtility
     private const string PassionPointsTooltip = "PassionPointsTooltip";
     private const string SkillVariationLeft = "SkillVariationLeft";
     private const string SkillVariationRight = "SkillVariationRight";
-    
+
     public static float RowHeight { get; } = 24f;
-    
+
     public static int OverallWidth => LazyWidth.Value;
 
     private static readonly Lazy<int> LazyWidth = new(GetOverallRowUiLength);
@@ -48,7 +48,7 @@ public class SettingsUiUtility
     private bool allowPregnancy;
     private float skillWeightVariation;
     private float maxPassionPoints;
-    
+
     private readonly bool drawPassionStats;
 
     public static SettingsUiUtility ForSettings { get; } = new(PrepareMod.Settings);
@@ -58,12 +58,12 @@ public class SettingsUiUtility
         get => field ??= new SettingsUiUtility();
         private set;
     }
-    
+
     private SettingsUiUtility()
     {
         PullChanges = PullFromEditor;
         PushChanges = PropagateToEditor;
-        
+
         selectedRaceAgeRange = Editor.AgeRange;
         melaninRange = Editor.MelaninRange;
         discretizedMelaninRange = GetDiscreteMelaninRange(melaninRange);
@@ -75,13 +75,16 @@ public class SettingsUiUtility
 
         drawPassionStats = true;
     }
-    
+
     private SettingsUiUtility(PrepareModSettings settings)
     {
-        void DoNothing() { }
+        void DoNothing()
+        {
+        }
+
         PullChanges = DoNothing;
         PushChanges = () => PropagateToSettings(settings);
-        
+
         (selectedRace, ageRanges) = settings.GetLoadedHumanTypes();
         var ageRangeByRace = ageRanges[selectedRace];
         selectedRaceAgeRange = ageRangeByRace.desiredAgeRange;
@@ -94,13 +97,13 @@ public class SettingsUiUtility
         skillWeightVariation = settings.skillWeightVariation;
         maxPassionPoints = settings.maxPassionPoints;
     }
-    
+
     public static void ClearEditor() => ForEditor = null;
-    
+
     public void DoWindowContents(Rect rect)
     {
         PullChanges();
-        
+
         // set up biological page section
         var labelText = new Rect(rect.x, rect.y, rect.width, RowHeight);
         labelText.SplitVertically(200f, out var labelRect, out var right);
@@ -133,7 +136,7 @@ public class SettingsUiUtility
 
         // age slider
         var ageSlider = new Rect(bioInnerRect.x, bioInnerRect.y, bioInnerRect.width, RowHeight);
-        
+
         // Age minimum is to force an adulthood backstory.
         var minAge = allowedAdultRaceAgeRange.min;
         var maxAge = allowedAdultRaceAgeRange.max;
@@ -147,22 +150,27 @@ public class SettingsUiUtility
         var maxMelanin = genes.Count - 1;
         Widgets.IntRange(melaninSlider, 676767, ref discretizedMelaninRange, 0, maxMelanin, MelaninRangeText, 1);
         var minSelectedMelanin = genes[discretizedMelaninRange.min].minMelanin;
-        var maxSelectedMelanin = discretizedMelaninRange.max >= maxMelanin ? 1 : genes[discretizedMelaninRange.max + 1].minMelanin;
+        var maxSelectedMelanin = discretizedMelaninRange.max >= maxMelanin
+            ? 1
+            : genes[discretizedMelaninRange.max + 1].minMelanin;
         melaninRange = new FloatRange(minSelectedMelanin, maxSelectedMelanin);
-        
+
         // Allow Bad HeDiffs Checkbox
-        var allowInjuriesRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 4f, bioInnerRect.width, RowHeight);
+        var allowInjuriesRect =
+            new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 4f, bioInnerRect.width, RowHeight);
         Widgets.CheckboxLabeled(allowInjuriesRect, InjuriesLabel.PpTranslate(), ref allowInjuries);
         TooltipHandler.TipRegion(allowInjuriesRect, InjuriesTooltip.PpTranslate());
-        
+
         // Allow Relationships checkbox
-        var allowRelationshipsRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 5f, bioInnerRect.width, RowHeight);
+        var allowRelationshipsRect =
+            new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 5f, bioInnerRect.width, RowHeight);
         Widgets.CheckboxLabeled(allowRelationshipsRect, RelationshipsLabel.PpTranslate(), ref allowRelationships);
         TooltipHandler.TipRegion(allowRelationshipsRect, RelationshipsTooltip.PpTranslate());
 
         if (ModsConfig.BiotechActive)
         {
-            var allowPregnancyRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 6f, bioInnerRect.width, RowHeight);
+            var allowPregnancyRect = new Rect(bioInnerRect.x, bioInnerRect.y + RowHeight * 6f, bioInnerRect.width,
+                RowHeight);
             Widgets.CheckboxLabeled(allowPregnancyRect, PregnancyLabel.PpTranslate(), ref allowPregnancy);
             TooltipHandler.TipRegion(allowPregnancyRect, PregnancyTooltip.PpTranslate());
         }
@@ -194,7 +202,7 @@ public class SettingsUiUtility
         Widgets.Label(skillLabels, PassionText.PpTranslate());
 
 #pragma warning disable CS0612 // 1.4 marks Widgets.HorizontalSlider as obsolete, but keeps it in later versions
-        
+
         // skill weight variation
         var variationSlider = new Rect(rect.x, rect.y + RowHeight * 11, rect.width, RowHeight);
         Text.Font = GameFont.Tiny;
@@ -231,7 +239,7 @@ public class SettingsUiUtility
         Text.Font = GameFont.Small;
         Text.Anchor = TextAnchor.UpperLeft;
     }
-    
+
     private void PullFromEditor()
     {
         selectedRace = Editor.SelectedRace;
@@ -239,7 +247,7 @@ public class SettingsUiUtility
         selectedRaceAgeRange = Editor.AgeRange;
         allowedAdultRaceAgeRange = ageRanges[selectedRace].possibleAgeRange;
     }
-    
+
     private static IntRange GetDiscreteMelaninRange(FloatRange melaninRange)
     {
         var genes = PawnSkinColors.SkinColorGenesInOrder;
@@ -251,20 +259,23 @@ public class SettingsUiUtility
             if (i + 1 < genes.Count && Mathf.Approximately(genes[i + 1].minMelanin, melaninRange.max))
                 range.max = i;
         }
+
         return range;
     }
 
     private void PropagateToSettings(PrepareModSettings settings)
     {
         bool dirty = settings.UpdateAgeData(selectedRace, ageRanges);
+
         void Apply<T>(in T currentValue, ref T value) where T : IEquatable<T>
         {
             if (currentValue.Equals(value))
                 return;
+
             value = currentValue;
             dirty = true;
         }
-        
+
         Apply(melaninRange, ref settings.defaultMelaninRange);
         Apply(allowInjuries, ref settings.allowInjuries);
         Apply(allowRelationships, ref settings.allowRelationships);
@@ -277,7 +288,7 @@ public class SettingsUiUtility
             settings.Write();
         }
     }
-    
+
     private void PropagateToEditor()
     {
         Editor.SelectedRace = selectedRace;
@@ -289,7 +300,7 @@ public class SettingsUiUtility
         Editor.SkillWeightVariation = skillWeightVariation;
         Editor.MaxPassionPoints = maxPassionPoints;
     }
-    
+
     private static int GetOverallRowUiLength()
     {
         return int.Parse("SelectSkillWidgetLength".PpTranslate());

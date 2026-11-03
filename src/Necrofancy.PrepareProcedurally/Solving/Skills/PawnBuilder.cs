@@ -7,8 +7,11 @@ namespace Necrofancy.PrepareProcedurally.Solving.Skills;
 
 public class PawnBuilder : SkillRangeBuilder<SkillDef>
 {
-    public PawnBuilder(Dictionary<SkillDef, IntRange> skillRanges, HashSet<SkillDef> forcedPassions,
-        HashSet<SkillDef> disallowedPassions, float maxPassionPoints) : base(skillRanges, forcedPassions,
+    public PawnBuilder(
+        Dictionary<SkillDef, IntRange> skillRanges,
+        HashSet<SkillDef> forcedPassions,
+        HashSet<SkillDef> disallowedPassions,
+        float maxPassionPoints) : base(skillRanges, forcedPassions,
         disallowedPassions, maxPassionPoints)
     {
     }

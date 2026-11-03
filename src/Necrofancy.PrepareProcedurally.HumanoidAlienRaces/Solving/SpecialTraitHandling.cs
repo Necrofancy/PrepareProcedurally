@@ -14,7 +14,7 @@ public static class SpecialTraitHandling
             if (ForcedByBackstory(trait, pawn))
                 traitsToRemove.Add(trait);
 
-        foreach (var trait in traitsToRemove) 
+        foreach (var trait in traitsToRemove)
             pawn.story.traits.RemoveTrait(trait);
     }
 
@@ -69,9 +69,11 @@ public static class SpecialTraitHandling
 #else
         if (chanceEntry.entry?.def == def) return true;
         if (chanceEntry.options is null) return false;
+
         foreach (var option in chanceEntry.options)
             if (CouldForce(option, def))
                 return true;
+
         return false;
 #endif
     }

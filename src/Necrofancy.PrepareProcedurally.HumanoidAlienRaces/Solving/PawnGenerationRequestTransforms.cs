@@ -22,15 +22,15 @@ public static class PawnGenerationRequestTransforms
         if (!Editor.AllowPregnancy)
             PreventPregnancy();
     }
-    
+
     public static void ApplyChangesTo(ref PawnGenerationRequest request)
     {
         foreach (var transform in BuiltUpChanges)
             transform(ref request);
-        
+
         BuiltUpChanges.Clear();
     }
-    
+
     public static void FixGender(GenderPossibility gender)
     {
         Gender? fixedGender = gender switch
@@ -45,33 +45,33 @@ public static class PawnGenerationRequestTransforms
             if (request.KindDef.race is ThingDef_AlienRace race)
             {
                 var maleProbability = race.alienRace.generalSettings.maleGenderProbability;
-                if ((fixedGender == Gender.Male && maleProbability <= 0) 
-                    || (fixedGender == Gender.Female && maleProbability >=1 ))
+                if ((fixedGender == Gender.Male && maleProbability <= 0)
+                    || (fixedGender == Gender.Female && maleProbability >= 1))
                 {
                     return;
                 }
             }
-            
+
             request.FixedGender = fixedGender;
         }
-        
+
         BuiltUpChanges.Add(EditGenderRequest);
     }
-    
+
     public static void PreventAddictions()
     {
         void EditAddiction(ref PawnGenerationRequest request) => request.AllowAddictions = false;
 
         BuiltUpChanges.Add(EditAddiction);
     }
-    
+
     public static void PreventRelationships()
     {
         void Disable(ref PawnGenerationRequest request) => request.CanGeneratePawnRelations = false;
 
         BuiltUpChanges.Add(Disable);
     }
-    
+
     public static void PreventPregnancy()
     {
         void Disable(ref PawnGenerationRequest request) => request.AllowPregnant = false;

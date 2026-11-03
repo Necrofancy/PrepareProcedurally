@@ -28,12 +28,12 @@ public class CollectSpecificPassions
         {
             disabledWork |= possibilityTrait.def.disabledWorkTags;
         }
-            
+
         if ((disabledWork & RequiredWork) != WorkTags.None)
         {
             return float.MinValue;
         }
-            
+
         var sum = 0.0f;
 
         var alreadyConsideredSkills = new List<SkillDef>(3);
@@ -50,7 +50,7 @@ public class CollectSpecificPassions
                     }
                 }
             }
-                
+
             // Assuming there's no crazy trait that both forces a passion and conflicts.
             if (trait.def.conflictingPassions != null)
             {
@@ -72,7 +72,7 @@ public class CollectSpecificPassions
             {
                 continue;
             }
-            
+
 #if RW1_4
             void AddToSum(KeyValuePair<SkillDef, int> gain)
             {
@@ -89,14 +89,14 @@ public class CollectSpecificPassions
 
             foreach (var gain in possibility.Childhood.skillGains)
                 AddToSum(gain);
-            
+
             foreach (var gain in possibility.Adulthood.skillGains)
                 AddToSum(gain);
 
             foreach (var trait in possibility.Traits)
             {
                 var traitData = trait.def.DataAtDegree(trait.degree ?? 0);
-                if (traitData.skillGains is {} traitGains)
+                if (traitData.skillGains is { } traitGains)
                 {
                     foreach (var gain in traitGains)
                         AddToSum(gain);

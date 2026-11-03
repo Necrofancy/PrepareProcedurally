@@ -4,12 +4,11 @@ using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Interface;
 
-
 public static class LazyTexture
 {
     public static Lazy<Texture2D> Unlocked { get; } = "UI/Overlays/LockedMonochrome".AsTexture();
     public static Lazy<Texture2D> Locked { get; } = "UI/Overlays/Locked".AsTexture();
-    
+
     /// <summary>
     /// I want to reference a texture before it's potentially loaded by the game.
     /// </summary>
@@ -17,7 +16,7 @@ public static class LazyTexture
     {
         return new Lazy<Texture2D>(() => ContentFinder<Texture2D>.Get(resource));
     }
-    
+
     /// <summary>
     /// Lazy load any related textures to avoid having something try resolving off the UI thread at start.
     /// </summary>

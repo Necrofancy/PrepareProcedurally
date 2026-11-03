@@ -16,57 +16,58 @@ public static class PassionButton
     private static readonly Lazy<Texture2D> Major = "UI/Icons/PassionMajor".AsTexture();
     private static readonly Lazy<Texture2D> Usable = "UI/Widgets/CheckOn".AsTexture();
     private static readonly Lazy<Texture2D> CanBeOff = "UI/Widgets/CheckPartial".AsTexture();
-    
+
     public static void DrawSkillRequirementIcon(float x, float y, SkillDef skill)
+    {
+        if (SelectedPawn.Pawn == null) return;
+
+        // Values ripped (lovingly) from SkillUI.DrawSkill
+        float buttonSpacing = 240f;
+        float buttonSize = 24f;
+
+        x += buttonSpacing - 0.5f * buttonSize;
+        Rect buttonRect = new Rect(x, y, buttonSize, buttonSize);
+
+        int idx = SelectedPawn.Requirements.FindIndex(requirement => requirement.Skill == skill);
+        if (idx == -1) return;
+
+        var (_, req) = SelectedPawn.Requirements[idx];
+        var icon = GetIcon(req);
+
+        GUI.DrawTexture(buttonRect, icon);
+
+        if (Mouse.IsOver(buttonRect))
         {
-            if (SelectedPawn.Pawn == null) return;
+            TooltipHandler.TipRegion(buttonRect, (TipSignal)GetLabel(req, skill));
+            Widgets.DrawHighlight(buttonRect);
+        }
 
-            // Values ripped (lovingly) from SkillUI.DrawSkill
-            float buttonSpacing = 240f;
-            float buttonSize = 24f;
+        if (Widgets.ButtonInvisible(buttonRect))
+        {
+            var passionPoints = SelectedPawn.GetPassionPoints();
+            var remainingPoints = Editor.MaxPassionPoints - passionPoints;
+            var canBumpUp = CanIncreaseRequirement(req, remainingPoints);
 
-            x += buttonSpacing - 0.5f * buttonSize;
-            Rect buttonRect = new Rect(x, y, buttonSize, buttonSize);
-
-            int idx = SelectedPawn.Requirements.FindIndex(requirement => requirement.Skill == skill);
-            if (idx == -1) return;
-
-            var (_, req) = SelectedPawn.Requirements[idx];
-            var icon = GetIcon(req); 
-
-            GUI.DrawTexture(buttonRect, icon);
-            
-            if (Mouse.IsOver(buttonRect))
+            if (ModsConfig.BiotechActive &&
+                StartingPawnUtilityState.GetStartingPawnRequestList() is { } pawnGenerationRequests)
             {
-                TooltipHandler.TipRegion(buttonRect, (TipSignal)GetLabel(req, skill));
-                Widgets.DrawHighlight(buttonRect);
-            }
+                var request = pawnGenerationRequests[SelectedPawn.Index];
+                var genes = request.ForcedXenotype?.AllGenes ?? GenesFromCustomXeno(request);
 
-            if (Widgets.ButtonInvisible(buttonRect))
-            {
-                var passionPoints = SelectedPawn.GetPassionPoints();
-                var remainingPoints = Editor.MaxPassionPoints - passionPoints;
-                var canBumpUp = CanIncreaseRequirement(req, remainingPoints);
-
-                if (ModsConfig.BiotechActive && StartingPawnUtilityState.GetStartingPawnRequestList() is { } pawnGenerationRequests)
+                foreach (var gene in genes)
                 {
-                    var request = pawnGenerationRequests[SelectedPawn.Index];
-                    var genes = request.ForcedXenotype?.AllGenes ?? GenesFromCustomXeno(request);
-                    
-                    foreach (var gene in genes)
+                    if (gene.passionMod?.modType == PassionMod.PassionModType.DropAll && gene.passionMod.skill == skill)
                     {
-                        if (gene.passionMod?.modType == PassionMod.PassionModType.DropAll && gene.passionMod.skill == skill)
-                        {
-                            SelectedPawn.Requirements[idx] = (skill, UsabilityRequirement.CanBeOff);
-                            return;
-                        }
+                        SelectedPawn.Requirements[idx] = (skill, UsabilityRequirement.CanBeOff);
+                        return;
                     }
                 }
-
-                var newReq = canBumpUp ? req + 1 : UsabilityRequirement.CanBeOff;
-                SelectedPawn.Requirements[idx] = (skill, newReq);
             }
+
+            var newReq = canBumpUp ? req + 1 : UsabilityRequirement.CanBeOff;
+            SelectedPawn.Requirements[idx] = (skill, newReq);
         }
+    }
 
     private static IEnumerable<GeneDef> GenesFromCustomXeno(PawnGenerationRequest request)
     {
@@ -105,7 +106,7 @@ public static class PassionButton
             _ => "Necrofancy.PrepareProcedurally.NoEmphasisTooltip".Translate(def.label)
         };
     }
-    
+
     private static Texture2D GetIcon(UsabilityRequirement req)
     {
         return req switch

@@ -9,7 +9,7 @@ public static class AlienExtensions
     {
         return pawn.def.defName.Equals("Human", StringComparison.OrdinalIgnoreCase);
     }
-    
+
     public static bool IsHuman(this ThingDef def)
     {
         return def.defName.Equals("Human", StringComparison.OrdinalIgnoreCase);

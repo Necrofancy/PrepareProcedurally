@@ -5,7 +5,9 @@ namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
 
 public class AlienBalancingSituation
 {
-    public AlienBalancingSituation(IReadOnlyList<AlienCategories> backstoryCategories, int pawns,
+    public AlienBalancingSituation(
+        IReadOnlyList<AlienCategories> backstoryCategories,
+        int pawns,
         IReadOnlyList<SkillPassionSelection> skillRequirements)
     {
         BackstoryCategories = backstoryCategories;

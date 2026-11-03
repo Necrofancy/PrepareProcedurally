@@ -31,11 +31,8 @@ public static class Editor
             }
         }
     }
-    
-    public static RaceAgeData RaceAgeData
-    {
-        get; private set;
-    }
+
+    public static RaceAgeData RaceAgeData { get; private set; }
 
 
     public static HashSet<TraitDef> TraitsThatDisablePassions { get; } = new();
@@ -47,7 +44,7 @@ public static class Editor
     public static Pawn[] StartingPawns { get; set; }
     public static IReadOnlyList<SkillFinalizationResult?> LastResults { get; set; }
     public static HashSet<Pawn> LockedPawns { get; } = new();
-    
+
     public static IntRange AgeRange
     {
         get;
@@ -59,8 +56,12 @@ public static class Editor
             }
         }
     }
-    
-    public static float SkillWeightVariation { get; set => SetProperty(ref field, value); }= 1.5f;
+
+    public static float SkillWeightVariation
+    {
+        get;
+        set => SetProperty(ref field, value);
+    } = 1.5f;
 
     public static FloatRange MelaninRange
     {
@@ -86,7 +87,7 @@ public static class Editor
                 stopwatch.Restart();
 #else
                 LastEditTime = Stopwatch.GetTimestamp();
-#endif                
+#endif
             }
         }
     }
@@ -108,14 +109,14 @@ public static class Editor
 #endif
         }
     }
-    
+
 #if WAYLITH
     private static long LastEditTime { get; set; }
 #endif
-    
+
 #if DEBUG
     internal static bool StressTestMode { get; set; }
-#endif                
+#endif
 
     public static bool AllowDirtying { get; set; }
 
@@ -136,10 +137,10 @@ public static class Editor
         get;
         set => SetProperty(ref field, value);
     } = true;
-    
+
     public static bool ShowCompatibility { get; set; } = true;
 
-    public static void MakeDirty([CallerMemberName]string caller = null)
+    public static void MakeDirty([CallerMemberName] string caller = null)
     {
         Logging.Debug($"Dirtying editor from '{caller}'");
         if (AllowDirtying) Dirty = true;
@@ -153,12 +154,12 @@ public static class Editor
         Logging.Debug("Cleaning Editor state");
         Dirty = false;
         AllowDirtying = false;
-        
+
         ClearState();
 
         var settings = PrepareMod.Settings;
         var (selectedRace, raceAges) = settings.GetLoadedHumanTypes();
-        
+
         RaceAgeRanges = raceAges;
 
         SelectedRace = selectedRace;
@@ -175,7 +176,7 @@ public static class Editor
         GenderRequirements = StartingPawns.Select(_ => GenderPossibility.Either).ToArray();
         SetChildhoods = new BackstoryDef[pawnCount];
         SetAdulthoods = new BackstoryDef[pawnCount];
-        
+
         foreach (var otherKind in Compatibility.Layer.GetPawnKindsThatCanAlsoGenerateFor(Faction.OfPlayer.def))
         {
             var minimumAdulthoodAge = Compatibility.Layer.GetMinimumAgeForAdulthood(otherKind);
@@ -184,17 +185,17 @@ public static class Editor
             AgeRange = raceAge.desiredAgeRange;
             RaceAgeRanges[otherKind.race] = raceAge;
         }
-        
+
         AgeRange = RaceAgeRanges[SelectedRace].desiredAgeRange;
         MelaninRange = settings.defaultMelaninRange;
-        
+
         AllowBadHeDiffs = settings.allowInjuries;
         AllowRelationships = settings.allowRelationships;
         AllowPregnancy = settings.allowPregnancy;
-        
+
         SkillWeightVariation = settings.skillWeightVariation;
         MaxPassionPoints = settings.maxPassionPoints;
-        
+
         AllowDirtying = settings.autoGenerate;
 #if !WAYLITH
         stopwatch = new Stopwatch();
@@ -235,7 +236,7 @@ public static class Editor
             value = newValue;
             return false;
         }
-        
+
         if (!newValue?.Equals(value) == true)
         {
             value = newValue;

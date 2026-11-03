@@ -13,9 +13,9 @@ public class SkillRequirementDef : Def
     public Passion passion = Passion.None;
     public bool allPawns = false;
     public SimpleCurve populationCurve;
-        
 
-    public int Count(int colonySize) => allPawns ? colonySize : (int) populationCurve.Evaluate(colonySize);
+
+    public int Count(int colonySize) => allPawns ? colonySize : (int)populationCurve.Evaluate(colonySize);
 
     public bool Satisfied(IReadOnlyList<SkillFinalizationResult> finalizations)
     {

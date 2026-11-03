@@ -21,7 +21,7 @@ public static class SkillPassionSelectionUiUtility
 {
     private const string SkillSelectWidgetLabel = "Necrofancy.PrepareProcedurally.SkillsGroupLabel";
     private const string UsableText = "Necrofancy.PrepareProcedurally.CapableOf";
-    
+
     private static readonly Lazy<int> SkillTitleLength = new(GetSkillTitleColumnLength);
 
     private const int PlusMinusButtonWidth = 5;
@@ -43,7 +43,7 @@ public static class SkillPassionSelectionUiUtility
     // These are different to even balance 
     private const int GapBeforeNumeric = -3;
     private const int GapAfterNumeric = -2;
-    
+
     public static void DoWindowContents(Rect skillSelectRect, List<SkillPassionSelection> skillPassions)
     {
         var lineHeight = new Rect(skillSelectRect.x + 20f, skillSelectRect.y, skillSelectRect.width, Text.LineHeight);

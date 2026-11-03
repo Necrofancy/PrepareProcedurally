@@ -34,7 +34,7 @@ public static class VerseExtensions
     {
         var area = curve.Integral();
         var target = area * bound;
-            
+
         var current = curve.Points[0];
         for (var i = 1; i < curve.PointsCount; i++)
         {
@@ -44,18 +44,19 @@ public static class VerseExtensions
             var minY = Math.Min(current.y, next.y);
 
             var currentArea = diffX * (diffY * 0.5f + minY);
-                
+
             if (target >= 0)
             {
                 if (currentArea > target)
                     return current.x + diffX * (target / currentArea);
+
                 target -= currentArea;
             }
 
             current = next;
         }
 
-        return curve.Points[curve.PointsCount-1].x;
+        return curve.Points[curve.PointsCount - 1].x;
     }
 
     public static float AssumingPercentRoll(this FloatRange range, float percent)
@@ -84,10 +85,11 @@ public static class VerseExtensions
     {
         return trait.exclusionTags.Contains("SexualOrientation");
     }
-        
+
     public static bool AllowsTrait(this IReadOnlyCollection<TraitRequirement> requirements, TraitDef traitDef)
     {
-        return requirements.All(requiredTrait => requiredTrait.def != traitDef && !requiredTrait.def.ConflictsWith(traitDef));
+        return requirements.All(requiredTrait =>
+            requiredTrait.def != traitDef && !requiredTrait.def.ConflictsWith(traitDef));
     }
 
     public static bool AllowsTrait(this TraitRequirement requiredTrait, TraitDef traitDef)

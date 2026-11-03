@@ -20,7 +20,9 @@ public class SelectBackstorySpecifically
     private BackstoryDef forcedAdulthood;
     private PawnBio forcedBio;
 
-    public SelectBackstorySpecifically(List<BackstoryCategoryFilter> spawnCategories, GenderPossibility genderRequirement,
+    public SelectBackstorySpecifically(
+        List<BackstoryCategoryFilter> spawnCategories,
+        GenderPossibility genderRequirement,
         IEnumerable<BackgroundPossibility> possibilities)
     {
         categoryFilters = spawnCategories;
@@ -36,7 +38,9 @@ public class SelectBackstorySpecifically
         }
     }
 
-    public SelectBackstorySpecifically(List<BackstoryCategoryFilter> categoryFilters, GenderPossibility genderRequirement,
+    public SelectBackstorySpecifically(
+        List<BackstoryCategoryFilter> categoryFilters,
+        GenderPossibility genderRequirement,
         Pawn pawn) : this(categoryFilters, genderRequirement, Enumerable.Empty<BackgroundPossibility>())
     {
         AddToAlreadyUsed(pawn.story.Childhood);
@@ -46,13 +50,19 @@ public class SelectBackstorySpecifically
         }
     }
 
-    public SelectBackstorySpecifically(BackstoryCategoryFilter backstoryFilter, GenderPossibility genderRequirement, IEnumerable<BackgroundPossibility> possibilities)
+    public SelectBackstorySpecifically(
+        BackstoryCategoryFilter backstoryFilter,
+        GenderPossibility genderRequirement,
+        IEnumerable<BackgroundPossibility> possibilities)
         : this([backstoryFilter], genderRequirement, possibilities)
     {
         // no special category.
     }
 
-    public SelectBackstorySpecifically(BackstoryCategoryFilter categoryName, GenderPossibility genderRequirement, Pawn pawn)
+    public SelectBackstorySpecifically(
+        BackstoryCategoryFilter categoryName,
+        GenderPossibility genderRequirement,
+        Pawn pawn)
     {
         categoryFilters = [categoryName];
         this.genderRequirement = genderRequirement;
@@ -61,7 +71,7 @@ public class SelectBackstorySpecifically
         {
             alreadyUsed.Add(adulthood);
         }
-        
+
         foreach (var lockedPawn in Editor.LockedPawns)
         {
             var story = lockedPawn.story;
@@ -71,20 +81,21 @@ public class SelectBackstorySpecifically
         }
     }
 
-    public BioPossibility GetBestBio(WeightBackgroundAlgorithm weightingSystem,
+    public BioPossibility GetBestBio(
+        WeightBackgroundAlgorithm weightingSystem,
         IReadOnlyList<TraitRequirement> requiredTraits)
     {
         var top = new List<(BioPossibility Bio, float Ranking)>(PrepareMod.Settings.candidatePoolSize + 1);
         foreach (var (bio, ranking) in GetPawnPossibilities(weightingSystem, requiredTraits))
         {
             var candidate = (bio, ranking);
-            if (top.Count == PrepareMod.Settings.candidatePoolSize && top[top.Count-1].Ranking > ranking)
+            if (top.Count == PrepareMod.Settings.candidatePoolSize && top[top.Count - 1].Ranking > ranking)
                 continue;
 
             var insertAt = top.Count;
-            while (insertAt > 0 
-                   && (ranking > top[insertAt - 1].Ranking 
-                       || (Mathf.Approximately(ranking, top[insertAt-1].Ranking) && Rand.Bool)))
+            while (insertAt > 0
+                   && (ranking > top[insertAt - 1].Ranking
+                       || (Mathf.Approximately(ranking, top[insertAt - 1].Ranking) && Rand.Bool)))
                 insertAt--;
             top.Insert(insertAt, candidate);
             if (top.Count > PrepareMod.Settings.candidatePoolSize)
@@ -93,13 +104,13 @@ public class SelectBackstorySpecifically
 
         if (top.Count == 0)
             throw new InvalidOperationException("No valid pawn possibilities were found.");
-        
+
         var bestRanking = top[0].Ranking;
         var goodOptionsExist = bestRanking > 0;
         var floor = goodOptionsExist ? bestRanking * PrepareMod.Settings.minimumRatioOfBest : bestRanking;
         var eligible = top.Where(x => x.Ranking >= floor).ToList();
 
-        var picked = goodOptionsExist 
+        var picked = goodOptionsExist
             ? eligible.RandomElementByWeight(x => x.Ranking).Bio
             : eligible.RandomElement().Bio;
 
@@ -108,8 +119,10 @@ public class SelectBackstorySpecifically
 
         return picked;
     }
-    
-    public List<BackstoryOption> PossibleChildhoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef adulthood)
+
+    public List<BackstoryOption> PossibleChildhoods(
+        IReadOnlyList<TraitRequirement> requiredTraits,
+        BackstoryDef adulthood)
     {
         var possibleChildhoods = new List<BackstoryOption>();
 
@@ -117,19 +130,19 @@ public class SelectBackstorySpecifically
         {
             foreach (var childhood in DefDatabase<BackstoryDef>.AllDefsListForReading)
             {
-                bool matches = 
+                bool matches =
                     childhood.shuffleable
-                    && category.Matches(childhood) 
+                    && category.Matches(childhood)
                     && childhood.slot == BackstorySlot.Childhood
                     && CompatibleForcedBackstories(childhood, adulthood);
-                
+
                 if (matches)
                 {
                     possibleChildhoods.Add(new BackstoryOption(childhood));
                 }
             }
         }
-        
+
         if (adulthood?.shuffleable == true)
         {
             // no solid bios are possible.
@@ -147,21 +160,23 @@ public class SelectBackstorySpecifically
 
         return possibleChildhoods;
     }
-    
-    public List<BackstoryOption> PossibleAdulthoods(IReadOnlyList<TraitRequirement> requiredTraits, BackstoryDef childhood)
+
+    public List<BackstoryOption> PossibleAdulthoods(
+        IReadOnlyList<TraitRequirement> requiredTraits,
+        BackstoryDef childhood)
     {
         var possibleAdulthoods = new List<BackstoryOption>();
-        
+
         foreach (var category in this.categoryFilters)
         {
             foreach (var adulthood in DefDatabase<BackstoryDef>.AllDefsListForReading)
             {
-                bool matches = 
-                    adulthood.shuffleable 
-                    && category.Matches(adulthood) 
+                bool matches =
+                    adulthood.shuffleable
+                    && category.Matches(adulthood)
                     && adulthood.slot == BackstorySlot.Adulthood
                     && CompatibleForcedBackstories(childhood, adulthood);
-                
+
                 if (matches)
                 {
                     possibleAdulthoods.Add(new BackstoryOption(adulthood));
@@ -174,7 +189,7 @@ public class SelectBackstorySpecifically
             // no solid bios are possible.
             return possibleAdulthoods;
         }
-        
+
         foreach (var bio in SolidBioDatabase.allBios.Where(AllowedBio))
         {
             var possibility = new BioPossibility(bio);
@@ -199,10 +214,10 @@ public class SelectBackstorySpecifically
             ForceBio(bio);
         }
     }
-    
+
     private static bool CompatibleForcedBackstories(BackstoryDef childhood, BackstoryDef adulthood)
     {
-        if (childhood is null || adulthood is null) 
+        if (childhood is null || adulthood is null)
             return true;
 
         var conflict = (childhood.requiredWorkTags & adulthood.workDisables) |
@@ -219,7 +234,7 @@ public class SelectBackstorySpecifically
                     return false;
             }
         }
-        
+
         if (adulthood.forcedTraits is { } adulthoodForcedTraits)
         {
             foreach (var trait in adulthoodForcedTraits)
@@ -228,7 +243,7 @@ public class SelectBackstorySpecifically
                     return false;
             }
         }
-        
+
         return true;
     }
 
@@ -249,17 +264,20 @@ public class SelectBackstorySpecifically
     {
         this.forcedBio = bio;
     }
-        
+
     private IEnumerable<(BioPossibility Bio, float Ranking)> GetPawnPossibilities(
-        WeightBackgroundAlgorithm weightingSystem, IReadOnlyList<TraitRequirement> requiredTraits)
+        WeightBackgroundAlgorithm weightingSystem,
+        IReadOnlyList<TraitRequirement> requiredTraits)
     {
         if (forcedBio is not null)
         {
             var possibility = new BioPossibility(forcedBio);
             foreach (var trait in requiredTraits) possibility.Traits.Add(trait);
             yield return (possibility, PunishReusedSkills(possibility));
+
             yield break;
         }
+
         float PunishReusedSkills(BioPossibility possibility)
         {
             var ranking = weightingSystem(possibility);
@@ -299,7 +317,7 @@ public class SelectBackstorySpecifically
                     if (backstory.slot == BackstorySlot.Childhood && forcedChildhood is null)
                     {
                         childhoods.Add(backstory);
-                    } 
+                    }
                     else if (backstory.slot == BackstorySlot.Adulthood && forcedAdulthood is null)
                     {
                         adulthoods.Add(backstory);
@@ -326,8 +344,10 @@ public class SelectBackstorySpecifically
         }
     }
 
-    private static bool UnworkableTraitCombination(IReadOnlyList<TraitRequirement> requiredTraits,
-        BackstoryDef childhood, BackstoryDef adulthood)
+    private static bool UnworkableTraitCombination(
+        IReadOnlyList<TraitRequirement> requiredTraits,
+        BackstoryDef childhood,
+        BackstoryDef adulthood)
     {
         var nonSexualityTraits = requiredTraits.Count(x => !x.def.IsSexualityTrait());
         var validTraitCombo = true;
@@ -357,14 +377,14 @@ public class SelectBackstorySpecifically
 
         return false;
     }
-    
+
     private void AddToAlreadyUsed(BioPossibility possibility)
     {
         AddToAlreadyUsed(possibility.Childhood);
         if (possibility.Adulthood is { } adulthood)
             AddToAlreadyUsed(adulthood);
     }
-    
+
     private void AddToAlreadyUsed(Pawn pawn)
     {
         AddToAlreadyUsed(pawn.story.Childhood);
@@ -378,11 +398,11 @@ public class SelectBackstorySpecifically
         {
             foreach (var requirement in requirements)
             {
-                alreadyForcedTraits.Add(new TraitRequirement{def = requirement.def, degree = requirement.degree});
+                alreadyForcedTraits.Add(new TraitRequirement { def = requirement.def, degree = requirement.degree });
             }
         }
     }
-    
+
     private bool AllowedBio(PawnBio bio)
     {
         var genderMatch = (genderRequirement == GenderPossibility.Either || genderRequirement == bio.gender);

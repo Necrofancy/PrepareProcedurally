@@ -8,7 +8,7 @@ internal static class StartingPawnUtilityState
 {
     private static readonly FieldInfo startingAndOptionalPawns;
     private static readonly MethodInfo ensureGenerationRequestInRangeOf;
-    
+
     static StartingPawnUtilityState()
     {
         var type = typeof(StartingPawnUtility);
@@ -30,7 +30,7 @@ internal static class StartingPawnUtilityState
             }
         }
     }
-    
+
     public static List<PawnGenerationRequest> GetStartingPawnRequestList()
     {
         ensureGenerationRequestInRangeOf.Invoke(null, [Editor.StartingPawns.Length]);

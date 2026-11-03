@@ -9,5 +9,5 @@ public class BySetupOf
 {
     public static BySetup Basic;
 
-    static BySetupOf() => DefOfHelper.EnsureInitializedInCtor(typeof (BySetupOf));
+    static BySetupOf() => DefOfHelper.EnsureInitializedInCtor(typeof(BySetupOf));
 }

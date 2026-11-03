@@ -46,16 +46,14 @@ public class PawnCanBePrepared : PawnColumnWorker
         Text.Anchor = TextAnchor.UpperLeft;
         if (Widgets.ButtonInvisible(fullRect))
         {
-            var dialog = new EditSpecificPawn(pawn)
-            {
-                closeOnClickedOutside = true
-            };
+            var dialog = new EditSpecificPawn(pawn) { closeOnClickedOutside = true };
             Find.WindowStack.Add(dialog);
         }
         else
         {
             if (!Mouse.IsOver(fullRect))
                 return;
+
             var tooltip = pawn.GetTooltip();
             tooltip.text = CustomizeText.Translate() + "\n\n" + tooltip.text;
             TooltipHandler.TipRegion(fullRect, tooltip);

@@ -42,7 +42,9 @@ public class HumanoidAlienRaceCompatibility : Compatibility
             : 3;
     }
 
-    public override Pawn RandomizeSingularPawn(Pawn pawn, CollectSpecificPassions collector,
+    public override Pawn RandomizeSingularPawn(
+        Pawn pawn,
+        CollectSpecificPassions collector,
         List<(SkillDef Skill, UsabilityRequirement Usability)> reqs)
     {
         return AlienProcGen.RandomizeSingularPawn(pawn, collector, reqs);
@@ -55,9 +57,9 @@ public class HumanoidAlienRaceCompatibility : Compatibility
 
     public override bool IsFixedGender(Pawn pawn)
     {
-        if (pawn.def is not ThingDef_AlienRace race) 
+        if (pawn.def is not ThingDef_AlienRace race)
             return false;
-        
+
         return race.alienRace.generalSettings.maleGenderProbability is <= 0 or >= 1;
     }
 }

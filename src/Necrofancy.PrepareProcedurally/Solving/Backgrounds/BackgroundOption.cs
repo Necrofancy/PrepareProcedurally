@@ -10,9 +10,10 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 public record BackstoryOption(
     BackstoryDef Def,
     GenderPossibility ForcedGender = GenderPossibility.Either,
-    PawnBio ForcedBio = null)
-{    
-    public void Apply (int pawnIndex, Action onSelect)
+    PawnBio ForcedBio = null
+)
+{
+    public void Apply(int pawnIndex, Action onSelect)
     {
         if (ForcedBio is not null)
         {
@@ -29,7 +30,7 @@ public record BackstoryOption(
                 otherArray[pawnIndex] = null;
             }
         }
-                
+
         onSelect();
     }
 
@@ -37,7 +38,7 @@ public record BackstoryOption(
     {
         var currentArray = slot == BackstorySlot.Childhood ? Editor.SetChildhoods : Editor.SetAdulthoods;
         var currentSelection = currentArray[pawnIndex];
-        
+
         if (!currentSelection.shuffleable)
         {
             // remove both for a solid bio
@@ -48,10 +49,10 @@ public record BackstoryOption(
         {
             currentArray[pawnIndex] = null;
         }
-                
+
         onSelect();
     }
-    
+
     private string Label()
     {
         return ForcedBio is not null
@@ -60,7 +61,7 @@ public record BackstoryOption(
                 ? $"{Def.TitleCapFor(Gender.Male)} / {Def.TitleCapFor(Gender.Female)}"
                 : Def.TitleCapFor(Gender.Male);
     }
-    
+
     private static string SolidBioString(PawnBio bio)
     {
         var name = bio.name.ToStringFull;
@@ -87,18 +88,15 @@ public record BackstoryOption(
         {
             Apply(pawnIndex, onSelect);
         }
-        
+
         void ShowTooltip(Rect draw)
         {
             TooltipHandler.TipRegion(draw, CreateTooltip(pawn));
         }
-        
-        return new FloatMenuOption(Label(), Add, mouseoverGuiAction: ShowTooltip)
-        {
-            Disabled = disabled
-        };
+
+        return new FloatMenuOption(Label(), Add, mouseoverGuiAction: ShowTooltip) { Disabled = disabled };
     }
-    
+
     private string CreateTooltip(Pawn pawn)
     {
         if (ForcedBio is null)
@@ -126,6 +124,7 @@ public record BackstoryOption(
             _ => pawn.gender
         };
         var setForBackstoryDesc = (bio.name, setGender);
+
         void Set((Name name, Gender gender) pawnFacts)
         {
             pawn.Name = pawnFacts.name;

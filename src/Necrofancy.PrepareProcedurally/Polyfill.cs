@@ -1,5 +1,4 @@
 #if !WAYLITH
-
 using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace

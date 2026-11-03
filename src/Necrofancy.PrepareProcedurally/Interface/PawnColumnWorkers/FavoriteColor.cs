@@ -13,16 +13,16 @@ public class FavoriteColor : PawnColumnWorker_Icon
     /// Gets the list of available colors that would be pickable from the Styling Station in Ideology
     /// </summary>
     public static List<ColorDef> AvailablePawnColors => DefDatabase<ColorDef>.AllDefsListForReading;
-        
+
     protected override Texture2D GetIconFor(Pawn pawn) => BaseContent.WhiteTex;
 
 #if RW1_6_OR_GREATER
     protected override Color GetIconColor(Pawn pawn) => pawn.story.favoriteColor?.color ?? Color.black;
-#else 
+#else
     protected override Color GetIconColor(Pawn pawn) => pawn.story.favoriteColor ?? Color.black;
 #endif
-    
-    
+
+
     protected override string GetIconTip(Pawn pawn)
     {
 #if RW1_4
@@ -37,20 +37,20 @@ public class FavoriteColor : PawnColumnWorker_Icon
         return "FavoriteColorTooltip".Translate(pawn.Named("PAWN"), 0.6f.ToStringPercent().Named("PERCENTAGE"), orIdeoColor.Named("ORIDEO")).Resolve();
 #else
         var pawnNamed = pawn.Named("PAWN");
-        
+
         var colorNamed = pawn.story.favoriteColor.label.Named("COLOR");
         var percentNamed = 0.6f.ToStringPercent().Named("PERCENTAGE");
         var ideoColor = "OrIdeoColor".Translate(pawnNamed);
-        
+
         var orIdeoColor = string.Empty;
         if (pawn.Ideo != null && !pawn.Ideo.hidden)
             orIdeoColor = ideoColor;
         var orIdeoNamed = orIdeoColor.Named("ORIDEO");
-        
+
         return "FavoriteColorTooltip".Translate(pawnNamed, colorNamed, percentNamed, orIdeoNamed).Resolve();
 #endif
     }
-        
+
     protected override void ClickedIcon(Pawn pawn)
     {
         var options = new List<FloatMenuGridOption>(AvailablePawnColors.Count);
@@ -60,7 +60,7 @@ public class FavoriteColor : PawnColumnWorker_Icon
             {
 #if RW1_6_OR_GREATER
                 pawn.story.favoriteColor = color;
-#else 
+#else
                 pawn.story.favoriteColor = color.color;
 #endif
                 Editor.LockedPawns.Add(pawn);
@@ -68,7 +68,7 @@ public class FavoriteColor : PawnColumnWorker_Icon
 
             options.Add(new FloatMenuGridOption(BaseContent.WhiteTex, ApplyColor, color.color, color.LabelCap));
         }
-            
+
         Find.WindowStack.Add(new FloatMenuGrid(options));
     }
 }

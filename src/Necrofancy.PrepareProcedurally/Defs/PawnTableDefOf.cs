@@ -9,6 +9,6 @@ namespace Necrofancy.PrepareProcedurally.Defs;
 public static class PawnTableDefOf
 {
     public static PawnTableDef PrepareProcedurallyResults;
-        
-    static PawnTableDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof (PawnTableDefOf));
+
+    static PawnTableDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(PawnTableDefOf));
 }

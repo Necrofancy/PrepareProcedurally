@@ -11,21 +11,22 @@ namespace Necrofancy.PrepareProcedurally;
 
 public class Compatibility
 {
-    public static Compatibility Layer { get; protected set; } = new ();
-        
+    public static Compatibility Layer { get; protected set; } = new();
+
     public virtual int GetMaximumGeneratedTraits(Pawn pawn) => 3;
-    
+
     public virtual int GetMinimumAgeForAdulthood(PawnKindDef kind) => 20;
-        
-    public virtual IEnumerable<PawnKindDef> GetPawnKindsThatCanAlsoGenerateFor(FactionDef def) => Enumerable.Empty<PawnKindDef>();
+
+    public virtual IEnumerable<PawnKindDef> GetPawnKindsThatCanAlsoGenerateFor(FactionDef def) =>
+        Enumerable.Empty<PawnKindDef>();
 
     public virtual bool IsFixedGender(Pawn pawn) => false;
-    
+
     public virtual void RandomizeForTeam(BalancingSituation situation)
     {
         ProcGen.RandomizeForTeam(situation);
     }
-    
+
     public virtual SelectBackstorySpecifically GetBackstorySelection(Pawn pawn)
     {
         var index = StartingPawnUtility.PawnIndex(pawn);
@@ -33,7 +34,9 @@ public class Compatibility
         return new SelectBackstorySpecifically(pawn.Faction.def.backstoryFilters, genderRequirement, pawn);
     }
 
-    public virtual Pawn RandomizeSingularPawn(Pawn pawn, CollectSpecificPassions collector,
+    public virtual Pawn RandomizeSingularPawn(
+        Pawn pawn,
+        CollectSpecificPassions collector,
         List<(SkillDef Skill, UsabilityRequirement Usability)> reqs)
     {
         return ProcGen.RandomizeSingularPawn(pawn, collector, reqs);

@@ -10,14 +10,20 @@ public class StringSkillBuilder : SkillRangeBuilder<string>
 {
     private static readonly HashSet<string> Empty = new();
 
-    private StringSkillBuilder(Dictionary<string, IntRange> skillRanges, HashSet<string> forcedPassions,
-        HashSet<string> disallowedPassions, float maxPassionPoints) : base(skillRanges, forcedPassions,
+    private StringSkillBuilder(
+        Dictionary<string, IntRange> skillRanges,
+        HashSet<string> forcedPassions,
+        HashSet<string> disallowedPassions,
+        float maxPassionPoints) : base(skillRanges, forcedPassions,
         disallowedPassions, maxPassionPoints)
     {
     }
 
-    public static StringSkillBuilder Make(Dictionary<string, IntRange> skillRanges, HashSet<string> forced = null,
-        HashSet<string> disallowed = null, float maxPassionPoints = 7.0f)
+    public static StringSkillBuilder Make(
+        Dictionary<string, IntRange> skillRanges,
+        HashSet<string> forced = null,
+        HashSet<string> disallowed = null,
+        float maxPassionPoints = 7.0f)
     {
         var skills = StaticData.FromShorthand(skillRanges);
         return new StringSkillBuilder(skills, forced ?? Empty, disallowed ?? Empty, maxPassionPoints);

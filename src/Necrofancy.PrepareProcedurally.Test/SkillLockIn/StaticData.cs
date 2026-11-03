@@ -21,17 +21,7 @@ public static class StaticData
 
     internal static readonly string[] RimworldSkills =
     {
-        Shooting,
-        Melee,
-        Construction,
-        Mining,
-        Cooking,
-        Plants,
-        Animals,
-        Crafting,
-        Artistic,
-        Medical,
-        Social,
+        Shooting, Melee, Construction, Mining, Cooking, Plants, Animals, Crafting, Artistic, Medical, Social,
         Intellectual
     };
 

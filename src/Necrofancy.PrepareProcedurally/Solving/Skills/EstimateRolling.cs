@@ -52,10 +52,7 @@ public static class EstimateRolling
     /// </summary>
     private static readonly SimpleCurve AgeSkillMaxFactorCurve = new()
     {
-        new CurvePoint(0f, 1f),
-        new CurvePoint(10f, 1f),
-        new CurvePoint(35f, 1f),
-        new CurvePoint(60f, 1.6f)
+        new CurvePoint(0f, 1f), new CurvePoint(10f, 1f), new CurvePoint(35f, 1f), new CurvePoint(60f, 1.6f)
     };
 
     /// <summary>
@@ -64,10 +61,7 @@ public static class EstimateRolling
     /// </summary>
     private static readonly SimpleCurve LevelFinalAdjustmentCurve = new()
     {
-        new CurvePoint(0.0f, 0.0f),
-        new CurvePoint(10f, 10f),
-        new CurvePoint(20f, 16f),
-        new CurvePoint(27f, 20f)
+        new CurvePoint(0.0f, 0.0f), new CurvePoint(10f, 10f), new CurvePoint(20f, 16f), new CurvePoint(27f, 20f)
     };
 
     /// <summary>
@@ -162,9 +156,9 @@ public static class EstimateRolling
                     {
                         int value = skillGain.Value;
 #else // 1.5 and later adds a SkillGain type
-                    if (skillGain.skill == skill)
-                    {
-                        int value = skillGain.amount;
+                if (skillGain.skill == skill)
+                {
+                    int value = skillGain.amount;
 #endif
                     var multiplied = value > 0
                         ? backstoryMultiplier * value
@@ -205,7 +199,8 @@ public static class EstimateRolling
         return Mathf.Clamp(Mathf.RoundToInt(fromAdjustmentCurve), 0, 20);
     }
 
-    public static IReadOnlyDictionary<SkillDef, IntRange> PossibleSkillRangesOf(float age,
+    public static IReadOnlyDictionary<SkillDef, IntRange> PossibleSkillRangesOf(
+        float age,
         in BioPossibility possibility)
     {
         var dict = new Dictionary<SkillDef, IntRange>();

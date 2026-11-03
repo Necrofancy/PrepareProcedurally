@@ -18,7 +18,9 @@ using static Editor;
 /// </summary>
 public static class AlienProcGen
 {
-    public static Pawn RandomizeSingularPawn(Pawn pawn, CollectSpecificPassions collector,
+    public static Pawn RandomizeSingularPawn(
+        Pawn pawn,
+        CollectSpecificPassions collector,
         List<(SkillDef Skill, UsabilityRequirement Usability)> reqs)
     {
         var index = StartingPawnUtility.PawnIndex(pawn);
@@ -31,9 +33,9 @@ public static class AlienProcGen
         }
 
         string pawnChildhoods = null, pawnAdulthoods = null;
-        
+
         WorldPawnDestruction.DestroyRelationships(pawn);
-        
+
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))
         {
@@ -54,7 +56,7 @@ public static class AlienProcGen
                     foundBackstoryToWorkWith = true;
                 }
             }
-            
+
             if (!foundBackstoryToWorkWith)
             {
                 Logging.Error($"HAR Compat - Failed to find a backstory to work with for {pawn.def.LabelCap}");
@@ -63,8 +65,7 @@ public static class AlienProcGen
 
         var backstoryFilter = new BackstoryCategoryFilter
         {
-            categoriesChildhood = [pawnChildhoods],
-            categoriesAdulthood = [pawnAdulthoods]
+            categoriesChildhood = [pawnChildhoods], categoriesAdulthood = [pawnAdulthoods]
         };
         var specifier = new SelectBackstorySpecifically(backstoryFilter, GenderRequirements[index], pawn);
         var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
@@ -93,7 +94,7 @@ public static class AlienProcGen
         // it's actually impossible to try balancing up-front because I don't know what backstories are available
         // so let's generate the pawns first to figure out their race and figure it out from there.
         List<AlienCategories> categories = new(StartingPawns.Length);
-        
+
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.AgeOnAllRelevantRaceProperties(RaceAgeRanges))
         {
@@ -113,7 +114,7 @@ public static class AlienProcGen
                 {
                     WorldPawnDestruction.DestroyRelationships(pawn);
 
-                    PawnGenerationRequestTransforms.SetBasedOnEditorSettings(pawnIndex);                    
+                    PawnGenerationRequestTransforms.SetBasedOnEditorSettings(pawnIndex);
                     pawn = StartingPawnUtility.RandomizeInPlace(pawn);
                     ProcGen.OnPawnChanged(pawn);
 
@@ -126,7 +127,7 @@ public static class AlienProcGen
                         foundBackstoryToWorkWith = true;
                     }
                 }
-                
+
                 if (!foundBackstoryToWorkWith)
                 {
                     Logging.Error($"HAR Compat - Failed to find a backstory to work with for {pawn.def.LabelCap}");

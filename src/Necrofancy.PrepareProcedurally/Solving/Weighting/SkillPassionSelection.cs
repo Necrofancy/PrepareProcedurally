@@ -99,7 +99,10 @@ public class SkillPassionSelection
         return selectionsList;
     }
 
-    public bool StartingGroupSatisfies(IReadOnlyCollection<Pawn> pawns, out int majorLeft, out int minorLeft,
+    public bool StartingGroupSatisfies(
+        IReadOnlyCollection<Pawn> pawns,
+        out int majorLeft,
+        out int minorLeft,
         out int usableLeft)
     {
         majorLeft = major;

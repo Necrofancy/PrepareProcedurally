@@ -27,11 +27,11 @@ public static class TemporaryEdit
 {
     public static IDisposable NullEdit => new TemporaryEdit<int>(default, default, DoNothingWithData);
 
-    public static IDisposable Many<T>(Stack<T> disposables) where T:IDisposable => new TemporaryMultiple<T>(disposables);
+    public static IDisposable Many<T>(Stack<T> disposables) where T : IDisposable =>
+        new TemporaryMultiple<T>(disposables);
 
     private static void DoNothingWithData(int _)
     {
-            
     }
 
     private class TemporaryMultiple<T> : IDisposable where T : IDisposable

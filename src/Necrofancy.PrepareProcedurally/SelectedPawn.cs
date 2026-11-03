@@ -15,14 +15,14 @@ public static class SelectedPawn
         get;
         set
         {
-            if (field == value) 
+            if (field == value)
                 return;
-            
+
             field = value;
-            
-            if (!field) 
+
+            if (!field)
                 return;
-            
+
             Editor.SetChildhoods[Index] = Pawn.story.Childhood;
             Editor.SetAdulthoods[Index] = Pawn.story.Adulthood;
         }
@@ -82,7 +82,7 @@ public static class SelectedPawn
 
         return sum;
     }
-    
+
     public static void Randomize()
     {
         var cosmetics = KeepCosmetics ? new CosmeticLock(Pawn) : null;

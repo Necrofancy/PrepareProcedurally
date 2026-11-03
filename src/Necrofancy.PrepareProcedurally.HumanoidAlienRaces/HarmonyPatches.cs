@@ -12,7 +12,7 @@ public class HarmonyPatches
     static HarmonyPatches()
     {
         Harmony harmony = new Harmony("Necrofancy.PrepareProcedurally.HumanoidAlienRaces");
-        
+
         var startingUtility = typeof(StartingPawnUtility);
 
         const string startingUtilityField = "DefaultStartingPawnRequest";

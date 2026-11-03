@@ -14,23 +14,28 @@ namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 public class Traits : PawnColumnWorker
 {
     private const string TraitLockedByBackstoryDescription = "Necrofancy.PrepareProcedurally.TraitIsBackstoryTooltip";
-    private const string TraitLockedByPlayerChoiceDescription = "Necrofancy.PrepareProcedurally.PlayerRequestedTraitLabel";
+
+    private const string TraitLockedByPlayerChoiceDescription =
+        "Necrofancy.PrepareProcedurally.PlayerRequestedTraitLabel";
+
     private const string TraitForcedByScenarioOrMod = "Necrofancy.PrepareProcedurally.TraitScenarioForcedLabel";
-        
+
     private static readonly List<Trait> TraitsToRemove = new List<Trait>();
     private static readonly List<TraitRequirement> TraitOptions = new List<TraitRequirement>();
-        
+
     private const int PaddingBetweenButtons = 4;
     const int AddButtonWidth = 30;
-        
+
     public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
     {
         TraitOptions.Clear();
 
         var lockedPawn = Editor.LockedPawns.Contains(pawn);
-        var needs = lockedPawn ? TraitUtilities.RequiredTraitsForLockedPawn(pawn) : TraitUtilities.RequiredTraitsForUnlockedPawn(pawn);
+        var needs = lockedPawn
+            ? TraitUtilities.RequiredTraitsForLockedPawn(pawn)
+            : TraitUtilities.RequiredTraitsForUnlockedPawn(pawn);
         TraitOptions.AddRange(TraitUtilities.GetAvailableTraits(needs));
-            
+
         var allowPlusButton = TraitOptions.Any();
 
         rect = rect.ContractedBy(PaddingBetweenButtons);
@@ -39,7 +44,7 @@ public class Traits : PawnColumnWorker
         var y = rect.y;
         float width;
         var height = rect.height;
-            
+
         foreach (var trait in pawn.story.traits.allTraits)
         {
             width = Text.CalcSize(trait.LabelCap).x + 10f;
@@ -51,10 +56,11 @@ public class Traits : PawnColumnWorker
         if (allowPlusButton && Widgets.ButtonText(new Rect(x, y, AddButtonWidth, height), "+"))
         {
             var options = new List<FloatMenuOption>();
-                
+
             foreach (var option in TraitOptions)
             {
                 var str = new Trait(option.def, option.degree ?? 0).LabelCap;
+
                 void Add()
                 {
                     if (lockedPawn)
@@ -77,7 +83,7 @@ public class Traits : PawnColumnWorker
         {
             pawn.story.traits.RemoveTrait(trait);
         }
-            
+
         TraitsToRemove.Clear();
     }
 
@@ -105,21 +111,21 @@ public class Traits : PawnColumnWorker
         {
             pawn.story.traits.RemoveTrait(trait);
         }
-        
+
         if (option.def.IsSexualityTrait())
         {
             pawn.story.traits.GainTrait(new Trait(option.def, option.degree ?? 0));
             return;
         }
-            
+
         pawn.story.traits.GainTrait(new Trait(option.def, option.degree ?? 0));
         foreach (var trait in geneTraits)
         {
             pawn.story.traits.GainTrait(trait, suppressConflicts: true);
         }
-        
+
         pawn.story.traits.RecalculateSuppression();
-        
+
         TraitUtilities.FixTraitOverflow(pawn);
     }
 
@@ -135,7 +141,8 @@ public class Traits : PawnColumnWorker
         float maxWidth = 0;
         foreach (var pawn in table.PawnsListForReading)
         {
-            var width = pawn.story.traits.allTraits.Sum(trait => Text.CalcSize(trait.LabelCap).x + 10f + 2 * PaddingBetweenButtons);
+            var width = pawn.story.traits.allTraits.Sum(trait =>
+                Text.CalcSize(trait.LabelCap).x + 10f + 2 * PaddingBetweenButtons);
             if (pawn.story.traits.allTraits.Count < 4)
             {
                 width += 2 * PaddingBetweenButtons + AddButtonWidth;
@@ -158,7 +165,8 @@ public class Traits : PawnColumnWorker
         Widgets.Label(new Rect(rect.x + 5f, rect.y, rect.width - 10f, rect.height), trait.LabelCap);
         GUI.color = Color.white;
         if (!Mouse.IsOver(rect)) return;
-        var tip = new TipSignal(() => TraitDescriptionWithAdditionalTips(trait, pawn), (int) rect.y * 37);
+
+        var tip = new TipSignal(() => TraitDescriptionWithAdditionalTips(trait, pawn), (int)rect.y * 37);
         TooltipHandler.TipRegion(rect, tip);
         if (Widgets.ButtonInvisible(rect, doMouseoverSound: true))
         {
@@ -193,7 +201,7 @@ public class Traits : PawnColumnWorker
     private static string TraitDescriptionWithAdditionalTips(Trait trait, Pawn pawn)
     {
         var builder = new StringBuilder(trait.TipString(pawn));
-            
+
         if (TraitUtilities.IsBackstoryTraitOfPawn(trait, pawn))
         {
             builder.AppendLine().AppendLine().AppendLine(TraitLockedByBackstoryDescription.Translate());
@@ -203,7 +211,7 @@ public class Traits : PawnColumnWorker
         {
             builder.AppendLine().AppendLine().AppendLine(TraitForcedByScenarioOrMod.Translate());
         }
-            
+
         var index = StartingPawnUtility.PawnIndex(pawn);
         var forcedTraits = Editor.TraitRequirements[index];
         if (forcedTraits.Any(x => x.def == trait.def && x.degree == trait.Degree))
@@ -225,12 +233,12 @@ public class Traits : PawnColumnWorker
         {
             return ColorLibrary.Aquamarine;
         }
-            
+
         if (TraitUtilities.IsBackstoryTraitOfPawn(trait, pawn))
         {
             return ColorLibrary.Turquoise;
         }
-            
+
         if (trait.sourceGene != null)
         {
             return ColoredText.GeneColor;

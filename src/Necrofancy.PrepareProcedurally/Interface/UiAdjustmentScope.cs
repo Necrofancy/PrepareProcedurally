@@ -10,7 +10,7 @@ public static class UiAdjustmentScope
     public static IDisposable BackgroundColorOf(Color color) => new TemporaryBackgroundColor(color);
     public static IDisposable ForegroundColorOf(Color color) => new TemporaryColor(color);
     public static IDisposable TextWrapOf(bool doWrap) => new TemporaryWordWrap(doWrap);
-        
+
     private readonly struct TemporaryAnchor : IDisposable
     {
         private readonly TextAnchor previous;
@@ -23,7 +23,7 @@ public static class UiAdjustmentScope
 
         void IDisposable.Dispose() => Text.Anchor = previous;
     }
-        
+
     private readonly struct TemporaryBackgroundColor : IDisposable
     {
         private readonly Color previous;
@@ -36,7 +36,7 @@ public static class UiAdjustmentScope
 
         void IDisposable.Dispose() => GUI.backgroundColor = previous;
     }
-    
+
     private readonly struct TemporaryColor : IDisposable
     {
         private readonly Color previous;
@@ -53,7 +53,7 @@ public static class UiAdjustmentScope
     private readonly struct TemporaryWordWrap : IDisposable
     {
         private readonly bool previous;
-            
+
         public TemporaryWordWrap(bool doWrap)
         {
             previous = Text.WordWrap;

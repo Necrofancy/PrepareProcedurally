@@ -13,7 +13,7 @@ namespace Necrofancy.PrepareProcedurally.Interface.Dialogs;
 public class BackstorySearch : Dialog_Search<BackstoryOption>
 {
     private static readonly char[] Separators = [',', '，', '、', '،', ';', '；'];
-    private static readonly Vector2 CreationOffset = new (0, 40);
+    private static readonly Vector2 CreationOffset = new(0, 40);
 
     private readonly Pawn referencePawn;
     private readonly Action onSelect;
@@ -22,10 +22,15 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
     private bool workflowEnded;
     private readonly HashSet<string> listedBackstories = new();
     private readonly Vector2 position;
-    
+
     private const float RemoveRowHeight = 30f;
 
-    public BackstorySearch(Pawn referencePawn, BackstorySlot slot, BackstoryDef existing, List<BackstoryOption> backstories, Action onSelect)
+    public BackstorySearch(
+        Pawn referencePawn,
+        BackstorySlot slot,
+        BackstoryDef existing,
+        List<BackstoryOption> backstories,
+        Action onSelect)
     {
         this.referencePawn = referencePawn;
         this.slot = slot;
@@ -35,16 +40,16 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
         searchResults = new SortedList<string, BackstoryOption>(StringComparer.InvariantCultureIgnoreCase);
         SearchSet = backstories;
     }
-    
+
     private bool ShowRemove => existing is not null && !searchResults.Any();
 
-    private static WorkTags ExpectedSearchWorkTags => 
-        WorkTags.ManualDumb 
-        | WorkTags.ManualSkilled 
-        | WorkTags.Violent                                                    
+    private static WorkTags ExpectedSearchWorkTags =>
+        WorkTags.ManualDumb
+        | WorkTags.ManualSkilled
+        | WorkTags.Violent
         | WorkTags.Caring
-        | WorkTags.Cleaning 
-        | WorkTags.Hauling 
+        | WorkTags.Cleaning
+        | WorkTags.Hauling
         | WorkTags.Firefighting;
 
     private static List<WorkTypeDef> ExpectedSearchWorkTypes
@@ -62,7 +67,7 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
             ];
         }
     }
-    
+
     protected override List<BackstoryOption> SearchSet { get; }
 
     protected override bool ShouldClose => workflowEnded;
@@ -79,9 +84,10 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
                 BackstoryOption.Remove(StartingPawnUtility.PawnIndex(referencePawn), slot, onSelect);
                 workflowEnded = true;
             }
+
             inRect.yMin += RemoveRowHeight + 4f;
         }
-        
+
         base.DoWindowContents(inRect);
     }
 
@@ -115,10 +121,10 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
         Vector2 size = InitialSize;
         size.y = Mathf.Clamp(size.y + scrollHeight, InitialSize.y, UI.screenHeight - position.y);
         size.y += ShowRemove ? RemoveRowHeight + 4f : 0f;
-        
+
         var centeredX = position.x - size.x / 2;
         var centeredY = position.y - size.y / 2;
-        
+
         windowRect = new Rect(centeredX, centeredY, size.x, size.y).Rounded();
     }
 
@@ -156,16 +162,17 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
         {
             option.Apply(index, onSelect);
         }
+
         workflowEnded = true;
     }
-    
+
     private bool BackstoryOptionMatches(BackstoryOption option)
     {
         return option.ForcedBio is not null
             ? SolidBioMatch(option.ForcedBio)
             : BackstoryMatch(option.Def);
     }
-    
+
     private bool SolidBioMatch(PawnBio bio)
     {
         var search = CommonSearchWidget.filter.Text;
@@ -200,8 +207,8 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
     {
         // disqualifiers disqualify both, whereas searching positively may refer to either childhood or adulthood
         return !(MatchesADisablingFactor(search, bio.childhood) || MatchesADisablingFactor(search, bio.adulthood))
-               && (MatchesADirectSearch(search, bio.childhood) 
-                   || MatchesADirectSearch(search, bio.adulthood) 
+               && (MatchesADirectSearch(search, bio.childhood)
+                   || MatchesADirectSearch(search, bio.adulthood)
                    || MatchesFallbackGenericWorkTypes(search)
                );
     }
@@ -212,7 +219,7 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
             !MatchesADisablingFactor(search, backstoryDef)
             && (MatchesADirectSearch(search, backstoryDef) || MatchesFallbackGenericWorkTypes(search));
     }
-    
+
     private static bool MatchesADisablingFactor(string search, BackstoryDef backstoryDef)
     {
         return MatchAgainstWorkTags(search, backstoryDef.workDisables)
@@ -229,7 +236,7 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
                || MatchesASkillBonus(search, backstoryDef)
                || MatchestTraitList(search, backstoryDef.forcedTraits);
     }
-    
+
     private static bool MatchesFallbackGenericWorkTypes(string search)
     {
         return MatchAgainstWorkTags(search, ExpectedSearchWorkTags)
@@ -244,6 +251,7 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
             {
                 if (gain is null)
                     continue;
+
                 if (gain.amount > 0 && SearchMatch(search, gain.skill.LabelCap))
                 {
                     return true;
@@ -278,10 +286,10 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
     {
         foreach (var workType in workTypes)
         {
-            if (workType is null) 
+            if (workType is null)
                 continue;
-            
-            if (SearchMatch(search,workType.gerundLabel))
+
+            if (SearchMatch(search, workType.gerundLabel))
             {
                 return true;
             }
@@ -306,7 +314,8 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
 
     private static bool SearchMatch(string searchFor, string withinText)
     {
-        return !withinText.NullOrEmpty() && withinText.IndexOf(searchFor, StringComparison.InvariantCultureIgnoreCase) >= 0;
+        return !withinText.NullOrEmpty() &&
+               withinText.IndexOf(searchFor, StringComparison.InvariantCultureIgnoreCase) >= 0;
     }
 
     private static string LookupString(BackstoryOption option)
