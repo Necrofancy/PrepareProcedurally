@@ -10,7 +10,7 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 public class SelectBackstorySpecifically
 {
-    private readonly List<BackstoryCategoryFilter> categoryFilters;
+    private readonly IReadOnlyList<BackstoryCategoryFilter> categoryFilters;
     private readonly GenderPossibility genderRequirement;
 
     private readonly HashSet<BackstoryDef> alreadyUsed = new();
@@ -21,25 +21,19 @@ public class SelectBackstorySpecifically
     private PawnBio forcedBio;
 
     public SelectBackstorySpecifically(
-        List<BackstoryCategoryFilter> spawnCategories,
+        IReadOnlyList<BackstoryCategoryFilter> spawnCategories,
         GenderPossibility genderRequirement,
-        IEnumerable<BackgroundPossibility> possibilities)
+        IEnumerable<BackgroundPossibility> alreadyUsed)
     {
         categoryFilters = spawnCategories;
         this.genderRequirement = genderRequirement;
-        foreach (var pawn in Editor.LockedPawns)
-        {
-            AddToAlreadyUsed(pawn);
-        }
 
-        foreach (var pawn in possibilities)
-        {
+        foreach (var pawn in alreadyUsed)
             AddToAlreadyUsed(pawn.Background);
-        }
     }
 
     public SelectBackstorySpecifically(
-        List<BackstoryCategoryFilter> categoryFilters,
+        IReadOnlyList<BackstoryCategoryFilter> categoryFilters,
         GenderPossibility genderRequirement,
         Pawn pawn) : this(categoryFilters, genderRequirement, Enumerable.Empty<BackgroundPossibility>())
     {
@@ -53,8 +47,8 @@ public class SelectBackstorySpecifically
     public SelectBackstorySpecifically(
         BackstoryCategoryFilter backstoryFilter,
         GenderPossibility genderRequirement,
-        IEnumerable<BackgroundPossibility> possibilities)
-        : this([backstoryFilter], genderRequirement, possibilities)
+        IEnumerable<BackgroundPossibility> alreadyUsed)
+        : this([backstoryFilter], genderRequirement, alreadyUsed)
     {
         // no special category.
     }
@@ -220,10 +214,8 @@ public class SelectBackstorySpecifically
         if (childhood is null || adulthood is null)
             return true;
 
-        var conflict = (childhood.requiredWorkTags & adulthood.workDisables) |
-                       (adulthood.requiredWorkTags & childhood.workDisables);
-
-        if (conflict != WorkTags.None)
+        if (adulthood.requiredWorkTags.OverlapsWithOnAnyWorkType(childhood.workDisables)
+            || childhood.requiredWorkTags.OverlapsWithOnAnyWorkType(adulthood.workDisables))
             return false;
 
         if (childhood.forcedTraits is { } childhoodForcedTraits)
@@ -328,6 +320,9 @@ public class SelectBackstorySpecifically
             foreach (var childhood in childhoods)
             foreach (var adulthood in adulthoods)
             {
+                if (adulthood.requiredWorkTags.OverlapsWithOnAnyWorkType(childhood.workDisables)
+                    || childhood.requiredWorkTags.OverlapsWithOnAnyWorkType(adulthood.workDisables))
+                    continue;
                 if (UnworkableTraitCombination(requiredTraits, childhood, adulthood))
                     continue;
 

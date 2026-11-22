@@ -16,9 +16,9 @@ public class PawnBuilder : SkillRangeBuilder<SkillDef>
     {
     }
 
-    public static PawnBuilder FromPossibleBio(BioPossibility bio, float age)
+    public static PawnBuilder FromPossibleBio(BioPossibility bio)
     {
-        var skills = GetSkillRanges(bio, age);
+        var skills = GetSkillRanges(bio);
         var disabledPassions = new HashSet<SkillDef>();
         var forcedPassions = new HashSet<SkillDef>();
         disabledPassions.AddRange(SkillDisables.GetSkillsDisabled(bio.Childhood, bio.Adulthood));
@@ -58,13 +58,13 @@ public class PawnBuilder : SkillRangeBuilder<SkillDef>
     }
 
 
-    private static Dictionary<SkillDef, IntRange> GetSkillRanges(BioPossibility bio, float age)
+    private static Dictionary<SkillDef, IntRange> GetSkillRanges(BioPossibility bio)
     {
         var skills = new Dictionary<SkillDef, IntRange>();
         foreach (var skill in DefDatabase<SkillDef>.AllDefs)
         {
-            var min = EstimateRolling.StaticRoll(in bio, age, skill, 0f);
-            var max = EstimateRolling.StaticRoll(in bio, age, skill, .98f);
+            var min = EstimateRolling.StaticAgelessRoll(in bio, skill, 0f);
+            var max = EstimateRolling.StaticAgelessRoll(in bio, skill, .98f);
             skills[skill] = new IntRange(min, max);
         }
 

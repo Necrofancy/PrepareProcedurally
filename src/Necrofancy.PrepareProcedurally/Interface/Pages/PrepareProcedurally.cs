@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
 using RimWorld;
@@ -222,6 +223,14 @@ public class PrepareProcedurally : Page
 
     private void RandomizeForTeam()
     {
+        if (Editor.StressTestMode)
+        {
+            var context = EditorContext.LiveContext();
+            context.AllPassions = Editor.SkillPassions;
+            context.Randomize();
+            return;
+        }
+
         var backstoryFilters = Faction.OfPlayer.def.backstoryFilters;
         var pawnCount = Find.GameInitData.startingPawnCount;
         var situation = new BalancingSituation(string.Empty, backstoryFilters, pawnCount, Editor.SkillPassions);

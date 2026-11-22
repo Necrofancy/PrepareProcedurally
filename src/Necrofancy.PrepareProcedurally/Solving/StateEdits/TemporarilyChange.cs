@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
+using HarmonyLib;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
-using RimWorld;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 
@@ -21,6 +19,10 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 /// </summary>
 public static class TemporarilyChange
 {
+    private static readonly FieldInfo ScenarioPartsField = AccessTools.Field(typeof(Scenario), "parts");
+    private static readonly FieldInfo ForcedTraitsTraitField = AccessTools.Field(typeof(ScenPart_ForcedTrait),"trait");
+    private static readonly FieldInfo ForcedTraitsDegreeField = AccessTools.Field(typeof(ScenPart_ForcedTrait), "degree");
+
     public static TemporaryEdit<PawnGenerationRequest> SetSpecificRequest(
         int pawnIndex,
         float age,
@@ -56,6 +58,21 @@ public static class TemporarilyChange
         }
 
         return new TemporaryEdit<PawnGenerationRequest>(currentRequest, editedRequest, SetRequest);
+    }
+
+    public static IDisposable StartingPawnRequest(int pawnIndex, Func<PawnGenerationRequest, PawnGenerationRequest> edit)
+    {
+        var startingPawnRequests = StartingPawnUtilityState.GetStartingPawnRequestList();
+
+        var oldRequest = startingPawnRequests[pawnIndex];
+        var newRequest = edit(oldRequest);
+
+        void SetRequest(PawnGenerationRequest req)
+        {
+            startingPawnRequests[pawnIndex] = req;
+        }
+
+        return new TemporaryEdit<PawnGenerationRequest>(oldRequest, newRequest, SetRequest);
     }
 
     public static IDisposable AgeOnAllRelevantRaceProperties(Dictionary<ThingDef, RaceAgeData> settings)
@@ -94,7 +111,7 @@ public static class TemporarilyChange
         return new TemporaryEdit<FloatRange>(currentRange, temporaryRange, SetMelaninRange);
     }
 
-    public static TemporaryEdit<List<TraitDef>> ScenarioBannedTraits(List<TraitDef> banned)
+    public static TemporaryEdit<List<TraitDef>> MemberKindDisallowedTraits(List<TraitDef> banned)
     {
         var memberKind = Faction.OfPlayer.def.basicMemberKind;
         var currentList = memberKind.disallowedTraits;
@@ -106,5 +123,32 @@ public static class TemporarilyChange
         }
 
         return new TemporaryEdit<List<TraitDef>>(currentList, newList, SetDisallowedTraits);
+    }
+
+    public static IDisposable ForcedTraitsInScenarioParts(IEnumerable<TraitRequirement> traits)
+    {
+        if (ScenarioPartsField is null || ForcedTraitsTraitField is null || ForcedTraitsDegreeField is null)
+        {
+            Logging.ErrorOnce("Reflection failed on prerequisites to forcing traits through scenario edits");
+            return TemporaryEdit.NullEdit;
+        }
+
+        var oldList = (List<ScenPart>)ScenarioPartsField.GetValue(Find.Scenario);
+        var newList = oldList.ListFullCopy();
+
+        foreach (var trait in traits)
+        {
+            var forceTrait = new ScenPart_ForcedTrait();
+            ForcedTraitsTraitField.SetValue(forceTrait, trait.def);
+            ForcedTraitsDegreeField.SetValue(forceTrait, trait.degree);
+            newList.Add(forceTrait);
+        }
+
+        void Set(List<ScenPart> parts)
+        {
+            ScenarioPartsField.SetValue(Find.Scenario, parts);
+        }
+
+        return new TemporaryEdit<List<ScenPart>>(oldList, newList, Set);
     }
 }

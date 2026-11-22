@@ -1,7 +1,5 @@
-using System.Collections.Generic;
+using Necrofancy.PrepareProcedurally.Rules;
 using Necrofancy.PrepareProcedurally.Solving;
-using RimWorld;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally;
 
@@ -57,6 +55,8 @@ public class PrepareModSettings : ModSettings
     public int debounceDelay = DefaultDebounceDelay;
 
     public bool AlienRacesEnabled => ModsConfig.IsActive("erdelf.humanoidalienraces");
+
+    public RuleSet RuleSet { get; set; } = RuleSet.Vanilla;
 
     public override void ExposeData()
     {
@@ -152,10 +152,33 @@ public class PrepareModSettings : ModSettings
         {
             // update just incase an underlying HAR mod changed.
             raceAgeData.possibleAgeRange = new IntRange(minimumAdulthoodAge, maximumAdulthoodAge);
+            var desired = raceAgeData.desiredAgeRange;
+            var min = Math.Min(Math.Max(desired.min, minimumAdulthoodAge), maximumAdulthoodAge);
+            var max = Math.Min(Math.Max(desired.max, min), maximumAdulthoodAge);
+            raceAgeData.desiredAgeRange = new IntRange(min, max);
         }
 
         ageRangeByRace[otherKindRace.defName] = raceAgeData;
 
         return raceAgeData;
+    }
+
+    public void ScanForRaceAgeUpdates(FactionDef faction)
+    {
+        foreach (var otherKind in RuleSet.RaceRules.PawnKindsFor(faction))
+        {
+            var minimumAdulthoodAge = RuleSet.RaceRules.GetMinimumAgeForAdulthood(otherKind.race);
+            var maximumAdulthoodAge = (int)otherKind.race.race.ageGenerationCurve.Last().x;
+            GetOrCreateRaceAgeSetting(otherKind.race, minimumAdulthoodAge, maximumAdulthoodAge);
+        }
+    }
+
+    public static (ThingDef humanTarget, Dictionary<ThingDef, RaceAgeData> ageRangesByHumanType) DefaultHumanData()
+    {
+        return (ThingDefOf.Human,
+            new Dictionary<ThingDef, RaceAgeData>
+            {
+                { ThingDefOf.Human, new RaceAgeData(DefaultedSelectedAdultHumanRange, PossibleAdultHumanAgeRange) }
+            });
     }
 }

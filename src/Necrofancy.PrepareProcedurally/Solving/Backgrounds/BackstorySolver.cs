@@ -1,15 +1,48 @@
 ﻿#nullable enable
-using System.Collections.Generic;
-using System.Linq;
+using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
-using RimWorld;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 public static class BackstorySolver
 {
+    public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(TeamRebalance rebalance)
+    {
+        var categoryFilters = rebalance.RuleSet.RaceRules.GetBackstoryCategoryFilters();
+        var currentBackgrounds = new List<BackgroundPossibility>(rebalance.Editor.Slots.Count);
+        var finalBackgrounds = new BackgroundPossibility[rebalance.Editor.Slots.Count];
+        foreach (var slot in rebalance.GetLockedSlots())
+        {
+            var existingBackground = StaticBackgroundPossibility(slot.Pawn);
+            currentBackgrounds.Add(existingBackground);
+            finalBackgrounds[slot.Index] = existingBackground;
+        }
+
+        var weights = new Dictionary<SkillPassionSelection, int>();
+        foreach (var slot in rebalance.GetUnlockedSlots())
+        {
+            foreach (var requirement in rebalance.Editor.AllPassions)
+                weights[requirement] = requirement.GetWeights(currentBackgrounds);
+
+            var skillWeightingSystem = new SpecificSkillWeights(weights);
+            var specifier = new SelectBackstorySpecifically(categoryFilters, slot.Gender, currentBackgrounds);
+            if (slot.ForcedChildhood is not null)
+                specifier.ForceChildhood(slot.ForcedChildhood);
+
+            if (slot.ForcedAdulthood is not null)
+                specifier.ForceAdulthood(slot.ForcedAdulthood);
+
+            var bio = specifier.GetBestBio(skillWeightingSystem.Weight, slot.RequiredTraits);
+            var skillRanges = EstimateRolling.PossibleSkillRangesOf(bio);
+            var determinedBackground = new BackgroundPossibility(bio, skillRanges, true);
+            currentBackgrounds.Add(determinedBackground);
+            finalBackgrounds[slot.Index] = determinedBackground;
+        }
+
+        return finalBackgrounds;
+    }
+
     public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(
         BalancingSituation situation,
         SimpleCurve ageRange,
@@ -34,8 +67,6 @@ public static class BackstorySolver
                 weights[requirement] = moddedByVariation;
             }
 
-            var age = Rand.ByCurve(ageRange);
-
             var skillWeightingSystem = new SpecificSkillWeights(weights);
             var specifier = new SelectBackstorySpecifically(situation.CategoryFilters, Editor.GenderRequirements[i],
                 currentBackgrounds);
@@ -50,8 +81,8 @@ public static class BackstorySolver
             }
 
             var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
-            var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
-            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, age, true));
+            var skillRanges = EstimateRolling.PossibleSkillRangesOf(bio);
+            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, true));
         }
 
         return currentBackgrounds;
@@ -63,12 +94,31 @@ public static class BackstorySolver
         var dict = new Dictionary<SkillDef, IntRange>();
         foreach (var skill in pawn.skills.skills) dict[skill.def] = new IntRange(skill.levelInt, skill.levelInt);
 
-        return new BackgroundPossibility(bio, dict, pawn.ageTracker.AgeBiologicalYearsFloat, false);
+        return new BackgroundPossibility(bio, dict, false);
+    }
+
+    public static SkillFinalizationResult FigureOutPassions(PawnCustomize customization, BioPossibility background)
+    {
+        var builder = PawnBuilder.FromPossibleBio(background);
+        foreach (var (skill, requirement) in customization.Requirements)
+        {
+            var passion = requirement switch
+            {
+                UsabilityRequirement.Major => Passion.Major,
+                UsabilityRequirement.Minor => Passion.Minor,
+                _ => Passion.None
+            };
+
+            builder.TryLockInPassion(skill, passion);
+        }
+
+        var (skills, exhaustedPoints) = builder.Build();
+        return new SkillFinalizationResult(skills, exhaustedPoints);
     }
 
     public static IReadOnlyList<SkillFinalizationResult?> FigureOutPassions(
         IReadOnlyList<BackgroundPossibility> bios,
-        BalancingSituation situation)
+        IReadOnlyList<SkillPassionSelection> teamRequirements)
     {
         // two lists; one that can be re-ordered at will to try locking in skills easier
         // and one that retains order to return results later.
@@ -78,15 +128,15 @@ public static class BackstorySolver
         {
             var possibility = bios[i];
             var builder = possibility.CanChange
-                ? PawnBuilder.FromPossibleBio(possibility.Background, possibility.AssumedAge)
+                ? PawnBuilder.FromPossibleBio(possibility.Background)
                 : null;
 
             pawnsInOriginalOrder[i] = builder;
             list.Add(builder);
         }
 
-        // run non-backstory-related skills last 
-        var skillRequirements = situation.SkillRequirements
+        // run non-backstory-related skills last
+        var skillRequirements = teamRequirements
             .OrderByDescending(x => x.Skill.usuallyDefinedInBackstories)
             .ThenByDescending(x => x.major)
             .ThenByDescending(x => x.minor)

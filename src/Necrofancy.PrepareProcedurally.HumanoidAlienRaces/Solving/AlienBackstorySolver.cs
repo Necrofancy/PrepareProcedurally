@@ -55,8 +55,8 @@ public class AlienBackstorySolver
             }
 
             var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
-            var skillRanges = EstimateRolling.PossibleSkillRangesOf(age, bio);
-            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, age, true));
+            var skillRanges = EstimateRolling.PossibleSkillRangesOf(bio);
+            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, true));
         }
 
         return currentBackgrounds;

@@ -1,0 +1,108 @@
+using Necrofancy.PrepareProcedurally.Rules;
+using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
+using Necrofancy.PrepareProcedurally.Solving.Skills;
+
+namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
+
+public static class HackFactory
+{
+    private const string SpawnCategoryFilter = "PrepareProcedurally";
+
+    public static Hack AgePropertiesOfRace(RaceProperties race, RaceAgeData curve)
+    {
+        SimpleCurve Transform(SimpleCurve oldCurve) => EstimateRolling.SubSampleCurve(oldCurve, curve.desiredAgeRange);
+        return Hack.FieldTransform<RaceProperties,SimpleCurve>(race, nameof(RaceProperties.ageGenerationCurve), Transform);
+    }
+
+    public static IEnumerable<Hack> AgePropertiesForEachRace(IReadOnlyDictionary<ThingDef, RaceAgeData> data)
+    {
+        foreach (var (thingDef, ageData) in data)
+        {
+            yield return AgePropertiesOfRace(thingDef.race, ageData);
+        }
+    }
+
+    public static Hack SelectedMelaninRange(FloatRange range)
+    {
+        return Hack.FieldWithValue(Faction.OfPlayer.def, nameof(FactionDef.melaninRange), range);
+    }
+
+    public static IEnumerable<Hack> ForAdjustingPawnBackstory(Fudging fudged, BackgroundPossibility possible)
+    {
+        var slot = fudged.Slot;
+        var list = StartingPawnUtilityState.GetStartingPawnRequestList();
+        if (slot.Index < 0 || slot.Index >= list.Count)
+            throw new ArgumentOutOfRangeException(nameof(slot));
+
+        var request = list[slot.Index];
+        var kindDef = slot.PinnedKind ?? request.KindDef;
+        yield return AdjustPawnKindBackstoryOverrides(kindDef);
+        yield return BanConflictingTraits(fudged, kindDef);
+
+        PawnGenerationRequest Get() => list[slot.Index];
+        void Set(PawnGenerationRequest toSet) => list[slot.Index] = toSet;
+        PawnGenerationRequest Transform(PawnGenerationRequest request)
+        {
+            var possibility = slot.Gender;
+
+            if (fudged.SolidBio is not null)
+            {
+                possibility = fudged.SolidBio.gender;
+            }
+
+            return request with
+            {
+                AllowPregnant = slot.Context.AllowPregnant,
+                AllowAddictions = slot.Context.AllowInjuries,
+                CanGeneratePawnRelations = slot.Context.AllowRelationships,
+                AllowedDevelopmentalStages = DevelopmentalStage.Adult,
+
+                FixedGender = possibility switch
+                {
+                    GenderPossibility.Male => Gender.Male,
+                    GenderPossibility.Female => Gender.Female,
+                    _ => null,
+                },
+
+                KindDef = kindDef,
+            };
+        }
+
+        yield return Hack.Function(Get, Transform, Set, $"Starting pawn request {slot.Index}");
+    }
+
+    private static Hack BanConflictingTraits(Fudging context, PawnKindDef kind)
+    {
+        var banned = DefDatabase<TraitDef>.AllDefsListForReading
+            .Where(x => x.conflictingPassions is not null)
+            .Where(trait => trait.conflictingPassions
+                .Any(x => context.Skills.FinalRanges[x].Passion > Passion.None))
+            .ToList();
+
+        List<TraitDef> Transform(List<TraitDef> current) => current is null ? banned : [.. current, .. banned];
+
+        return Hack.FieldTransform<PawnKindDef,List<TraitDef>>(kind, nameof(PawnKindDef.disallowedTraits), Transform);
+    }
+
+    public static Hack AdjustPawnKindBackstoryOverrides(PawnKindDef def)
+    {
+        // force only a list of backstories set by the BackstoryDef hack below
+        var list = new List<BackstoryCategoryFilter> { new() { categories = SpawnFilter() } };
+        return Hack.FieldWithValue(def, nameof(PawnKindDef.backstoryFiltersOverride), list);
+    }
+
+    public static Hack AdjustBackstorySpawnCategory(BackstoryDef def)
+    {
+        // point desired backstories to match the PawnKindDef hack above
+        return Hack.FieldWithValue(def, nameof(BackstoryDef.spawnCategories), SpawnFilter());
+    }
+
+    public static Hack MakeBackstoryShuffleable(BackstoryDef def)
+    {
+        // make solid bios temporarily shuffleable so that even if a roll for shuffled backstories happens,
+        // it will be forced to pick the appropriate backstory.
+        return Hack.FieldWithValue(def, nameof(BackstoryDef.shuffleable), true);
+    }
+
+    private static List<string> SpawnFilter() => [SpawnCategoryFilter];
+}

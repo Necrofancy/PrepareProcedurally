@@ -140,7 +140,7 @@ public static class AlienProcGen
 
         var variation = new IntRange(10, (int)(SkillWeightVariation * 10));
         var backgrounds = AlienBackstorySolver.TryToSolveWith(alienSituation, variation);
-        var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
+        var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation.SkillRequirements);
 
         for (var pawnIndex = 0; pawnIndex < StartingPawns.Length; pawnIndex++)
         {

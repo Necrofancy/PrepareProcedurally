@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Necrofancy.PrepareProcedurally.Interface.Dialogs;
+﻿using Necrofancy.PrepareProcedurally.Interface.Dialogs;
+using Necrofancy.PrepareProcedurally.Rules;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
-using RimWorld;
-using RimWorld.Planet;
-using Verse;
 using static Necrofancy.PrepareProcedurally.Editor;
 
 namespace Necrofancy.PrepareProcedurally.Solving;
@@ -27,7 +23,7 @@ public static class ProcGen
 
         var variation = new IntRange(10, (int)(SkillWeightVariation * 10));
         var backgrounds = BackstorySolver.TryToSolveWith(situation, ageCurve, variation);
-        var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation);
+        var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, situation.SkillRequirements);
 
         LastResults = finalSkills;
         for (var i = 0; i < pawnCount; i++)
@@ -44,7 +40,7 @@ public static class ProcGen
 
             Pawn pawn;
 
-            var age = backstory.AssumedAge;
+            var age = Rand.ByCurve(ageCurve);
 
             var gender = backstory.Background.Gender != GenderPossibility.Either
                 ? backstory.Background.Gender
@@ -54,7 +50,7 @@ public static class ProcGen
 
             using (TemporarilyChange.SetSpecificRequest(i, age, gender, AllowBadHeDiffs, AllowRelationships,
                        AllowPregnancy))
-            using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
+            using (TemporarilyChange.MemberKindDisallowedTraits(traitsToBan))
             using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
             {
                 pawn = StartingPawnUtility.RandomizeInPlace(pawnList[i]);
@@ -120,7 +116,7 @@ public static class ProcGen
 
         WorldPawnDestruction.DestroyRelationships(pawn);
 
-        using (TemporarilyChange.ScenarioBannedTraits(traitsToBan))
+        using (TemporarilyChange.MemberKindDisallowedTraits(traitsToBan))
         using (TemporarilyChange.PlayerFactionMelaninRange(MelaninRange))
         using (TemporarilyChange.SetSpecificRequest(index, age, gender, AllowBadHeDiffs, AllowRelationships,
                    AllowPregnancy))
@@ -178,5 +174,44 @@ public static class ProcGen
             startingPawns[i] = StartingPawnUtility.RandomizeInPlace(startingPawns[i]);
             OnPawnChanged(startingPawns[i]);
         }
+    }
+
+    public static void RandomizeTeam(TeamRebalance teamRebalance)
+    {
+        var backgrounds = BackstorySolver.TryToSolveWith(teamRebalance);
+        var finalSkills = BackstorySolver.FigureOutPassions(backgrounds, teamRebalance.Editor.AllPassions);
+        var fudger = teamRebalance.RuleSet.Fudger;
+
+        using (EditSequence.Apply(fudger.TeamwideGeneratorFudges(teamRebalance.Editor)))
+        {
+            foreach (var slot in teamRebalance.GetUnlockedSlots())
+            {
+                if (!finalSkills[slot.Index].HasValue)
+                    continue;
+                var background = backgrounds[slot.Index];
+                var skills = finalSkills[slot.Index].Value;
+
+                var fudging = new Fudging(slot, background, skills);
+
+                fudger.FudgePawnGenerationInTeam(fudging);
+            }
+        }
+    }
+
+    public static void RandomizeCustomPawn(PawnCustomize custom)
+    {
+        var spawnCategories = custom.Rules.RaceRules.GetBackstoryCategoryFilters();
+        var current = BackstorySolver.StaticBackgroundPossibility(custom.Slot.Pawn);
+        var specifier = new SelectBackstorySpecifically(spawnCategories, custom.Slot.Gender, alreadyUsed:[current]);
+
+        var bio = specifier.GetBestBio(custom.Collector.Weight, custom.Slot.RequiredTraits);
+        var skillRanges = EstimateRolling.PossibleSkillRangesOf(bio);
+
+        var background = new BackgroundPossibility(bio, skillRanges, true);
+        var finalSkills = BackstorySolver.FigureOutPassions(custom, bio);
+
+        var fudger = custom.Rules.Fudger;
+        var fudging = new Fudging(custom.Slot, background, finalSkills);
+        fudger.FudgeSoloPawnGeneration(fudging);
     }
 }

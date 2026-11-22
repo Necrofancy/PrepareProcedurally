@@ -10,6 +10,7 @@ public readonly struct BioPossibility
 {
     public BioPossibility(PawnBio bio)
     {
+        Bio = bio;
         Gender = bio.gender;
         Name = bio.name;
 
@@ -31,6 +32,8 @@ public readonly struct BioPossibility
         AddIfAny(Childhood);
         AddIfAny(Adulthood);
     }
+
+    public PawnBio Bio { get; }
 
     public BackstoryDef Childhood { get; }
 

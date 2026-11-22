@@ -90,12 +90,42 @@ public static class EstimateRolling
         return newCurve;
     }
 
-    public static int StaticRoll(in BioPossibility bioPossibility, float age, SkillDef skill, float roll)
+    private static float PreAgeRoll(in BioPossibility bio, SkillDef skill, float roll)
     {
         var start = skill.usuallyDefinedInBackstories
             ? StartingValue.AssumingPercentRoll(roll)
             : NonBackstoryStartingValueCurve.AssumingPercentRoll(roll);
 
+        var story = BackstoryBaseline(in bio, skill, roll);
+
+        return start + story;
+    }
+
+    public static int StaticAgelessRoll(in BioPossibility bio, SkillDef skill, float roll)
+    {
+        return CurveToSkillLevel(PreAgeRoll(bio, skill, roll));
+    }
+
+    public static int StaticRollWithAge(in BioPossibility bioPossibility, float age, SkillDef skill, float roll)
+    {
+        var baseSkill = PreAgeRoll(bioPossibility, skill, roll);
+
+        var ageMax = AgeSkillMaxFactorCurve.Evaluate(age);
+        var ageMultiplierRange = new FloatRange(1.0f, ageMax);
+        var ageMultiplier = ageMultiplierRange.AssumingPercentRoll(roll);
+        var preCurve = baseSkill * ageMultiplier;
+
+        return CurveToSkillLevel(preCurve);
+    }
+
+    private static int CurveToSkillLevel(float preCurveValue)
+    {
+        var postCurve = LevelFinalAdjustmentCurve.Evaluate(preCurveValue);
+        return Mathf.Clamp(Mathf.RoundToInt(postCurve), 0, 20);
+    }
+
+    private static float BackstoryBaseline(in BioPossibility bioPossibility, SkillDef skill, float roll)
+    {
         float story = 0;
         var backstoryMultiplier = BackstoryMultiplier.AssumingPercentRoll(roll);
 
@@ -125,14 +155,7 @@ public static class EstimateRolling
 
         AddBackstory(bioPossibility.Childhood);
         AddBackstory(bioPossibility.Adulthood);
-
-        var ageMax = AgeSkillMaxFactorCurve.Evaluate(age);
-        var ageMultiplierRange = new FloatRange(1.0f, ageMax);
-        var ageMultiplier = ageMultiplierRange.AssumingPercentRoll(roll);
-        var curveValue = (start + story) * ageMultiplier;
-        var fromAdjustmentCurve = LevelFinalAdjustmentCurve.Evaluate(curveValue);
-
-        return Mathf.Clamp(Mathf.RoundToInt(fromAdjustmentCurve), 0, 20);
+        return story;
     }
 
     public static int StaticRoll(Pawn pawn, SkillDef skill, float roll)
@@ -199,15 +222,13 @@ public static class EstimateRolling
         return Mathf.Clamp(Mathf.RoundToInt(fromAdjustmentCurve), 0, 20);
     }
 
-    public static IReadOnlyDictionary<SkillDef, IntRange> PossibleSkillRangesOf(
-        float age,
-        in BioPossibility possibility)
+    public static IReadOnlyDictionary<SkillDef, IntRange> PossibleSkillRangesOf(in BioPossibility possibility)
     {
         var dict = new Dictionary<SkillDef, IntRange>();
         foreach (var skill in DefDatabase<SkillDef>.AllDefs)
         {
-            var min = StaticRoll(in possibility, age, skill, 0f);
-            var max = StaticRoll(in possibility, age, skill, .98f);
+            var min = StaticAgelessRoll(in possibility, skill, 0f);
+            var max = StaticAgelessRoll(in possibility, skill, .98f);
             dict[skill] = new IntRange(min, max);
         }
 

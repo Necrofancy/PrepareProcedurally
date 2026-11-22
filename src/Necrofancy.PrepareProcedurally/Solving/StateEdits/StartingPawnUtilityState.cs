@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using Verse;
+﻿using System.Reflection;
 
-namespace Necrofancy.PrepareProcedurally.Solving;
+namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 
 internal static class StartingPawnUtilityState
 {

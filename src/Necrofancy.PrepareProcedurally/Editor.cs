@@ -34,7 +34,6 @@ public static class Editor
 
     public static RaceAgeData RaceAgeData { get; private set; }
 
-
     public static HashSet<TraitDef> TraitsThatDisablePassions { get; } = new();
     public static List<TraitRequirement>[] TraitRequirements { get; private set; }
     public static BackstoryDef[] SetChildhoods { get; private set; }
@@ -115,7 +114,22 @@ public static class Editor
 #endif
 
 #if DEBUG
-    internal static bool StressTestMode { get; set; }
+    internal static bool StressTestMode
+    {
+        get;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                if (value)
+                {
+                    Log.Clear();
+                    Log.Warning("Clearing log to initiate stress test mode");
+                }
+            }
+        }
+    }
 #endif
 
     public static bool AllowDirtying { get; set; }

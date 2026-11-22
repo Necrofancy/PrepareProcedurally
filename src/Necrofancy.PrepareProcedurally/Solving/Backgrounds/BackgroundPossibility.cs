@@ -9,17 +9,15 @@ public readonly struct BackgroundPossibility
     public BackgroundPossibility(
         BioPossibility background,
         IReadOnlyDictionary<SkillDef, IntRange> skillRanges,
-        float assumedAge,
         bool canChange)
     {
         Background = background;
         SkillRanges = skillRanges;
-        AssumedAge = assumedAge;
         CanChange = canChange;
     }
 
+    public PawnBio Bio => Background.Bio;
     public BioPossibility Background { get; }
     public IReadOnlyDictionary<SkillDef, IntRange> SkillRanges { get; }
-    public float AssumedAge { get; }
     public bool CanChange { get; }
 }

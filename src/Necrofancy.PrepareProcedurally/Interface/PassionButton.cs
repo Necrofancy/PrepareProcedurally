@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
+using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 using RimWorld;
 using UnityEngine;
 using Verse;
