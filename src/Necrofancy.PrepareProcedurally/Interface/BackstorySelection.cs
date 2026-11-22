@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using RimWorld;
-using UnityEngine;
-using Verse;
+using Verse.Sound;
 
 namespace Necrofancy.PrepareProcedurally.Interface;
 
@@ -13,35 +10,38 @@ public static class BackstorySelection
     internal const string ThisBackstoryIsUnlocked = "Necrofancy.PrepareProcedurally.BackstoryUnlocked";
     internal const string ThisBackstoryIsLocked = "Necrofancy.PrepareProcedurally.BackstoryLocked";
 
-    public static void PossibleAdulthoods(Pawn pawn, Action onSelect)
+    public static void PossibleAdulthoods(PawnSlot slot, Action onSelect)
     {
-        var selector = Compatibility.Layer.GetBackstorySelection(pawn);
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        var traitRequirements = Editor.TraitRequirements[index];
-        var childhood = Editor.SetChildhoods[index];
-        var possibleBackstories = selector.PossibleAdulthoods(traitRequirements, childhood);
-
-#if SEARCH_MENU_AVAILABLE
-        Find.WindowStack.Add(new BackstorySearch(pawn, BackstorySlot.Adulthood, Editor.SetAdulthoods[index],
-            possibleBackstories, onSelect));
-#else
-        ShowBackstories(possibleBackstories, index, BackstorySlot.Adulthood, onSelect);
-#endif
+        Open(slot, BackstorySlot.Adulthood, onSelect);
     }
 
-    public static void PossibleChildhoods(Pawn pawn, Action onSelect)
+    public static void PossibleChildhoods(PawnSlot slot, Action onSelect)
     {
-        var selector = Compatibility.Layer.GetBackstorySelection(pawn);
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        var traitRequirements = Editor.TraitRequirements[index];
-        var adulthood = Editor.SetAdulthoods[index];
-        var possibleBackstories = selector.PossibleChildhoods(traitRequirements, adulthood);
+        Open(slot, BackstorySlot.Childhood, onSelect);
+    }
+
+    public static void OpenForSelectedPawn(BackstorySlot slot)
+    {
+        var pawnSlot = SelectedPawn.Slot;
+        Open(pawnSlot, slot, SelectedPawn.Randomize);
+    }
+
+    public static void Open(PawnSlot pawnSlot, BackstorySlot slot, Action onSelect)
+    {
+        var filters = PrepareMod.Settings.RuleSet.RaceRules.GetBackstoryCategoryFilters();
+        var selector = new SelectBackstorySpecifically(filters, pawnSlot.Gender, pawnSlot.Pawn);
+
+        var (options, current) = slot switch
+        {
+            BackstorySlot.Childhood => (selector.PossibleChildhoods(pawnSlot.RequiredTraits, pawnSlot.ForcedAdulthood), pawnSlot.ForcedChildhood),
+            BackstorySlot.Adulthood => (selector.PossibleAdulthoods(pawnSlot.RequiredTraits, pawnSlot.ForcedChildhood), pawnSlot.ForcedAdulthood),
+            _ => throw new ArgumentOutOfRangeException(nameof(slot))
+        };
 
 #if SEARCH_MENU_AVAILABLE
-        Find.WindowStack.Add(new BackstorySearch(pawn, BackstorySlot.Childhood, Editor.SetChildhoods[index],
-            possibleBackstories, onSelect));
+        Find.WindowStack.Add(new BackstorySearch(pawnSlot, slot, current, options, onSelect));
 #else
-        ShowBackstories(possibleBackstories, index, BackstorySlot.Childhood, onSelect);
+        ShowBackstories(pawnSlot, options, slot, onSelect);
 #endif
     }
 
@@ -53,61 +53,25 @@ public static class BackstorySelection
         }
     }
 
-    public static void OpenForSelectedPawn(BackstorySlot slot)
-    {
-        var pawn = SelectedPawn.Pawn;
-        var index = SelectedPawn.Index;
-        var selector = Compatibility.Layer.GetBackstorySelection(SelectedPawn.Pawn);
-        var traitRequirements = Editor.TraitRequirements[index];
-
-        var childhood = Editor.SetChildhoods[index];
-        var adulthood = Editor.SetAdulthoods[index];
-
-        List<BackstoryOption> possibleBackstories;
-        BackstoryDef current;
-
-        switch (slot)
-        {
-            case BackstorySlot.Childhood:
-                possibleBackstories = selector.PossibleChildhoods(traitRequirements, adulthood);
-                current = childhood;
-                break;
-            case BackstorySlot.Adulthood:
-                possibleBackstories = selector.PossibleAdulthoods(traitRequirements, childhood);
-                current = adulthood;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(slot), "Invalid backstory slot");
-        }
-
-#if SEARCH_MENU_AVAILABLE
-        Find.WindowStack.Add(new BackstorySearch(pawn, slot, current, possibleBackstories, SelectedPawn.Randomize));
-#else
-        ShowBackstories(possibleBackstories, index, slot, SelectedPawn.Randomize);
-#endif
-    }
-
     private static void ShowBackstories(
+        PawnSlot pawnSlot,
         IEnumerable<BackstoryOption> backstories,
-        int pawnIndex,
         BackstorySlot slot,
         Action onSelect)
     {
-        var pawn = Editor.StartingPawns[pawnIndex];
         var options = new List<FloatMenuOption>();
-        var fixedGender = Editor.GenderRequirements[pawnIndex];
+        var fixedGender = pawnSlot.Gender;
 
-        var currentArray = slot == BackstorySlot.Childhood
-            ? Editor.SetChildhoods
-            : Editor.SetAdulthoods;
-
-        var currentSelection = currentArray[pawnIndex];
+        var currentSelection = slot ==  BackstorySlot.Childhood
+            ? pawnSlot.ForcedChildhood
+            : pawnSlot.ForcedAdulthood;
 
         if (currentSelection is not null)
         {
             void Remove()
             {
-                BackstoryOption.Remove(pawnIndex, slot, onSelect);
+                pawnSlot.RemoveBackstory(slot);
+                onSelect();
             }
 
             options.Add(new FloatMenuOption("Remove".Translate(), Remove));
@@ -121,7 +85,7 @@ public static class BackstorySelection
 
             var disabled = option.Def == currentSelection;
 
-            var floatOption = option.CreateFloatOption(pawn, pawnIndex, disabled, onSelect);
+            var floatOption = option.CreateFloatOption(pawnSlot, disabled, onSelect);
 
             options.Add(floatOption);
         }

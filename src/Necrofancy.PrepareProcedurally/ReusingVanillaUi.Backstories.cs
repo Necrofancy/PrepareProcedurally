@@ -276,10 +276,10 @@ public static partial class ReusingVanillaUi
 
         buttonSelectionForBackstories = boxRect;
 
-        var index = SelectedPawn.Index;
+        var pawnSlot = SelectedPawn.Slot;
         var locked = slot == BackstorySlot.Childhood
-            ? Editor.SetChildhoods[index] is not null
-            : Editor.SetAdulthoods[index] is not null;
+            ? pawnSlot.ForcedChildhood is not null
+            : pawnSlot.ForcedAdulthood is not null;
 
         var buttonRect = GetEnlargedButtonRect(boxRect);
 

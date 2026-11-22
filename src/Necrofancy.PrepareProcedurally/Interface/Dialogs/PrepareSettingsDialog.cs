@@ -1,6 +1,3 @@
-using System;
-using UnityEngine;
-using Verse;
 using static Necrofancy.PrepareProcedurally.PrepareMod;
 
 namespace Necrofancy.PrepareProcedurally.Interface.Dialogs;
@@ -26,8 +23,7 @@ public class PrepareSettingsDialog : Window
     public override void PreClose()
     {
         base.PreClose();
-        PrepareMod.Settings.Write();
-        Editor.AllowDirtying = PrepareMod.Settings.autoGenerate;
+        Settings.Write();
     }
 
     internal static void DrawModSettings(Rect rect)

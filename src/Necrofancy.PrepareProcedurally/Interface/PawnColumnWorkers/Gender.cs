@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Necrofancy.PrepareProcedurally.Editing;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -17,17 +18,18 @@ public class Gender : PawnColumnWorker_Icon
     private const string TooltipNoPreference = "Necrofancy.PrepareProcedurally.ProcGenPreferNoGenderPreferenceTooltip";
 
     private const string TooltipCouldRequestGender = "Necrofancy.PrepareProcedurally.ProcGenCannotRequestGender";
+
+    private static EditorContext Editor => EditorSession.Require();
+
     protected override Texture2D GetIconFor(Pawn pawn) => pawn.gender.GetIcon();
 
     protected override Color GetIconColor(Pawn pawn)
     {
-        if (PrepareProcedurally.Compatibility.Layer.IsFixedGender(pawn))
-        {
+        if (!CanSelectGender(pawn))
             return ColoredText.SubtleGrayColor;
-        }
 
         var index = StartingPawnUtility.PawnIndex(pawn);
-        var genderPossibility = index != -1 ? Editor.GenderRequirements[index] : GenderPossibility.Either;
+        var genderPossibility = index != -1 ? EditorSession.Require().Slots[index].Gender : GenderPossibility.Either;
         return genderPossibility switch
         {
             GenderPossibility.Male => ColorLibrary.Turquoise,
@@ -44,13 +46,13 @@ public class Gender : PawnColumnWorker_Icon
             return builder.ToString();
 
         builder.AppendLine().AppendLine();
-        if (PrepareProcedurally.Compatibility.Layer.IsFixedGender(pawn))
+        if (!CanSelectGender(pawn))
         {
             builder.AppendLine(TooltipCouldRequestGender.Translate());
         }
         else
         {
-            var currentPref = Editor.GenderRequirements[index] switch
+            var currentPref = Editor.Slots[index].Gender switch
             {
                 GenderPossibility.Male => TooltipPreferMale.Translate(),
                 GenderPossibility.Female => TooltipPreferFemale.Translate(),
@@ -71,7 +73,7 @@ public class Gender : PawnColumnWorker_Icon
         if (index < 0)
             return;
 
-        var currentPossibility = Editor.GenderRequirements[index];
+        var currentPossibility = Editor.Slots[index].Gender;
 
         if (currentPossibility != GenderPossibility.Male)
             options.Add(OptionForGender(index, PreferMaleLabel, GenderPossibility.Male));
@@ -89,10 +91,14 @@ public class Gender : PawnColumnWorker_Icon
     {
         void OnClick()
         {
-            Editor.GenderRequirements[pawnIndex] = possibility;
-            Editor.MakeDirty();
+            Editor.Slots[pawnIndex].Gender = possibility;
         }
 
         return new FloatMenuOption(label.Translate(), OnClick);
+    }
+
+    private static bool CanSelectGender(Pawn pawn)
+    {
+        return PrepareMod.Settings.RuleSet.RaceRules.GetGenderPossibility(pawn.def) == GenderPossibility.Either;
     }
 }

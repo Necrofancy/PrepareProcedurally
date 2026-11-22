@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using Necrofancy.PrepareProcedurally.Editing;
+using Necrofancy.PrepareProcedurally.Interface;
 
 namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 
@@ -31,7 +33,7 @@ internal static class StartingPawnUtilityState
 
     public static List<PawnGenerationRequest> GetStartingPawnRequestList()
     {
-        ensureGenerationRequestInRangeOf.Invoke(null, [Editor.StartingPawns.Length]);
+        ensureGenerationRequestInRangeOf.Invoke(null, [EditorSession.Require().Slots.Count]);
         return (List<PawnGenerationRequest>)startingAndOptionalPawns.GetValue(null);
     }
 

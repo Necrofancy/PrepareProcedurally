@@ -16,7 +16,7 @@ public class PawnBuilder : SkillRangeBuilder<SkillDef>
     {
     }
 
-    public static PawnBuilder FromPossibleBio(BioPossibility bio)
+    public static PawnBuilder FromPossibleBio(BioPossibility bio, float maxPassionPoints)
     {
         var skills = GetSkillRanges(bio);
         var disabledPassions = new HashSet<SkillDef>();
@@ -30,10 +30,10 @@ public class PawnBuilder : SkillRangeBuilder<SkillDef>
                 disabledPassions.AddRange(conflicting);
         }
 
-        return new PawnBuilder(skills, forcedPassions, disabledPassions, Editor.MaxPassionPoints);
+        return new PawnBuilder(skills, forcedPassions, disabledPassions, maxPassionPoints);
     }
 
-    public static PawnBuilder ForPawn(Pawn pawn)
+    public static PawnBuilder ForPawn(Pawn pawn, float maxPassionPoints)
     {
         var skills = GetSkillRanges(pawn);
         var disabledPassions = new HashSet<SkillDef>();
@@ -49,7 +49,7 @@ public class PawnBuilder : SkillRangeBuilder<SkillDef>
                 disabledPassions.AddRange(conflicting);
         }
 
-        return new PawnBuilder(skills, forcedPassions, disabledPassions, Editor.MaxPassionPoints);
+        return new PawnBuilder(skills, forcedPassions, disabledPassions, maxPassionPoints);
     }
 
     protected override IReadOnlyList<SkillDef> GetAllSkillDefinitions()

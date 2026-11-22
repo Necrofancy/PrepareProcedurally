@@ -1,14 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
-using Necrofancy.PrepareProcedurally.Solving;
-using RimWorld;
-using UnityEngine;
-using Verse;
 using Verse.Sound;
 using PawnTableDefOf = Necrofancy.PrepareProcedurally.Defs.PawnTableDefOf;
 
@@ -30,10 +23,12 @@ public class PrepareProcedurally : Page
 
     private static Vector2 scrollPosition;
 
+    private static EditorContext Editor => EditorSession.Require();
+
     public PrepareProcedurally()
     {
-        Editor.RefreshPawnList();
-        Editor.Dirty = PrepareMod.Settings.preGenerate;
+        if (PrepareMod.Settings.preGenerate)
+            Editor.Randomize();
     }
 
     public override void DoWindowContents(Rect rect)
@@ -53,7 +48,7 @@ public class PrepareProcedurally : Page
             skillSelectRect.y -= 18;
 
             SettingsUiUtility.ForEditor.DoWindowContents(textRect);
-            SkillPassionSelectionUiUtility.DoWindowContents(skillSelectRect, Editor.SkillPassions);
+            SkillPassionSelectionUiUtility.DoWindowContents(skillSelectRect, Editor.AllPassions);
 
             Text.Font = GameFont.Tiny;
             Widgets.Label(lower, CustomizePawnSkillsLabel.Translate());
@@ -71,13 +66,13 @@ public class PrepareProcedurally : Page
             table.PawnTableOnGUI(lower.min);
             Widgets.EndScrollView();
 
-            PropagateToEditor();
-
             void Reroll()
             {
                 SoundDefOf.Click.PlayOneShotOnCamera();
-                RandomizeForTeam();
+                Editor.Randomize();
             }
+
+            Editor.WindowTick();
 
             DoBottomButtons(rect);
             DoCenterButtons(rect, Reroll);
@@ -86,7 +81,11 @@ public class PrepareProcedurally : Page
         {
             Close();
             Log.Error($"Exception In Workflow of Prepare Procedurally - Closing Window\n{e}");
-            ProcGen.CleanUpOnError();
+            var pawns = Find.GameInitData.startingAndOptionalPawns;
+            for (var i = 0; i < pawns.Count; i++)
+                StartingPawnUtility.RandomizeInPlace(pawns[i]);
+            EditorSession.End();
+            EditorSession.Begin();
             string errorMessage = PrepareProcedurallyErrorMessage.Translate(e.Message);
             var window = new Dialog_MessageBox(errorMessage);
             Find.WindowStack.Add(window);
@@ -189,8 +188,8 @@ public class PrepareProcedurally : Page
     {
         var unsatisfiedRequirements =
             new List<(SkillDef Skill, int MajorMissing, int MinorMissing, int UsableMissing)>();
-        foreach (var requirement in Editor.SkillPassions)
-            if (!requirement.StartingGroupSatisfies(Editor.StartingPawns, out var major, out var minor, out var usable))
+        foreach (var requirement in Editor.AllPassions)
+            if (!requirement.StartingGroupSatisfies(Editor.Slots, out var major, out var minor, out var usable))
                 unsatisfiedRequirements.Add((requirement.Skill, major, minor, usable));
         return unsatisfiedRequirements;
     }
@@ -210,43 +209,5 @@ public class PrepareProcedurally : Page
     {
         CloseSubdialogs();
         Close();
-    }
-
-    private void PropagateToEditor()
-    {
-        if (Editor.ReadyForEdit)
-        {
-            CloseSubdialogs();
-            RandomizeForTeam();
-        }
-    }
-
-    private void RandomizeForTeam()
-    {
-        if (Editor.StressTestMode)
-        {
-            var context = EditorContext.LiveContext();
-            context.AllPassions = Editor.SkillPassions;
-            context.Randomize();
-            return;
-        }
-
-        var backstoryFilters = Faction.OfPlayer.def.backstoryFilters;
-        var pawnCount = Find.GameInitData.startingPawnCount;
-        var situation = new BalancingSituation(string.Empty, backstoryFilters, pawnCount, Editor.SkillPassions);
-
-        // Compatibility layers (e.g. HAR) index into Editor.StartingPawns and pass those pawns to
-        // StartingPawnUtility.RandomizeInPlace, which throws if a pawn is no longer in GameInitData.
-        Editor.RefreshPawnList();
-        Compatibility.Layer.RandomizeForTeam(situation);
-
-        Editor.StartingPawns = Find.GameInitData.startingAndOptionalPawns.Take(pawnCount).ToArray();
-
-        Editor.Dirty = false;
-    }
-
-    private static int GetOverallRowUiLength()
-    {
-        return int.Parse("Necrofancy.PrepareProcedurally.SelectSkillWidgetLength".Translate());
     }
 }

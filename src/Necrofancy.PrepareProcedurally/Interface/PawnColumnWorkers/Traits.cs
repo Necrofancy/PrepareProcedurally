@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using RimWorld;
 using UnityEngine;
@@ -26,14 +27,17 @@ public class Traits : PawnColumnWorker
     private const int PaddingBetweenButtons = 4;
     const int AddButtonWidth = 30;
 
+    private static EditorContext Editor => EditorSession.Require();
+
     public override void DoCell(Rect rect, Pawn pawn, PawnTable table)
     {
         TraitOptions.Clear();
 
-        var lockedPawn = Editor.LockedPawns.Contains(pawn);
+        var slot = Editor[pawn];
+        var lockedPawn = slot.Locked;
         var needs = lockedPawn
-            ? TraitUtilities.RequiredTraitsForLockedPawn(pawn)
-            : TraitUtilities.RequiredTraitsForUnlockedPawn(pawn);
+            ? TraitUtilities.RequiredTraitsForLockedPawn(slot)
+            : TraitUtilities.RequiredTraitsForUnlockedPawn(slot);
         TraitOptions.AddRange(TraitUtilities.GetAvailableTraits(needs));
 
         var allowPlusButton = TraitOptions.Any();
@@ -89,8 +93,7 @@ public class Traits : PawnColumnWorker
 
     private static void AddTraitToLockedPawn(Pawn pawn, TraitRequirement option)
     {
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        Editor.TraitRequirements[index].Add(option);
+        Editor[pawn].AddTrait(option);
 
         List<Trait> geneTraits = new List<Trait>();
         List<Trait> toRemove = new List<Trait>();
@@ -126,14 +129,12 @@ public class Traits : PawnColumnWorker
 
         pawn.story.traits.RecalculateSuppression();
 
-        TraitUtilities.FixTraitOverflow(pawn);
+        TraitUtilities.FixTraitOverflow(Editor[pawn], PrepareMod.Settings.RuleSet);
     }
 
     private static void AddTraitToUnlockedPawn(Pawn pawn, TraitRequirement option)
     {
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        Editor.TraitRequirements[index].Add(option);
-        Editor.MakeDirty();
+        Editor[pawn].AddTrait(option);
     }
 
     public override int GetMinWidth(PawnTable table)
@@ -170,14 +171,13 @@ public class Traits : PawnColumnWorker
         TooltipHandler.TipRegion(rect, tip);
         if (Widgets.ButtonInvisible(rect, doMouseoverSound: true))
         {
-            var index = StartingPawnUtility.PawnIndex(pawn);
-            var requiredTraits = Editor.TraitRequirements[index];
+            var slot = Editor[pawn];
             bool found = false;
-            foreach (var required in requiredTraits)
+            foreach (var required in slot.RequiredTraits)
             {
                 if (trait.def == required.def && trait.Degree == required.degree)
                 {
-                    requiredTraits.Remove(required);
+                    slot.RemoveTrait(new TraitRequirement{def = required.def, degree = required.degree});
                     found = true;
                     break;
                 }
@@ -212,8 +212,7 @@ public class Traits : PawnColumnWorker
             builder.AppendLine().AppendLine().AppendLine(TraitForcedByScenarioOrMod.Translate());
         }
 
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        var forcedTraits = Editor.TraitRequirements[index];
+        var forcedTraits = Editor[pawn].RequiredTraits;
         if (forcedTraits.Any(x => x.def == trait.def && x.degree == trait.Degree))
         {
             builder.AppendLine().AppendLine().AppendLine(TraitLockedByPlayerChoiceDescription.Translate());
@@ -244,8 +243,7 @@ public class Traits : PawnColumnWorker
             return ColoredText.GeneColor;
         }
 
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        var forcedTraits = Editor.TraitRequirements[index];
+        var forcedTraits = Editor[pawn].RequiredTraits;
         if (forcedTraits.Any(x => x.def == trait.def && x.degree == trait.Degree))
         {
             return ColoredText.ImpactColor;

@@ -40,7 +40,7 @@ public static class SkillPassionSelectionUiUtility
 
     private const int NumericLabelTextLength = 10;
 
-    // These are different to even balance 
+    // These are different to even balance
     private const int GapBeforeNumeric = -3;
     private const int GapAfterNumeric = -2;
 
@@ -134,7 +134,6 @@ public static class SkillPassionSelectionUiUtility
             if (ButtonHit(widgetRow, Minus, selection.major > 0))
             {
                 selection.major--;
-                Editor.MakeDirty();
             }
 
             widgetRow.Gap(GapBeforeNumeric);
@@ -149,7 +148,6 @@ public static class SkillPassionSelectionUiUtility
                     selection.minor--;
 
                 selection.major++;
-                Editor.MakeDirty();
             }
 
             // draw minor passions selection section if we can give a minor passion role.
@@ -163,7 +161,6 @@ public static class SkillPassionSelectionUiUtility
             if (ButtonHit(widgetRow, Minus, selection.minor > 0))
             {
                 selection.minor--;
-                Editor.MakeDirty();
             }
 
             widgetRow.Gap(GapBeforeNumeric);
@@ -176,7 +173,6 @@ public static class SkillPassionSelectionUiUtility
                     selection.usable--;
 
                 selection.minor++;
-                Editor.MakeDirty();
             }
 
             // draw minimal non-passion selection section if more pawns can be assigned.
@@ -189,7 +185,6 @@ public static class SkillPassionSelectionUiUtility
             if (ButtonHit(widgetRow, Minus, selection.usable > 0))
             {
                 selection.usable--;
-                Editor.MakeDirty();
             }
 
             widgetRow.Gap(GapBeforeNumeric);
@@ -199,7 +194,6 @@ public static class SkillPassionSelectionUiUtility
             if (ButtonHit(widgetRow, Plus, pawnsRemaining > 0))
             {
                 selection.usable++;
-                Editor.MakeDirty();
             }
         }
 
@@ -213,7 +207,6 @@ public static class SkillPassionSelectionUiUtility
             SoundDefOf.Click.PlayOneShotOnCamera();
             factions.RemoveAt(index);
             flag = true;
-            Editor.MakeDirty();
         }
 
         Widgets.EndGroup();

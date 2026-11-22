@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving;
-using RimWorld;
-using UnityEngine;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Interface;
 
@@ -51,6 +46,10 @@ public class SettingsUiUtility
 
     private readonly bool drawPassionStats;
 
+    // other areas assume an edit session and use require
+    // this does not require it, so it uses the current session.
+    private static EditorContext Editor => EditorSession.Current;
+
     public static SettingsUiUtility ForSettings { get; } = new(PrepareMod.Settings);
 
     public static SettingsUiUtility ForEditor
@@ -63,16 +62,6 @@ public class SettingsUiUtility
     {
         PullChanges = PullFromEditor;
         PushChanges = PropagateToEditor;
-
-        selectedRaceAgeRange = Editor.AgeRange;
-        melaninRange = Editor.MelaninRange;
-        discretizedMelaninRange = GetDiscreteMelaninRange(melaninRange);
-        allowInjuries = Editor.AllowBadHeDiffs;
-        allowRelationships = Editor.AllowRelationships;
-        allowPregnancy = Editor.AllowPregnancy;
-        skillWeightVariation = Editor.SkillWeightVariation;
-        maxPassionPoints = Editor.MaxPassionPoints;
-
         drawPassionStats = true;
     }
 
@@ -97,8 +86,6 @@ public class SettingsUiUtility
         skillWeightVariation = settings.skillWeightVariation;
         maxPassionPoints = settings.maxPassionPoints;
     }
-
-    public static void ClearEditor() => ForEditor = null;
 
     public void DoWindowContents(Rect rect)
     {
@@ -229,7 +216,7 @@ public class SettingsUiUtility
         }
 
         var textExplainer = new Rect(rect.x, rect.y + RowHeight * 14, rect.width, RowHeight * 2);
-        var passionPointsNeeded = Editor.SkillPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
+        var passionPointsNeeded = Editor.AllPassions.Sum(x => 1.5f * x.major + 1.0f * x.minor);
         var passionPointsAvailable = maxPassionPoints * Find.GameInitData.startingPawnCount;
 
         Text.Font = GameFont.Tiny;
@@ -242,10 +229,18 @@ public class SettingsUiUtility
 
     private void PullFromEditor()
     {
+        if (Editor is null) return;
+
         selectedRace = Editor.SelectedRace;
-        ageRanges = Editor.RaceAgeRanges;
-        selectedRaceAgeRange = Editor.AgeRange;
-        allowedAdultRaceAgeRange = ageRanges[selectedRace].possibleAgeRange;
+        ageRanges = Editor.PawnKindAdultAges;
+        selectedRaceAgeRange = Editor.SelectedAgeRange.desiredAgeRange;
+        allowedAdultRaceAgeRange = Editor.SelectedAgeRange.possibleAgeRange;
+        melaninRange = Editor.MelaninRange;
+        discretizedMelaninRange = GetDiscreteMelaninRange(melaninRange);
+        allowInjuries = Editor.AllowInjuries;
+        allowRelationships = Editor.AllowRelationships;
+        allowPregnancy = Editor.AllowPregnancy;
+        maxPassionPoints = Editor.MaxPassionPoints;
     }
 
     private static IntRange GetDiscreteMelaninRange(FloatRange melaninRange)
@@ -292,12 +287,11 @@ public class SettingsUiUtility
     private void PropagateToEditor()
     {
         Editor.SelectedRace = selectedRace;
-        Editor.AgeRange = selectedRaceAgeRange;
+        Editor.SelectedAgeRange = Editor.SelectedAgeRange with { desiredAgeRange =  selectedRaceAgeRange };
         Editor.MelaninRange = melaninRange;
-        Editor.AllowBadHeDiffs = allowInjuries;
+        Editor.AllowInjuries = allowInjuries;
         Editor.AllowRelationships = allowRelationships;
         Editor.AllowPregnancy = allowPregnancy;
-        Editor.SkillWeightVariation = skillWeightVariation;
         Editor.MaxPassionPoints = maxPassionPoints;
     }
 

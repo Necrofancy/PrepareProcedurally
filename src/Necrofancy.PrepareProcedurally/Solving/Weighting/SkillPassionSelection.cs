@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Necrofancy.PrepareProcedurally.Defs;
+﻿using Necrofancy.PrepareProcedurally.Defs;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using RimWorld;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Weighting;
 
@@ -25,9 +21,9 @@ public class SkillPassionSelection
 
     public int GetWeights(IReadOnlyList<BackgroundPossibility> possibilities)
     {
-        const int majorPassionLevel = 7, majorPassionWeight = 120;
-        const int minorPassionLevel = 5, minorPassionWeight = 110;
-        const int usableLevel = 4, usableWeight = 100;
+        const int MajorPassionLevel = 7, MajorPassionWeight = 120;
+        const int MinorPassionLevel = 5, MinorPassionWeight = 110;
+        const int UsableLevel = 4, UsableWeight = 100;
 
         var majorLeft = major;
         var minorLeft = minor;
@@ -36,7 +32,7 @@ public class SkillPassionSelection
         foreach (var possibility in possibilities)
         {
             var range = possibility.SkillRanges[Skill];
-            if (range.TrueMax > majorPassionLevel)
+            if (range.TrueMax > MajorPassionLevel)
             {
                 if (majorLeft > 0)
                     majorLeft--;
@@ -45,20 +41,20 @@ public class SkillPassionSelection
                 else if (usableLeft > 0)
                     usableLeft--;
             }
-            else if (range.TrueMax > minorPassionLevel)
+            else if (range.TrueMax > MinorPassionLevel)
             {
                 if (minorLeft > 0)
                     minorLeft--;
                 else if (usableLeft > 0)
                     usableLeft--;
             }
-            else if (range.TrueMax > usableLevel && usableLeft > 0)
+            else if (range.TrueMax > UsableLevel && usableLeft > 0)
             {
                 usableLeft--;
             }
         }
 
-        return majorLeft * majorPassionWeight + minorLeft * minorPassionWeight + usableLeft * usableWeight;
+        return majorLeft * MajorPassionWeight + minorLeft * MinorPassionWeight + usableLeft * UsableWeight;
     }
 
     public static SkillPassionSelection CreateFromSkill(SkillDef def)
@@ -100,7 +96,7 @@ public class SkillPassionSelection
     }
 
     public bool StartingGroupSatisfies(
-        IReadOnlyCollection<Pawn> pawns,
+        IReadOnlyCollection<PawnSlot> slots,
         out int majorLeft,
         out int minorLeft,
         out int usableLeft)
@@ -109,9 +105,9 @@ public class SkillPassionSelection
         minorLeft = minor;
         usableLeft = usable;
 
-        foreach (var pawn in pawns)
+        foreach (var slot in slots)
         {
-            var skillRecord = pawn.skills.skills.First(x => x.def == Skill);
+            var skillRecord = slot.Pawn.skills.skills.First(x => x.def == Skill);
             if (skillRecord.passion >= Passion.Major && majorLeft > 0)
                 majorLeft--;
             else if (skillRecord.passion >= Passion.Minor && minorLeft > 0)

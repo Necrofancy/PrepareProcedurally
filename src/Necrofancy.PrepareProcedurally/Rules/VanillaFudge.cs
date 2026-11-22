@@ -19,6 +19,7 @@ public sealed class VanillaFudge : Fudge
     {
         yield return HackFactory.MakeBackstoryShuffleable(fudging.ChosenPossibility.Background.Childhood);
         yield return HackFactory.MakeBackstoryShuffleable(fudging.ChosenPossibility.Background.Adulthood);
+        yield return HackFactory.ForceRequiredTraits(fudging, fudging.ChosenPossibility.Background.Childhood);
         yield return HackFactory.AdjustBackstorySpawnCategory(fudging.ChosenPossibility.Background.Childhood);
         yield return HackFactory.AdjustBackstorySpawnCategory(fudging.ChosenPossibility.Background.Adulthood);
         foreach (var requestHack in HackFactory.ForAdjustingPawnBackstory(fudging, fudging.ChosenPossibility))
@@ -42,7 +43,7 @@ public sealed class VanillaFudge : Fudge
             PostPawnGenerationChanges.RemoveBadHeDiffs(pawn);
         fudging.Slot.CosmeticLock?.ApplyToPawn(fudging.Slot.Pawn);
 
-        var finalSkillBuilder = PawnBuilder.ForPawn(fudging.Slot.Pawn);
+        var finalSkillBuilder = PawnBuilder.ForPawn(fudging.Slot.Pawn, fudging.Slot.Context.MaxPassionPoints);
         foreach (var (skill, requirement) in fudging.Skills.FinalRanges)
             finalSkillBuilder.TryLockInPassion(skill, requirement.Passion);
 
@@ -54,9 +55,6 @@ public sealed class VanillaFudge : Fudge
             {
                 case Page_ConfigureStartingPawns startingPage:
                     startingPage.SelectPawn(pawn);
-                    break;
-                case Interface.Pages.PrepareProcedurally _:
-                    Editor.StartingPawns[fudging.Slot.Index] = pawn;
                     break;
             }
         }

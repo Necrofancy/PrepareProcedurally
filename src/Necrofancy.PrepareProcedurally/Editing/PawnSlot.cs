@@ -1,5 +1,7 @@
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using Necrofancy.PrepareProcedurally.Interface.Dialogs;
+using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 namespace Necrofancy.PrepareProcedurally.Editing;
 
@@ -61,7 +63,18 @@ public sealed class PawnSlot(EditorContext context, int index)
     }
 
     [CanBeNull]
-    public CosmeticLock CosmeticLock { get; private set; }
+    public CosmeticLock CosmeticLock { get; set; }
+
+    public List<(SkillDef Skill, UsabilityRequirement Usability)> CustomRequirements
+    {
+        get
+        {
+            // lazy-init for SelectedPawn workflows
+            field ??= CreateCustomRequirements();
+            return field;
+        }
+        private set;
+    }
 
     public IReadOnlyList<TraitRequirement> RequiredTraits { get; private set; } = [];
 
@@ -100,8 +113,52 @@ public sealed class PawnSlot(EditorContext context, int index)
             return false;
 
         value = newValue;
-        context.NotifySlotChanged();
+        if (!Locked)
+            context.NotifySlotChanged();
+
         Logging.Debug($"Slot Update {Index}.{caller}");
         return true;
+    }
+
+    private List<(SkillDef Skill, UsabilityRequirement Usability)> CreateCustomRequirements()
+    {
+        var reqs = new List<(SkillDef Skill, UsabilityRequirement Usability)>();
+        foreach (var skill in Pawn.skills.skills)
+        {
+            var req = skill.PermanentlyDisabled
+                ? UsabilityRequirement.CanBeOff
+                : skill.passion == Passion.Major
+                    ? UsabilityRequirement.Major
+                    : skill.passion == Passion.Minor
+                        ? UsabilityRequirement.Minor
+                        : UsabilityRequirement.Usable;
+            reqs.Add((skill.def, req));
+        }
+
+        return reqs;
+    }
+
+    public void ApplyBackstoryOption(BackstoryOption option)
+    {
+        if (option.ForcedBio is not null)
+            SolidBio = option.ForcedBio;
+        else if (option.Def.slot == BackstorySlot.Childhood)
+            ForcedChildhood = option.Def;
+        else if (option.Def.slot == BackstorySlot.Adulthood)
+            ForcedAdulthood = option.Def;
+    }
+
+    public void RemoveBackstory(BackstorySlot slot)
+    {
+        if (SolidBio is not null)
+        {
+            SolidBio = null;
+            ForcedChildhood = null;
+            ForcedAdulthood = null;
+        }
+        else if (slot == BackstorySlot.Childhood)
+            ForcedChildhood = null;
+        else if (slot == BackstorySlot.Adulthood)
+            ForcedAdulthood = null;
     }
 }

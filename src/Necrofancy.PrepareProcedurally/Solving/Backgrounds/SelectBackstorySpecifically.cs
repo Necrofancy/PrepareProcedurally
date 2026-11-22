@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using UnityEngine;
@@ -53,25 +54,21 @@ public class SelectBackstorySpecifically
         // no special category.
     }
 
-    public SelectBackstorySpecifically(
-        BackstoryCategoryFilter categoryName,
-        GenderPossibility genderRequirement,
-        Pawn pawn)
+    public SelectBackstorySpecifically(IReadOnlyList<BackstoryCategoryFilter> spawnCategories, PawnSlot slot)
+        : this(spawnCategories, slot.Gender, [])
     {
-        categoryFilters = [categoryName];
-        this.genderRequirement = genderRequirement;
-        alreadyUsed.Add(pawn.story.Childhood);
-        if (pawn.story.Adulthood is { } adulthood)
+        if (slot.SolidBio is not null)
+            ForceBio(slot.SolidBio);
+        else
         {
-            alreadyUsed.Add(adulthood);
-        }
-
-        foreach (var lockedPawn in Editor.LockedPawns)
-        {
-            var story = lockedPawn.story;
-            alreadyUsed.Add(story.Childhood);
-            if (story.Adulthood != null)
-                alreadyUsed.Add(story.Adulthood);
+            if (slot.ForcedChildhood is not null)
+                ForceChildhood(slot.ForcedChildhood);
+            else
+                AddToAlreadyUsed(slot.Pawn.story.Childhood);
+            if (slot.ForcedAdulthood is not null)
+                ForceAdulthood(slot.ForcedAdulthood);
+            else
+                AddToAlreadyUsed(slot.Pawn.story.Adulthood);
         }
     }
 

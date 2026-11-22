@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using Necrofancy.PrepareProcedurally.Editing;
+using Necrofancy.PrepareProcedurally.Interface;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
+using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
 using RimWorld;
 using Verse;
@@ -8,7 +11,9 @@ namespace Necrofancy.PrepareProcedurally;
 
 public static class SelectedPawn
 {
-    public static Pawn Pawn { get; private set; }
+    public static Pawn Pawn => Slot.Pawn;
+
+    public static PawnSlot Slot => EditorSession.Require().Slots[Index];
 
     public static bool KeepCosmetics
     {
@@ -20,56 +25,28 @@ public static class SelectedPawn
 
             field = value;
 
+            Slot.CosmeticLock = field ? new CosmeticLock(Pawn) : null;
+
             if (!field)
                 return;
 
-            Editor.SetChildhoods[Index] = Pawn.story.Childhood;
-            Editor.SetAdulthoods[Index] = Pawn.story.Adulthood;
+            Slot.ForcedChildhood = Pawn.story.Childhood;
+            Slot.ForcedAdulthood = Pawn.story.Adulthood;
         }
     }
 
     public static int Index { get; private set; }
 
-    public static List<(SkillDef Skill, UsabilityRequirement Usability)> Requirements { get; private set; }
-
     public static void Select(Pawn pawn)
     {
-        Editor.LockedPawns.Add(pawn);
-        Pawn = pawn;
         Index = StartingPawnUtility.PawnIndex(pawn);
-        Requirements = new List<(SkillDef Skill, UsabilityRequirement Usability)>();
-        if (Index >= 0
-            && Editor.LastResults?.Count > Index
-            && Editor.LastResults[Index] is { } existing)
-            foreach (var skill in DefDatabase<SkillDef>.AllDefsListForReading)
-            {
-                var result = existing.FinalRanges[skill];
-                var usability = result.Passion switch
-                {
-                    Passion.Major => UsabilityRequirement.Major,
-                    Passion.Minor => UsabilityRequirement.Minor,
-                    _ => UsabilityRequirement.CanBeOff
-                };
-                Requirements.Add((skill, usability));
-            }
-        else
-            foreach (var skill in pawn.skills.skills)
-            {
-                var req = skill.PermanentlyDisabled
-                    ? UsabilityRequirement.CanBeOff
-                    : skill.passion == Passion.Major
-                        ? UsabilityRequirement.Major
-                        : skill.passion == Passion.Minor
-                            ? UsabilityRequirement.Minor
-                            : UsabilityRequirement.Usable;
-                Requirements.Add((skill.def, req));
-            }
+        Slot.Locked = true;
     }
 
     public static float GetPassionPoints()
     {
         var sum = 0.0f;
-        foreach (var item in Requirements)
+        foreach (var item in Slot.CustomRequirements)
             switch (item.Usability)
             {
                 case UsabilityRequirement.Major:
@@ -85,48 +62,8 @@ public static class SelectedPawn
 
     public static void Randomize()
     {
-        var cosmetics = KeepCosmetics ? new CosmeticLock(Pawn) : null;
-        var dict = new Dictionary<SkillDef, int>();
-        var requiredSkills = new List<SkillDef>();
-        var requiredWorkTags = WorkTags.None;
-
-        var variation = new IntRange(10, (int)(Editor.SkillWeightVariation * 10));
-        foreach (var (skill, usability) in Requirements)
-            switch (usability)
-            {
-                case UsabilityRequirement.Major:
-                    dict[skill] = 20 * variation.RandomInRange;
-                    requiredWorkTags |= skill.disablingWorkTags;
-                    requiredSkills.Add(skill);
-                    break;
-                case UsabilityRequirement.Minor:
-                    dict[skill] = 10 * variation.RandomInRange;
-                    requiredWorkTags |= skill.disablingWorkTags;
-                    requiredSkills.Add(skill);
-                    break;
-                case UsabilityRequirement.Usable:
-                    dict[skill] = 5 * variation.RandomInRange;
-                    requiredWorkTags |= skill.disablingWorkTags;
-                    requiredSkills.Add(skill);
-                    break;
-                default:
-                    dict[skill] = -5 * variation.RandomInRange;
-                    break;
-            }
-
-        foreach (var workType in DefDatabase<WorkTypeDef>.AllDefsListForReading)
-            if (workType.relevantSkills.Any(requiredSkills.Contains))
-                requiredWorkTags |= workType.workTags;
-
-        var collectSpecificPassions = new CollectSpecificPassions(dict, requiredWorkTags);
-
-        Pawn = Compatibility.Layer.RandomizeSingularPawn(Pawn, collectSpecificPassions, Requirements);
-        cosmetics?.ApplyToPawn(Pawn);
-    }
-
-    public static void Clear()
-    {
-        Pawn = null;
-        Requirements = null;
+        var collect = new CollectSpecificPassions(Slot);
+        var rules = PrepareMod.Settings.RuleSet;
+        ProcGen.RandomizeCustomPawn(new PawnCustomize(Slot, collect, rules));
     }
 }

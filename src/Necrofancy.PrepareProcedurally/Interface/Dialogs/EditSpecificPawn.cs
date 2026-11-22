@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Necrofancy.PrepareProcedurally.Editing;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -26,7 +27,7 @@ public class EditSpecificPawn : Window
     private const float BackstoryX = 83f;
     private const float BackstoryY = 131f;
 
-    private bool keepAesthetics = false;
+    private bool keepAesthetics;
     private bool showHeadgear = true;
     private bool showApparel = true;
 
@@ -74,7 +75,7 @@ public class EditSpecificPawn : Window
 
         if (PrepareMod.Settings.showCompatibility)
         {
-            var width = 60f * (Editor.StartingPawns.Length - 1);
+            var width = 60f * (EditorSession.Require().Slots.Count - 1);
             var height = 75f;
             var xStart = (rect.xMax - rect.xMin - width) / 2;
             var relationShipsRect = new Rect(xStart, rect.yMax - height, width, height);
@@ -103,10 +104,10 @@ public class EditSpecificPawn : Window
 
     private void DrawAestheticOptions(Rect rect)
     {
-        const float checkboxSpace = 30f;
-        const float margin = 10f;
+        const float CheckboxSpace = 30f;
+        const float GivenMargin = 10f;
         var aesthetics = "KeepAesthetics".PpTranslate();
-        var aestheticsLength = Text.CalcSize(aesthetics).x + checkboxSpace;
+        var aestheticsLength = Text.CalcSize(aesthetics).x + CheckboxSpace;
         var tooltip = "KeepAestheticsTooltip".PpTranslate();
         if (!ModsConfig.IdeologyActive)
         {
@@ -122,11 +123,11 @@ public class EditSpecificPawn : Window
         }
 
         var head = "ShowHeadgear".Translate();
-        var headLength = Text.CalcSize(head).x + checkboxSpace;
+        var headLength = Text.CalcSize(head).x + CheckboxSpace;
         var apparel = "ShowApparel".Translate();
-        var apparelLength = Text.CalcSize(apparel).x + checkboxSpace;
+        var apparelLength = Text.CalcSize(apparel).x + CheckboxSpace;
 
-        var totalWidth = aestheticsLength + headLength + apparelLength + margin * 3;
+        var totalWidth = aestheticsLength + headLength + apparelLength + GivenMargin * 3;
         Rect align = new Rect(rect.xMax - totalWidth, rect.y, aestheticsLength, Text.LineHeight);
         if (!PrepareMod.Settings.AlienRacesEnabled)
         {
@@ -134,10 +135,10 @@ public class EditSpecificPawn : Window
             TooltipHandler.TipRegion(align, tooltip);
         }
 
-        align.x += aestheticsLength + margin;
+        align.x += aestheticsLength + GivenMargin;
         align.width = headLength;
         Widgets.CheckboxLabeled(align, head, ref showHeadgear);
-        align.x += headLength + margin;
+        align.x += headLength + GivenMargin;
         align.width = apparelLength;
         Widgets.CheckboxLabeled(align, apparel, ref showApparel);
     }
@@ -146,8 +147,8 @@ public class EditSpecificPawn : Window
     {
         var locked = slot switch
         {
-            BackstorySlot.Childhood => Editor.SetChildhoods[SelectedPawn.Index] is not null,
-            _ => Editor.SetAdulthoods[SelectedPawn.Index] is not null
+            BackstorySlot.Childhood => SelectedPawn.Slot.ForcedChildhood is not null,
+            _ => SelectedPawn.Slot.ForcedAdulthood is not null
         };
         var button = locked ? LazyTexture.Locked : LazyTexture.Unlocked;
         BackstorySelection.ForSelectedPawn(slot, buttonRect);
@@ -157,7 +158,11 @@ public class EditSpecificPawn : Window
 
     private void ShowRelationships(Rect areaRect)
     {
-        var otherPawns = Editor.StartingPawns.Except(SelectedPawn.Pawn).ToList();
+        var otherPawns = EditorSession.Require().Slots
+            .Except(SelectedPawn.Slot)
+            .Select(x => x.Pawn)
+            .ToList();
+
         var width = areaRect.width / otherPawns.Count;
         foreach (var otherPawn in otherPawns)
         {

@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using Necrofancy.PrepareProcedurally.Editing;
+using Necrofancy.PrepareProcedurally.Interface;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -18,27 +20,27 @@ public static partial class ReusingVanillaUi
         int tracerBullet = 0;
         try
         {
-            var currentPawn = Editor.StartingPawns[pawnIndex];
+            var currentPawn = EditorSession.Require()[pawnIndex];
             Widgets.DrawMenuSection(rect);
             rect = rect.ContractedBy(17f);
             Rect position = new Rect(rect.center.x - Page_ConfigureStartingPawns.PawnPortraitSize.x / 2f, rect.yMin - 24f, Page_ConfigureStartingPawns.PawnPortraitSize.x, Page_ConfigureStartingPawns.PawnPortraitSize.y);
-            Pawn curPawn = currentPawn;
+            Pawn curPawn = currentPawn.Pawn;
             Vector2 pawnPortraitSize = Page_ConfigureStartingPawns.PawnPortraitSize;
             Rot4 south = Rot4.South;
             Vector3 cameraOffset = new Vector3();
             int num1 = renderHeadgear ? 1 : 0;
             int num2 = renderClothes ? 1 : 0;
-            
+
             tracerBullet++; //1
             RenderTexture image = PortraitsCache.Get(curPawn, pawnPortraitSize, south, cameraOffset, renderHeadgear: num1 != 0, renderClothes: num2 != 0, stylingStation: true);
             GUI.DrawTexture(position, image);
-            
+
             Rect rect1 = rect with { width = 500f };
-            CharacterCardUtility.DrawCharacterCard(rect1, currentPawn, SelectedPawn.Randomize, rect);
-            int num3 = SocialCardUtility.AnyRelations(currentPawn) ? 1 : 0;
+            CharacterCardUtility.DrawCharacterCard(rect1, curPawn, SelectedPawn.Randomize, rect);
+            int num3 = SocialCardUtility.AnyRelations(curPawn) ? 1 : 0;
 
             tracerBullet++;
-            if (!Find.GameInitData.startingPossessions.TryGetValue(currentPawn, out var startingPossession))
+            if (!Find.GameInitData.startingPossessions.TryGetValue(curPawn, out var startingPossession))
             {
                 startingPossession = new List<ThingDefCount>();
             }
@@ -54,19 +56,19 @@ public static partial class ReusingVanillaUi
             rect2.xMin = rect1.xMax + 5f;
             rect2.height = height;
             tracerBullet++; //3
-            if (!HealthCardUtility.AnyHediffsDisplayed(currentPawn, true))
+            if (!HealthCardUtility.AnyHediffsDisplayed(curPawn, true))
               GUI.color = Color.gray;
             Widgets.Label(rect2, "Health".Translate().AsTipTitle());
             GUI.color = Color.white;
             rect2.yMin += 35f;
-            HealthCardUtility.DrawHediffListing(rect2, currentPawn, true);
+            HealthCardUtility.DrawHediffListing(rect2, curPawn, true);
             float y2 = rect2.yMax + 4f;
             if (num3 != 0)
             {
               Rect rect3 = new Rect(rect2.x, y2, rect2.width, height);
               Widgets.Label(rect3, "Relations".Translate().AsTipTitle());
               rect3.yMin += 35f;
-              SocialCardUtility.DrawRelationsAndOpinions(rect3, currentPawn);
+              SocialCardUtility.DrawRelationsAndOpinions(rect3, curPawn);
               y2 = rect3.yMax + 4f;
             }
             tracerBullet++; //4
@@ -75,7 +77,7 @@ public static partial class ReusingVanillaUi
             Rect rect4 = new Rect(rect2.x, y2, rect2.width, height);
             Widgets.Label(rect4, "Possessions".Translate().AsTipTitle());
             rect4.yMin += 35f;
-            DrawPossessions(rect4, currentPawn);
+            DrawPossessions(rect4, curPawn);
         }
         catch (Exception e)
         {
@@ -83,7 +85,7 @@ public static partial class ReusingVanillaUi
             Logging.Error(e.ToString());
         }
     }
-    
+
     private static void DrawPossessions(Rect rect, Pawn pawn)
     {
         GUI.BeginGroup(rect);

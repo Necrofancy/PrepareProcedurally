@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Necrofancy.PrepareProcedurally.Editing;
+using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using RimWorld;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Weighting;
 
@@ -10,8 +9,39 @@ namespace Necrofancy.PrepareProcedurally.Solving.Weighting;
 /// </summary>
 public class CollectSpecificPassions
 {
-    public CollectSpecificPassions(Dictionary<SkillDef, int> desiredSkills, WorkTags requiredWork)
+    public CollectSpecificPassions(PawnSlot slot)
     {
+        var desiredSkills = new Dictionary<SkillDef, int>();
+        var requiredWork = WorkTags.None;
+        var requiredSkills = new List<SkillDef>();
+
+        foreach (var (skill, usability) in slot.CustomRequirements)
+            switch (usability)
+            {
+                case UsabilityRequirement.Major:
+                    desiredSkills[skill] = 20 ;
+                    requiredWork |= skill.disablingWorkTags;
+                    requiredSkills.Add(skill);
+                    break;
+                case UsabilityRequirement.Minor:
+                    desiredSkills[skill] = 10;
+                    requiredWork |= skill.disablingWorkTags;
+                    requiredSkills.Add(skill);
+                    break;
+                case UsabilityRequirement.Usable:
+                    desiredSkills[skill] = 5;
+                    requiredWork |= skill.disablingWorkTags;
+                    requiredSkills.Add(skill);
+                    break;
+                default:
+                    desiredSkills[skill] = -5;
+                    break;
+            }
+
+        foreach (var workType in DefDatabase<WorkTypeDef>.AllDefsListForReading)
+            if (workType.relevantSkills.Any(requiredSkills.Contains))
+                requiredWork |= workType.workTags;
+
         DesiredSkills = desiredSkills;
         RequiredWork = requiredWork;
     }

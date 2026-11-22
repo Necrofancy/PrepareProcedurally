@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using RimWorld;
 using Verse;
@@ -17,12 +18,13 @@ public class Adulthood : Backstory
 
     protected override void SelectBackstory(Pawn pawn)
     {
-        BackstorySelection.PossibleAdulthoods(pawn, () => OnceSelected(pawn));
+        var slot = EditorSession.Require()[pawn];
+        BackstorySelection.PossibleAdulthoods(slot, () => OnceSelected(slot));
     }
 
     protected override bool Locked(Pawn pawn)
     {
         var index = StartingPawnUtility.PawnIndex(pawn);
-        return Editor.SetAdulthoods[index] is not null;
+        return EditorSession.Require().Slots[index].ForcedAdulthood is not null;
     }
 }

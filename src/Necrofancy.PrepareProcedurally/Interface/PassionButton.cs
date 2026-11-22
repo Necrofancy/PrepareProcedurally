@@ -1,13 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
-using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
-using RimWorld;
-using UnityEngine;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Interface;
 
@@ -17,6 +10,9 @@ public static class PassionButton
     private static readonly Lazy<Texture2D> Major = "UI/Icons/PassionMajor".AsTexture();
     private static readonly Lazy<Texture2D> Usable = "UI/Widgets/CheckOn".AsTexture();
     private static readonly Lazy<Texture2D> CanBeOff = "UI/Widgets/CheckPartial".AsTexture();
+
+    private static EditorContext Editor => EditorSession.Require();
+    private static List<(SkillDef Skill, UsabilityRequirement Usability)> Requirements => SelectedPawn.Slot.CustomRequirements;
 
     public static void DrawSkillRequirementIcon(float x, float y, SkillDef skill)
     {
@@ -29,10 +25,10 @@ public static class PassionButton
         x += buttonSpacing - 0.5f * buttonSize;
         Rect buttonRect = new Rect(x, y, buttonSize, buttonSize);
 
-        int idx = SelectedPawn.Requirements.FindIndex(requirement => requirement.Skill == skill);
+        int idx = Requirements.FindIndex(requirement => requirement.Skill == skill);
         if (idx == -1) return;
 
-        var (_, req) = SelectedPawn.Requirements[idx];
+        var (_, req) = Requirements[idx];
         var icon = GetIcon(req);
 
         GUI.DrawTexture(buttonRect, icon);
@@ -59,14 +55,14 @@ public static class PassionButton
                 {
                     if (gene.passionMod?.modType == PassionMod.PassionModType.DropAll && gene.passionMod.skill == skill)
                     {
-                        SelectedPawn.Requirements[idx] = (skill, UsabilityRequirement.CanBeOff);
+                        Requirements[idx] = (skill, UsabilityRequirement.CanBeOff);
                         return;
                     }
                 }
             }
 
             var newReq = canBumpUp ? req + 1 : UsabilityRequirement.CanBeOff;
-            SelectedPawn.Requirements[idx] = (skill, newReq);
+            Requirements[idx] = (skill, newReq);
         }
     }
 

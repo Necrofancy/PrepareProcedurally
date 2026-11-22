@@ -6,7 +6,7 @@ public class VanillaRules : IRaceRules
 
     public IReadOnlyList<BackstoryCategoryFilter> GetBackstoryCategoryFilters()
     {
-        return Faction.OfPlayer.def.basicMemberKind.backstoryFilters;
+        return Faction.OfPlayer.def.backstoryFilters;
     }
 
     public int GetMinimumAgeForAdulthood(ThingDef _) => 20;

@@ -1,9 +1,7 @@
-using System;
 using System.Text;
+using Necrofancy.PrepareProcedurally.Editing;
+using Necrofancy.PrepareProcedurally.Interface;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
-using RimWorld;
-using UnityEngine;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
@@ -13,46 +11,6 @@ public record BackstoryOption(
     PawnBio ForcedBio = null
 )
 {
-    public void Apply(int pawnIndex, Action onSelect)
-    {
-        if (ForcedBio is not null)
-        {
-            Editor.SetChildhoods[pawnIndex] = ForcedBio.childhood;
-            Editor.SetAdulthoods[pawnIndex] = ForcedBio.adulthood;
-        }
-        else
-        {
-            var array = Def.slot == BackstorySlot.Childhood ? Editor.SetChildhoods : Editor.SetAdulthoods;
-            var otherArray = Def.slot == BackstorySlot.Childhood ? Editor.SetAdulthoods : Editor.SetChildhoods;
-            array[pawnIndex] = Def;
-            if (otherArray[pawnIndex]?.shuffleable == false)
-            {
-                otherArray[pawnIndex] = null;
-            }
-        }
-
-        onSelect();
-    }
-
-    public static void Remove(int pawnIndex, BackstorySlot slot, Action onSelect)
-    {
-        var currentArray = slot == BackstorySlot.Childhood ? Editor.SetChildhoods : Editor.SetAdulthoods;
-        var currentSelection = currentArray[pawnIndex];
-
-        if (!currentSelection.shuffleable)
-        {
-            // remove both for a solid bio
-            Editor.SetChildhoods[pawnIndex] = null;
-            Editor.SetAdulthoods[pawnIndex] = null;
-        }
-        else
-        {
-            currentArray[pawnIndex] = null;
-        }
-
-        onSelect();
-    }
-
     private string Label()
     {
         return ForcedBio is not null
@@ -82,16 +40,17 @@ public record BackstoryOption(
         }
     }
 
-    public FloatMenuOption CreateFloatOption(Pawn pawn, int pawnIndex, bool disabled, Action onSelect)
+    public FloatMenuOption CreateFloatOption(PawnSlot slot, bool disabled, Action onSelect)
     {
         void Add()
         {
-            Apply(pawnIndex, onSelect);
+            slot.ApplyBackstoryOption(this);
+            onSelect();
         }
 
         void ShowTooltip(Rect draw)
         {
-            TooltipHandler.TipRegion(draw, CreateTooltip(pawn));
+            TooltipHandler.TipRegion(draw, CreateTooltip(slot.Pawn));
         }
 
         return new FloatMenuOption(Label(), Add, mouseoverGuiAction: ShowTooltip) { Disabled = disabled };

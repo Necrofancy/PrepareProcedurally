@@ -34,7 +34,8 @@ public class EditorContext
             MelaninRange = settings.defaultMelaninRange;
             AllowInjuries = settings.allowInjuries;
             AllowRelationships = settings.allowRelationships;
-            AllowPregnant = settings.allowPregnancy;
+            AllowPregnancy = settings.allowPregnancy;
+            MaxPassionPoints = settings.maxPassionPoints;
         }
 
         DebounceDelay = 1000;
@@ -45,6 +46,10 @@ public class EditorContext
     }
 
     public IReadOnlyList<PawnSlot> Slots { get; }
+
+    public PawnSlot this[int index] => Slots[index];
+
+    public PawnSlot this[Pawn pawn] => Slots.FirstOrDefault(s => s.Pawn == pawn);
 
     public bool OverrideSettings { get; set; } = false;
 
@@ -62,7 +67,7 @@ public class EditorContext
 
     public Dictionary<ThingDef, RaceAgeData> PawnKindAdultAges { get; }
 
-    public List<SkillPassionSelection> AllPassions { get; set; }
+    public List<SkillPassionSelection> AllPassions { get; set; } = [];
 
     public ThingDef SelectedRace
     {
@@ -86,11 +91,8 @@ public class EditorContext
             if (!field.Equals(value))
             {
                 field = value;
-                if (!PawnKindAdultAges[SelectedRace].Equals(value))
-                {
-                    PawnKindAdultAges[SelectedRace] = value;
-                    CountdownToRandomize();
-                }
+                PawnKindAdultAges[SelectedRace] = value;
+                CountdownToRandomize();
             }
         }
     }
@@ -108,7 +110,7 @@ public class EditorContext
         }
     } = new(0, 1);
 
-    public bool AllowPregnant
+    public bool AllowPregnancy
     {
         get;
         set
@@ -147,8 +149,32 @@ public class EditorContext
         }
     } = true;
 
+    public float MaxPassionPoints
+    {
+        get;
+        set
+        {
+            if (!Mathf.Approximately(field, value))
+            {
+                field = value;
+                CountdownToRandomize();
+            }
+        }
+    }
+
+#if DEBUG
+    public bool StressTestMode { get; set; }
+#endif
+
     public void WindowTick()
     {
+#if DEBUG
+        if (StressTestMode)
+        {
+            randomizeTeam(this);
+            return;
+        }
+#endif
         if (timerForRandomizing.IsRunning && timerForRandomizing.ElapsedMilliseconds > DebounceDelay)
         {
             Logging.Debug("Randomizing team after debounce");
@@ -180,7 +206,11 @@ public class EditorContext
             ProcGen.RandomizeTeam(teamContext);
         }
 
-        return new EditorContext(pawnList, pawnCount, Randomize, PrepareMod.Settings);
+        return new EditorContext(pawnList, pawnCount, Randomize, PrepareMod.Settings)
+        {
+            AllPassions = DefDatabase<SkillDef>.AllDefsListForReading
+                .Select(SkillPassionSelection.CreateFromSkill).ToList()
+        };
     }
 
     public static EditorContext MockContext(List<Pawn> pawns, int count, Action<EditorContext> randomizeTeam)

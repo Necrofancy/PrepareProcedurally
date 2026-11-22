@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using Necrofancy.PrepareProcedurally.Editing;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -53,6 +54,8 @@ public class FavoriteColor : PawnColumnWorker_Icon
 
     protected override void ClickedIcon(Pawn pawn)
     {
+        var index = StartingPawnUtility.PawnIndex(pawn);
+
         var options = new List<FloatMenuGridOption>(AvailablePawnColors.Count);
         foreach (var color in AvailablePawnColors)
         {
@@ -63,7 +66,7 @@ public class FavoriteColor : PawnColumnWorker_Icon
 #else
                 pawn.story.favoriteColor = color.color;
 #endif
-                Editor.LockedPawns.Add(pawn);
+                EditorSession.Require().Slots[index].Locked = true;
             }
 
             options.Add(new FloatMenuGridOption(BaseContent.WhiteTex, ApplyColor, color.color, color.LabelCap));

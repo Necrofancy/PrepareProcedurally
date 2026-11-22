@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Interface;
 using RimWorld;
 using UnityEngine;
@@ -93,11 +94,7 @@ public class HarmonyPatches
 #endif
     }
 
-    private static void InitializeEditorState()
-    {
-        Editor.SetCleanState();
-        SettingsUiUtility.ClearEditor();
-    }
+    private static void InitializeEditorState() => EditorSession.Begin();
 
     private static void AddButtonToDialog(Rect rect, Page_ConfigureStartingPawns __instance)
     {
@@ -130,7 +127,7 @@ public class HarmonyPatches
         if (__instance is not Page_ConfigureStartingPawns)
             return;
 
-        Editor.ClearState();
+        EditorSession.End();
 
         foreach (var window in Find.WindowStack.Windows
                      .Where(w => w.GetType().Assembly == Assembly.GetExecutingAssembly()).ToList())

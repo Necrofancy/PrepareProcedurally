@@ -1,12 +1,7 @@
 #if SEARCH_MENU_AVAILABLE
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using RimWorld;
-using UnityEngine;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Interface.Dialogs;
 
@@ -15,10 +10,10 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
     private static readonly char[] Separators = [',', '，', '、', '،', ';', '；'];
     private static readonly Vector2 CreationOffset = new(0, 40);
 
-    private readonly Pawn referencePawn;
-    private readonly Action onSelect;
+    private readonly PawnSlot pawnSlot;
     private readonly BackstorySlot slot;
     private readonly BackstoryDef existing;
+    private readonly Action onSelect;
     private bool workflowEnded;
     private readonly HashSet<string> listedBackstories = new();
     private readonly Vector2 position;
@@ -26,13 +21,13 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
     private const float RemoveRowHeight = 30f;
 
     public BackstorySearch(
-        Pawn referencePawn,
+        PawnSlot pawnSlot,
         BackstorySlot slot,
         BackstoryDef existing,
         List<BackstoryOption> backstories,
         Action onSelect)
     {
-        this.referencePawn = referencePawn;
+        this.pawnSlot = pawnSlot;
         this.slot = slot;
         this.existing = existing;
         this.onSelect = onSelect;
@@ -81,7 +76,8 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
             var removeRect = new Rect(inRect.x, inRect.y, inRect.width, RemoveRowHeight);
             if (Widgets.ButtonText(removeRect, "Remove".Translate()))
             {
-                BackstoryOption.Remove(StartingPawnUtility.PawnIndex(referencePawn), slot, onSelect);
+                pawnSlot.RemoveBackstory(slot);
+                onSelect();
                 workflowEnded = true;
             }
 
@@ -130,7 +126,7 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
 
     protected override void DoLabel(BackstoryOption element, Rect labelRect)
     {
-        element.DrawLabel(labelRect, referencePawn);
+        element.DrawLabel(labelRect, pawnSlot.Pawn);
     }
 
     protected override bool ShouldSkipElement(BackstoryOption option)
@@ -149,20 +145,13 @@ public class BackstorySearch : Dialog_Search<BackstoryOption>
         listedBackstories.Clear();
     }
 
-    public override void Notify_ClickOutsideWindow()
-    {
-        workflowEnded = true;
-    }
+    public override void Notify_ClickOutsideWindow() => workflowEnded = true;
 
     // cliked
     protected override void ClikedOnElement(BackstoryOption option)
     {
-        int index = StartingPawnUtility.PawnIndex(referencePawn);
-        if (index >= 0)
-        {
-            option.Apply(index, onSelect);
-        }
-
+        pawnSlot.ApplyBackstoryOption(option);
+        onSelect();
         workflowEnded = true;
     }
 

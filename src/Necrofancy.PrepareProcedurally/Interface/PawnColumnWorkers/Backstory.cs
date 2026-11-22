@@ -1,7 +1,4 @@
-﻿using System;
-using RimWorld;
-using UnityEngine;
-using Verse;
+﻿using Necrofancy.PrepareProcedurally.Editing;
 
 namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
@@ -11,10 +8,10 @@ public abstract class Backstory : PawnColumnWorker
     protected abstract void SelectBackstory(Pawn pawn);
     protected abstract bool Locked(Pawn pawn);
 
-    protected void OnceSelected(Pawn pawn)
+    protected void OnceSelected(PawnSlot slot)
     {
-        Editor.LockedPawns.Remove(pawn);
-        Editor.MakeDirty();
+        slot.Locked = false;
+        slot.Context.NotifySlotChanged();
     }
 
     public override void DoCell(Rect rect, Pawn pawn, PawnTable table)

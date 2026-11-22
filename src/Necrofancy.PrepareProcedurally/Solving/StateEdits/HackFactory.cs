@@ -36,6 +36,7 @@ public static class HackFactory
 
         var request = list[slot.Index];
         var kindDef = slot.PinnedKind ?? request.KindDef;
+
         yield return AdjustPawnKindBackstoryOverrides(kindDef);
         yield return BanConflictingTraits(fudged, kindDef);
 
@@ -52,7 +53,7 @@ public static class HackFactory
 
             return request with
             {
-                AllowPregnant = slot.Context.AllowPregnant,
+                AllowPregnant = slot.Context.AllowPregnancy,
                 AllowAddictions = slot.Context.AllowInjuries,
                 CanGeneratePawnRelations = slot.Context.AllowRelationships,
                 AllowedDevelopmentalStages = DevelopmentalStage.Adult,
@@ -69,6 +70,20 @@ public static class HackFactory
         }
 
         yield return Hack.Function(Get, Transform, Set, $"Starting pawn request {slot.Index}");
+    }
+
+    public static Hack ForceRequiredTraits(Fudging fudge, BackstoryDef childhood)
+    {
+        // forced backstory in PawnGenerationRequest.ForcedTraits means I have to question
+        // whether the trait had the forced flag was a Scenario part or a mod. Pass.
+        var required = fudge.Slot.RequiredTraits
+            .Select(t => new BackstoryTrait { def = t.def, degree = t.degree ?? 0 })
+            .ToList();
+
+        List<BackstoryTrait> Transform(List<BackstoryTrait> current) =>
+            current is null ? required : [.. current, .. required];
+
+        return Hack.FieldTransform<BackstoryDef, List<BackstoryTrait>>(childhood, nameof(BackstoryDef.forcedTraits), Transform);
     }
 
     private static Hack BanConflictingTraits(Fudging context, PawnKindDef kind)
@@ -94,6 +109,7 @@ public static class HackFactory
     public static Hack AdjustBackstorySpawnCategory(BackstoryDef def)
     {
         // point desired backstories to match the PawnKindDef hack above
+        // side-effect of preventing world-pawn relationships from using this backstory
         return Hack.FieldWithValue(def, nameof(BackstoryDef.spawnCategories), SpawnFilter());
     }
 

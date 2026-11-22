@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Necrofancy.PrepareProcedurally.Editing;
+using Necrofancy.PrepareProcedurally.Rules;
 using RimWorld;
 using Verse;
 
@@ -8,36 +10,30 @@ internal static class TraitUtilities
 {
     private static readonly int MaxNonSexualityTraits = 3;
 
-    internal static List<TraitRequirement> RequiredTraitsForUnlockedPawn(Pawn pawn)
+    internal static List<TraitRequirement> RequiredTraitsForUnlockedPawn(PawnSlot slot)
     {
         var requiredTraits = new List<TraitRequirement>();
 
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        if (index < Editor.TraitRequirements.Length && Editor.TraitRequirements[index] is { } traits)
-        {
-            requiredTraits.AddRange(traits);
-        }
+        if (slot.RequiredTraits.Any())
+            requiredTraits.AddRange(slot.RequiredTraits);
 
         return requiredTraits;
     }
 
-    internal static List<TraitRequirement> RequiredTraitsForLockedPawn(Pawn pawn)
+    internal static List<TraitRequirement> RequiredTraitsForLockedPawn(PawnSlot slot)
     {
         var requiredTraits = new List<TraitRequirement>();
 
-        foreach (var trait in pawn.story.traits.allTraits)
+        foreach (var trait in slot.Pawn.story.traits.allTraits)
         {
-            if (IsBackstoryTraitOfPawn(trait, pawn))
+            if (IsBackstoryTraitOfPawn(trait, slot.Pawn))
             {
                 requiredTraits.Add(new TraitRequirement { def = trait.def, degree = trait.Degree });
             }
         }
 
-        var index = StartingPawnUtility.PawnIndex(pawn);
-        if (index < Editor.TraitRequirements.Length && Editor.TraitRequirements[index] is { } traits)
-        {
-            requiredTraits.AddRange(traits);
-        }
+        if (slot.RequiredTraits.Any())
+            requiredTraits.AddRange(slot.RequiredTraits);
 
         return requiredTraits;
     }
@@ -65,12 +61,12 @@ internal static class TraitUtilities
     ///
     /// To accomplish that, remove any randomly-rolled traits until the pawn is back to their max number of traits.
     /// </summary>
-    internal static void FixTraitOverflow(Pawn pawn)
+    internal static void FixTraitOverflow(PawnSlot slot, RuleSet rules)
     {
-        var neededTraits = RequiredTraitsForLockedPawn(pawn);
+        var neededTraits = RequiredTraitsForLockedPawn(slot);
         var traitSlots = 0;
         var candidates = new List<Trait>();
-        foreach (var trait in pawn.story.traits.allTraits)
+        foreach (var trait in slot.Pawn.story.traits.allTraits)
         {
             // Biotech-forced traits won't count towards the limit.
             // Post-1.4, sexuality traits are rolled separately from the 1~3 trait count
@@ -92,18 +88,13 @@ internal static class TraitUtilities
             candidates.Add(trait);
         }
 
-        while (traitSlots > MaxAllowedTraits(pawn))
+        while (traitSlots > rules.RaceRules.GetMaximumGeneratedTraits(slot.Pawn.def))
         {
             var traitToRemove = candidates.RandomElement();
-            pawn.story.traits.RemoveTrait(traitToRemove);
+            slot.Pawn.story.traits.RemoveTrait(traitToRemove);
             candidates.Remove(traitToRemove);
             traitSlots--;
         }
-    }
-
-    private static int MaxAllowedTraits(Pawn pawn)
-    {
-        return Compatibility.Layer.GetMaximumGeneratedTraits(pawn);
     }
 
     internal static bool IsBackstoryTraitOfPawn(Trait trait, Pawn pawn)

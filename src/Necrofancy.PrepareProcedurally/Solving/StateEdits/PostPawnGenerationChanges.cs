@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
 using RimWorld;
@@ -123,8 +124,10 @@ public static class PostPawnGenerationChanges
     /// of rolling for that given pawn (i.e. it has to respect backstory-forced traits and that said trait is
     /// taking up a slot that could be requested for another one).
     /// </summary>
-    public static void ApplyRequestedTraitsTo(this List<TraitRequirement> traits, Pawn pawn)
+    public static void ApplyRequestedTraitsTo(this List<TraitRequirement> traits, PawnSlot slot)
     {
+        var pawn = slot.Pawn;
+
         List<Trait> toRemove = new List<Trait>();
         List<Trait> toAddBack = new List<Trait>();
         foreach (var toAdd in traits)
@@ -166,7 +169,7 @@ public static class PostPawnGenerationChanges
             }
         }
 
-        TraitUtilities.FixTraitOverflow(pawn);
+        TraitUtilities.FixTraitOverflow(slot, PrepareMod.Settings.RuleSet);
         pawn.story.traits.RecalculateSuppression();
     }
 
