@@ -46,7 +46,7 @@ public static class PassionButton
             var canBumpUp = CanIncreaseRequirement(req, remainingPoints);
 
             if (ModsConfig.BiotechActive &&
-                StartingPawnUtilityState.GetStartingPawnRequestList() is { } pawnGenerationRequests)
+                StartingPawnUtilityState.GetStartingPawnRequestList(Editor.Slots.Count) is { } pawnGenerationRequests)
             {
                 var request = pawnGenerationRequests[SelectedPawn.Index];
                 var genes = request.ForcedXenotype?.AllGenes ?? GenesFromCustomXeno(request);

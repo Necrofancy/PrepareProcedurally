@@ -14,7 +14,7 @@ namespace Necrofancy.PrepareProcedurally.Rules;
 /// <param name="Skills">Data about what skill ranges that pawn will need</param>
 public record Fudging(
     PawnSlot Slot,
-    BackgroundPossibility ChosenPossibility,
+    PawnPossibility ChosenPossibility,
     SkillFinalizationResult Skills
 )
 {

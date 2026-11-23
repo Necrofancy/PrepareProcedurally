@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using RimWorld;
-using UnityEngine;
-using Verse;
 
 // ReSharper disable once UnusedType.Global
 
@@ -35,10 +29,7 @@ public class Traits : PawnColumnWorker
 
         var slot = Editor[pawn];
         var lockedPawn = slot.Locked;
-        var needs = lockedPawn
-            ? TraitUtilities.RequiredTraitsForLockedPawn(slot)
-            : TraitUtilities.RequiredTraitsForUnlockedPawn(slot);
-        TraitOptions.AddRange(TraitUtilities.GetAvailableTraits(needs));
+        TraitOptions.AddRange(PrepareMod.Settings.RuleSet.Choices.PossibleTraitsFor(slot));
 
         var allowPlusButton = TraitOptions.Any();
 
@@ -104,7 +95,7 @@ public class Traits : PawnColumnWorker
                 geneTraits.Add(ownedTrait);
                 toRemove.Add(ownedTrait);
             }
-            else if (option.AllowsTrait(ownedTrait.def))
+            else if (option.def.ConflictsWith(ownedTrait.def))
             {
                 toRemove.Add(ownedTrait);
             }

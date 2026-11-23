@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Interface;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
-using RimWorld;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally;
 
@@ -64,6 +61,7 @@ public static class SelectedPawn
     {
         var collect = new CollectSpecificPassions(Slot);
         var rules = PrepareMod.Settings.RuleSet;
-        ProcGen.RandomizeCustomPawn(new PawnCustomize(Slot, collect, rules));
+        var parameters = CandidateSelectionParameters.FromSettings();
+        ProcGen.RandomizeCustomPawn(new PawnCustomize(Slot, collect, rules, parameters));
     }
 }

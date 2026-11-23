@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using Necrofancy.PrepareProcedurally.Editing;
-using Necrofancy.PrepareProcedurally.Interface;
 
 namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 
@@ -25,20 +23,13 @@ internal static class StartingPawnUtilityState
         foreach (var method in methods)
         {
             if (method.Name.Equals("EnsureGenerationRequestInRangeOf"))
-            {
                 ensureGenerationRequestInRangeOf = method;
-            }
         }
     }
 
-    public static List<PawnGenerationRequest> GetStartingPawnRequestList()
+    public static List<PawnGenerationRequest> GetStartingPawnRequestList(int pawnCount)
     {
-        ensureGenerationRequestInRangeOf.Invoke(null, [EditorSession.Require().Slots.Count]);
+        ensureGenerationRequestInRangeOf.Invoke(null, [pawnCount]);
         return (List<PawnGenerationRequest>)startingAndOptionalPawns.GetValue(null);
-    }
-
-    public static void SetStartingPawnRequestList(List<PawnGenerationRequest> requests)
-    {
-        startingAndOptionalPawns.SetValue(null, requests);
     }
 }

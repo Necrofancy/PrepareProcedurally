@@ -202,7 +202,9 @@ public class EditorContext
 
         void Randomize(EditorContext editor)
         {
-            var teamContext = new TeamRebalance(editor, PrepareMod.Settings.RuleSet);
+            var rules = PrepareMod.Settings.RuleSet;
+            var backstorySelection = CandidateSelectionParameters.FromSettings();
+            var teamContext = new TeamRebalance(editor, rules, backstorySelection);
             ProcGen.RandomizeTeam(teamContext);
         }
 

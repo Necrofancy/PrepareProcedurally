@@ -27,10 +27,10 @@ public static class HackFactory
         return Hack.FieldWithValue(Faction.OfPlayer.def, nameof(FactionDef.melaninRange), range);
     }
 
-    public static IEnumerable<Hack> ForAdjustingPawnBackstory(Fudging fudged, BackgroundPossibility possible)
+    public static IEnumerable<Hack> ForAdjustingPawnBackstory(Fudging fudged, PawnPossibility possible)
     {
         var slot = fudged.Slot;
-        var list = StartingPawnUtilityState.GetStartingPawnRequestList();
+        var list = StartingPawnUtilityState.GetStartingPawnRequestList(fudged.Slot.Context.Slots.Count);
         if (slot.Index < 0 || slot.Index >= list.Count)
             throw new ArgumentOutOfRangeException(nameof(slot));
 
@@ -118,6 +118,21 @@ public static class HackFactory
         // make solid bios temporarily shuffleable so that even if a roll for shuffled backstories happens,
         // it will be forced to pick the appropriate backstory.
         return Hack.FieldWithValue(def, nameof(BackstoryDef.shuffleable), true);
+    }
+
+    public static IEnumerable<Hack> SetBackstory(Pawn pawn, PawnBio bio)
+    {
+        Gender gender = bio.gender switch
+        {
+            GenderPossibility.Male => Gender.Male,
+            GenderPossibility.Female => Gender.Female,
+            _ => pawn.gender
+        };
+
+        Name name = new NameTriple(bio.name.First, bio.name.Nick, bio.name.Last);
+
+        yield return Hack.FieldWithValue(pawn, nameof(pawn.gender), gender);
+        yield return Hack.PropertySet(pawn, nameof(pawn.Name), name);
     }
 
     private static List<string> SpawnFilter() => [SpawnCategoryFilter];

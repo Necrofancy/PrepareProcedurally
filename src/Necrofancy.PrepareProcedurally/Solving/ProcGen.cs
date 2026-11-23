@@ -36,14 +36,11 @@ public static class ProcGen
 
     public static void RandomizeCustomPawn(PawnCustomize custom)
     {
-        var spawnCategories = custom.Rules.RaceRules.GetBackstoryCategoryFilters();
-        var current = BackstorySolver.StaticBackgroundPossibility(custom.Slot.Pawn);
-        var specifier = new SelectBackstorySpecifically(spawnCategories, custom.Slot);
-
-        var bio = specifier.GetBestBio(custom.Collector.Weight, custom.Slot.RequiredTraits);
+        var backstorySelection = BackstorySelectionParameters.ForCustomizingPawn(custom);
+        var bio = BackstoryPicking.TopWeighted(backstorySelection);
         var skillRanges = EstimateRolling.PossibleSkillRangesOf(bio);
 
-        var background = new BackgroundPossibility(bio, skillRanges, true);
+        var background = new PawnPossibility(bio, skillRanges, true);
         var maxPassionPoints = custom.Slot.Context.MaxPassionPoints;
         var finalSkills = BackstorySolver.FigureOutPassions(custom, bio, maxPassionPoints);
 

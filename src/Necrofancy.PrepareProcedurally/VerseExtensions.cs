@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using RimWorld;
-using Verse;
-
-namespace Necrofancy.PrepareProcedurally;
+﻿namespace Necrofancy.PrepareProcedurally;
 
 /// <summary>
 /// Common extensions for some common Verse/Rimworld classes
@@ -86,14 +80,17 @@ public static class VerseExtensions
         return trait.exclusionTags.Contains("SexualOrientation");
     }
 
-    public static bool AllowsTrait(this IReadOnlyCollection<TraitRequirement> requirements, TraitDef traitDef)
+    internal static (WorkTags Required, WorkTags Disabled) WorkTagsInPractice(this BackstoryDef backstory)
     {
-        return requirements.All(requiredTrait =>
-            requiredTrait.def != traitDef && !requiredTrait.def.ConflictsWith(traitDef));
-    }
+        var required = backstory.requiredWorkTags;
+        var disabled = backstory.workDisables;
 
-    public static bool AllowsTrait(this TraitRequirement requiredTrait, TraitDef traitDef)
-    {
-        return requiredTrait.def == traitDef || requiredTrait.def.ConflictsWith(traitDef);
+        foreach (var trait in backstory.forcedTraits ?? Enumerable.Empty<BackstoryTrait>())
+        {
+            required |= trait.def.requiredWorkTags;
+            disabled |= trait.def.disabledWorkTags;
+        }
+
+        return (required, disabled);
     }
 }

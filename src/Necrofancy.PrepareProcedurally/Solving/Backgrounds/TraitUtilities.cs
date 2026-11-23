@@ -1,60 +1,10 @@
-﻿using System.Collections.Generic;
-using Necrofancy.PrepareProcedurally.Editing;
+﻿using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Rules;
-using RimWorld;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 internal static class TraitUtilities
 {
-    private static readonly int MaxNonSexualityTraits = 3;
-
-    internal static List<TraitRequirement> RequiredTraitsForUnlockedPawn(PawnSlot slot)
-    {
-        var requiredTraits = new List<TraitRequirement>();
-
-        if (slot.RequiredTraits.Any())
-            requiredTraits.AddRange(slot.RequiredTraits);
-
-        return requiredTraits;
-    }
-
-    internal static List<TraitRequirement> RequiredTraitsForLockedPawn(PawnSlot slot)
-    {
-        var requiredTraits = new List<TraitRequirement>();
-
-        foreach (var trait in slot.Pawn.story.traits.allTraits)
-        {
-            if (IsBackstoryTraitOfPawn(trait, slot.Pawn))
-            {
-                requiredTraits.Add(new TraitRequirement { def = trait.def, degree = trait.Degree });
-            }
-        }
-
-        if (slot.RequiredTraits.Any())
-            requiredTraits.AddRange(slot.RequiredTraits);
-
-        return requiredTraits;
-    }
-
-    internal static IEnumerable<TraitRequirement> GetAvailableTraits(List<TraitRequirement> neededTraits)
-    {
-        var nonSexualityCount = neededTraits.Count(x => !x.def.IsSexualityTrait());
-        foreach (var possibleTrait in DefDatabase<TraitDef>.AllDefsListForReading)
-        {
-            if ((possibleTrait.IsSexualityTrait() || nonSexualityCount < MaxNonSexualityTraits)
-                && neededTraits.AllowsTrait(possibleTrait)
-                && possibleTrait.GetGenderSpecificCommonality(Gender.None) > 0)
-            {
-                foreach (var data in possibleTrait.degreeDatas)
-                {
-                    yield return new TraitRequirement { def = possibleTrait, degree = data.degree };
-                }
-            }
-        }
-    }
-
     /// <summary>
     /// If too many traits are requested, then pawn generation will randomly include a fourth or fifth trait.
     /// "Requested" traits are not similar to _forced_ traits - the goal is to simulate rolling them specifically.
@@ -97,11 +47,29 @@ internal static class TraitUtilities
         }
     }
 
-    internal static bool IsBackstoryTraitOfPawn(Trait trait, Pawn pawn)
+    public static bool IsBackstoryTraitOfPawn(Trait trait, Pawn pawn)
     {
         bool isChildHoodBackstory = pawn.story.Adulthood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
         bool isAdulthoodBackstory = pawn.story.Childhood?.forcedTraits?.Any(x => BackstoryMatch(trait, x)) == true;
         return isChildHoodBackstory || isAdulthoodBackstory;
+    }
+
+    private static List<TraitRequirement> RequiredTraitsForLockedPawn(PawnSlot slot)
+    {
+        var requiredTraits = new List<TraitRequirement>();
+
+        foreach (var trait in slot.Pawn.story.traits.allTraits)
+        {
+            if (IsBackstoryTraitOfPawn(trait, slot.Pawn))
+            {
+                requiredTraits.Add(new TraitRequirement { def = trait.def, degree = trait.Degree });
+            }
+        }
+
+        if (slot.RequiredTraits.Any())
+            requiredTraits.AddRange(slot.RequiredTraits);
+
+        return requiredTraits;
     }
 
     private static bool BackstoryMatch(Trait traitInstance, BackstoryTrait backstoryTrait)

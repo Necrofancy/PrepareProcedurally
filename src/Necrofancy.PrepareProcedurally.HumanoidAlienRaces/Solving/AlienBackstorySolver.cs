@@ -11,11 +11,11 @@ using static BackstorySolver;
 
 public class AlienBackstorySolver
 {
-    public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(
+    public static IReadOnlyList<PawnPossibility> TryToSolveWith(
         AlienBalancingSituation situation,
         IntRange variation)
     {
-        var currentBackgrounds = new List<BackgroundPossibility>(situation.Pawns);
+        var currentBackgrounds = new List<PawnPossibility>(situation.Pawns);
         var categories = new BackstoryCategoryFilter();
 
         var weights = new Dictionary<SkillPassionSelection, int>();
@@ -54,9 +54,9 @@ public class AlienBackstorySolver
                 }
             }
 
-            var bio = specifier.GetBestBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
+            var bio = specifier.GetGoodBio(skillWeightingSystem.Weight, Editor.TraitRequirements[i]);
             var skillRanges = EstimateRolling.PossibleSkillRangesOf(bio);
-            currentBackgrounds.Add(new BackgroundPossibility(bio, skillRanges, true));
+            currentBackgrounds.Add(new PawnPossibility(bio, skillRanges, true));
         }
 
         return currentBackgrounds;

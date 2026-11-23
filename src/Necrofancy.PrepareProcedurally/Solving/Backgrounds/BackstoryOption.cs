@@ -1,23 +1,37 @@
 using System.Text;
 using Necrofancy.PrepareProcedurally.Editing;
-using Necrofancy.PrepareProcedurally.Interface;
 using Necrofancy.PrepareProcedurally.Solving.StateEdits;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
-public record BackstoryOption(
-    BackstoryDef Def,
-    GenderPossibility ForcedGender = GenderPossibility.Either,
-    PawnBio ForcedBio = null
-)
+public record BackstoryOption
 {
+    public BackstoryOption(BackstoryDef def)
+    {
+        Backstory = def;
+        ForcedBio = null;
+    }
+
+    public BackstoryOption(PawnBio bio)
+    {
+        Backstory = null;
+        ForcedBio = bio;
+        GenderRequirement = bio.gender;
+    }
+
+    public BackstoryDef Backstory { get; init; }
+
+    public PawnBio ForcedBio { get; init; }
+
+    public GenderPossibility GenderRequirement { get; init; }
+
     private string Label()
     {
         return ForcedBio is not null
             ? SolidBioString(ForcedBio)
-            : Def.titleFemale is not null
-                ? $"{Def.TitleCapFor(Gender.Male)} / {Def.TitleCapFor(Gender.Female)}"
-                : Def.TitleCapFor(Gender.Male);
+            : Backstory.titleFemale is not null
+                ? $"{Backstory.TitleCapFor(Gender.Male)} / {Backstory.TitleCapFor(Gender.Female)}"
+                : Backstory.TitleCapFor(Gender.Male);
     }
 
     private static string SolidBioString(PawnBio bio)
@@ -60,10 +74,10 @@ public record BackstoryOption(
     {
         if (ForcedBio is null)
         {
-            return Def.FullDescriptionFor(pawn);
+            return Backstory.FullDescriptionFor(pawn);
         }
 
-        using (FakeBackstory(pawn, ForcedBio))
+        using (EditSequence.Apply(HackFactory.SetBackstory(pawn, ForcedBio)))
         {
             StringBuilder builder = new();
             builder.AppendLine(ForcedBio.childhood.FullDescriptionFor(pawn));
@@ -71,25 +85,5 @@ public record BackstoryOption(
             builder.AppendLine(ForcedBio.adulthood.FullDescriptionFor(pawn));
             return builder.ToString();
         }
-    }
-
-    public static TemporaryEdit<(Name, Gender)> FakeBackstory(Pawn pawn, PawnBio bio)
-    {
-        var current = (pawn.Name, pawn.gender);
-        var setGender = bio.gender switch
-        {
-            GenderPossibility.Male => Gender.Male,
-            GenderPossibility.Female => Gender.Female,
-            _ => pawn.gender
-        };
-        var setForBackstoryDesc = (bio.name, setGender);
-
-        void Set((Name name, Gender gender) pawnFacts)
-        {
-            pawn.Name = pawnFacts.name;
-            pawn.gender = pawnFacts.gender;
-        }
-
-        return new TemporaryEdit<(Name, Gender)>(current, setForBackstoryDesc, Set);
     }
 }

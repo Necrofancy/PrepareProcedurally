@@ -19,7 +19,7 @@ public class SkillPassionSelection
 
     public SkillDef Skill { get; }
 
-    public int GetWeights(IReadOnlyList<BackgroundPossibility> possibilities)
+    public int GetWeights(IReadOnlyList<PawnPossibility> possibilities)
     {
         const int MajorPassionLevel = 7, MajorPassionWeight = 120;
         const int MinorPassionLevel = 5, MinorPassionWeight = 110;

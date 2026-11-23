@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using RimWorld;
-using Verse;
+﻿using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Skills;
 
@@ -16,13 +13,13 @@ public class PawnBuilder : SkillRangeBuilder<SkillDef>
     {
     }
 
-    public static PawnBuilder FromPossibleBio(BioPossibility bio, float maxPassionPoints)
+    public static PawnBuilder FromPossibleBio(BackstoryPossibility backstory, float maxPassionPoints)
     {
-        var skills = GetSkillRanges(bio);
+        var skills = GetSkillRanges(backstory);
         var disabledPassions = new HashSet<SkillDef>();
         var forcedPassions = new HashSet<SkillDef>();
-        disabledPassions.AddRange(SkillDisables.GetSkillsDisabled(bio.Childhood, bio.Adulthood));
-        foreach (var trait in bio.Traits)
+        disabledPassions.AddRange(SkillDisables.GetSkillsDisabled(backstory.Childhood, backstory.Adulthood));
+        foreach (var trait in backstory.Traits)
         {
             if (trait.def.forcedPassions is { } forced)
                 forcedPassions.AddRange(forced);
@@ -58,13 +55,13 @@ public class PawnBuilder : SkillRangeBuilder<SkillDef>
     }
 
 
-    private static Dictionary<SkillDef, IntRange> GetSkillRanges(BioPossibility bio)
+    private static Dictionary<SkillDef, IntRange> GetSkillRanges(BackstoryPossibility backstory)
     {
         var skills = new Dictionary<SkillDef, IntRange>();
         foreach (var skill in DefDatabase<SkillDef>.AllDefs)
         {
-            var min = EstimateRolling.StaticAgelessRoll(in bio, skill, 0f);
-            var max = EstimateRolling.StaticAgelessRoll(in bio, skill, .98f);
+            var min = EstimateRolling.StaticAgelessRoll(in backstory, skill, 0f);
+            var max = EstimateRolling.StaticAgelessRoll(in backstory, skill, .98f);
             skills[skill] = new IntRange(min, max);
         }
 

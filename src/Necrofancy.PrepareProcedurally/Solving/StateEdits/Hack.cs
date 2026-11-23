@@ -63,6 +63,31 @@ public sealed class Hack
     public static Hack Value<TValue>(Func<TValue> get, TValue value, Action<TValue> set, string description)
         => Function(get, _ => value, set, description);
 
+    public static Hack PropertyTransform<TObject, TProperty>(TObject instance, string propName, Func<TProperty,TProperty> transform)
+        where TObject : class
+    {
+        if (instance is null)
+            throw new ArgumentNullException(nameof(instance));
+        if (propName is null)
+            throw new ArgumentNullException(nameof(propName));
+
+        var propertyName = $"{instance.GetType().Name}.{propName}";
+        var getter = AccessTools.PropertyGetter(instance.GetType(), propName);
+        var setter = AccessTools.PropertySetter(instance.GetType(), propName);
+
+        if (getter is null || setter is null)
+            throw new InvalidOperationException($"{propertyName} getter/setter not found on {instance.GetType().Name}.");
+        if (getter.ReturnType != typeof(TProperty))
+            throw new InvalidOperationException($"{propertyName} type mismatch on type {typeof(TProperty).Name}.");
+
+        TProperty Get() => (TProperty)getter.Invoke(instance,[]);
+        void Set(TProperty value) => setter.Invoke(instance, [value]);
+        return Function(Get, transform, Set, propertyName);
+    }
+
+    public static Hack PropertySet<TObject, TProp>(TObject instance, string propName, TProp value)
+        where TObject : class => PropertyTransform(instance, propName, (TProp _) => value);
+
     public static Hack FieldTransform<TObject, TField>(TObject instance, string fieldName, Func<TField, TField> transform)
         where TObject : class
     {

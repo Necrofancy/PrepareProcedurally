@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using RimWorld;
-using Verse;
+﻿using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Weighting;
 
@@ -20,7 +15,7 @@ public class SpecificSkillWeights
 
     private IReadOnlyDictionary<SkillPassionSelection, int> Requirements { get; }
 
-    public float Weight(BioPossibility possibility)
+    public float Weight(BackstoryPossibility possibility)
     {
         var disables = possibility.Childhood.workDisables | possibility.Adulthood.workDisables;
         var workDisables = possibility.Childhood.DisabledWorkTypes.Concat(possibility.Adulthood.DisabledWorkTypes)

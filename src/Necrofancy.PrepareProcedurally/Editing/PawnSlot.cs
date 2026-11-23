@@ -142,10 +142,10 @@ public sealed class PawnSlot(EditorContext context, int index)
     {
         if (option.ForcedBio is not null)
             SolidBio = option.ForcedBio;
-        else if (option.Def.slot == BackstorySlot.Childhood)
-            ForcedChildhood = option.Def;
-        else if (option.Def.slot == BackstorySlot.Adulthood)
-            ForcedAdulthood = option.Def;
+        else if (option.Backstory.slot == BackstorySlot.Childhood)
+            ForcedChildhood = option.Backstory;
+        else if (option.Backstory.slot == BackstorySlot.Adulthood)
+            ForcedAdulthood = option.Backstory;
     }
 
     public void RemoveBackstory(BackstorySlot slot)

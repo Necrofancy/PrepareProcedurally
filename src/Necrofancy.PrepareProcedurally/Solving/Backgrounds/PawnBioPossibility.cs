@@ -1,18 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Annotations;
-using RimWorld;
-using Verse;
+﻿using JetBrains.Annotations;
 
 namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
-public readonly struct BioPossibility
+public readonly struct BackstoryPossibility
 {
-    public BioPossibility(PawnBio bio)
+    public BackstoryPossibility(PawnBio bio, ThingDef race)
     {
         Bio = bio;
         Gender = bio.gender;
         Name = bio.name;
+        HumanoidRace = race;
 
         Childhood = bio.childhood;
         Adulthood = bio.adulthood;
@@ -21,10 +18,11 @@ public readonly struct BioPossibility
         AddIfAny(Adulthood);
     }
 
-    public BioPossibility(BackstoryDef childhood, BackstoryDef adulthood)
+    public BackstoryPossibility(BackstoryDef childhood, BackstoryDef adulthood, ThingDef race)
     {
         Childhood = childhood;
         Adulthood = adulthood;
+        HumanoidRace = race;
 
         Name = null;
         Gender = GenderPossibility.Either;
@@ -42,6 +40,8 @@ public readonly struct BioPossibility
     public List<TraitRequirement> Traits { get; }
 
     [CanBeNull] public NameTriple Name { get; }
+
+    public ThingDef HumanoidRace { get; }
 
     public GenderPossibility Gender { get; }
 

@@ -7,11 +7,10 @@ namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 public static class BackstorySolver
 {
-    public static IReadOnlyList<BackgroundPossibility> TryToSolveWith(TeamRebalance rebalance)
+    public static IReadOnlyList<PawnPossibility> TryToSolveWith(TeamRebalance rebalance)
     {
-        var categoryFilters = rebalance.RuleSet.RaceRules.GetBackstoryCategoryFilters();
-        var currentBackgrounds = new List<BackgroundPossibility>(rebalance.Editor.Slots.Count);
-        var finalBackgrounds = new BackgroundPossibility[rebalance.Editor.Slots.Count];
+        var currentBackgrounds = new List<PawnPossibility>(rebalance.Editor.Slots.Count);
+        var finalBackgrounds = new PawnPossibility[rebalance.Editor.Slots.Count];
         foreach (var slot in rebalance.GetLockedSlots())
         {
             var existingBackground = StaticBackgroundPossibility(slot.Pawn);
@@ -26,16 +25,10 @@ public static class BackstorySolver
                 weights[requirement] = requirement.GetWeights(currentBackgrounds);
 
             var skillWeightingSystem = new SpecificSkillWeights(weights);
-            var specifier = new SelectBackstorySpecifically(categoryFilters, slot.Gender, currentBackgrounds);
-            if (slot.ForcedChildhood is not null)
-                specifier.ForceChildhood(slot.ForcedChildhood);
-
-            if (slot.ForcedAdulthood is not null)
-                specifier.ForceAdulthood(slot.ForcedAdulthood);
-
-            var bio = specifier.GetBestBio(skillWeightingSystem.Weight, slot.RequiredTraits);
-            var skillRanges = EstimateRolling.PossibleSkillRangesOf(bio);
-            var determinedBackground = new BackgroundPossibility(bio, skillRanges, true);
+            var parameters = BackstorySelectionParameters.ForTeamRebalance(rebalance, slot, skillWeightingSystem.Weight, currentBackgrounds);
+            var backstoryPossibility = BackstoryPicking.TopWeighted(parameters);
+            var skillRanges = EstimateRolling.PossibleSkillRangesOf(backstoryPossibility);
+            var determinedBackground = new PawnPossibility(backstoryPossibility, skillRanges, true);
             currentBackgrounds.Add(determinedBackground);
             finalBackgrounds[slot.Index] = determinedBackground;
         }
@@ -43,18 +36,18 @@ public static class BackstorySolver
         return finalBackgrounds;
     }
 
-    public static BackgroundPossibility StaticBackgroundPossibility(Pawn pawn)
+    public static PawnPossibility StaticBackgroundPossibility(Pawn pawn)
     {
-        var bio = new BioPossibility(pawn.story.Childhood, pawn.story.Adulthood);
+        var bio = new BackstoryPossibility(pawn.story.Childhood, pawn.story.Adulthood, pawn.def);
         var dict = new Dictionary<SkillDef, IntRange>();
         foreach (var skill in pawn.skills.skills) dict[skill.def] = new IntRange(skill.levelInt, skill.levelInt);
 
-        return new BackgroundPossibility(bio, dict, false);
+        return new PawnPossibility(bio, dict, false);
     }
 
     public static SkillFinalizationResult FigureOutPassions(
         PawnCustomize customization,
-        BioPossibility background,
+        BackstoryPossibility background,
         float maxPassionPoints)
     {
         var builder = PawnBuilder.FromPossibleBio(background, maxPassionPoints);
@@ -75,7 +68,7 @@ public static class BackstorySolver
     }
 
     public static IReadOnlyList<SkillFinalizationResult?> FigureOutPassions(
-        IReadOnlyList<BackgroundPossibility> bios,
+        IReadOnlyList<PawnPossibility> bios,
         IReadOnlyList<SkillPassionSelection> teamRequirements,
         float maxPassionPoints)
     {

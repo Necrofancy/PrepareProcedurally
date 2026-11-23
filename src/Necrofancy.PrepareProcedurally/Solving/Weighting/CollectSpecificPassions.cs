@@ -49,7 +49,7 @@ public class CollectSpecificPassions
     private Dictionary<SkillDef, int> DesiredSkills { get; }
     private WorkTags RequiredWork { get; }
 
-    public float Weight(BioPossibility possibility)
+    public float Weight(BackstoryPossibility possibility)
     {
         var disabledWork = WorkTags.None;
         disabledWork |= possibility.Childhood.workDisables;

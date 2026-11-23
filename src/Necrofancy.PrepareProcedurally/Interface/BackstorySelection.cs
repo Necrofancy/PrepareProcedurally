@@ -1,7 +1,6 @@
 using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
-using Verse.Sound;
 
 namespace Necrofancy.PrepareProcedurally.Interface;
 
@@ -26,22 +25,20 @@ public static class BackstorySelection
         Open(pawnSlot, slot, SelectedPawn.Randomize);
     }
 
-    public static void Open(PawnSlot pawnSlot, BackstorySlot slot, Action onSelect)
+    public static void Open(PawnSlot pawn, BackstorySlot slot, Action onSelect)
     {
-        var filters = PrepareMod.Settings.RuleSet.RaceRules.GetBackstoryCategoryFilters();
-        var selector = new SelectBackstorySpecifically(filters, pawnSlot.Gender, pawnSlot.Pawn);
-
+        var choices = PrepareMod.Settings.RuleSet.Choices;
         var (options, current) = slot switch
         {
-            BackstorySlot.Childhood => (selector.PossibleChildhoods(pawnSlot.RequiredTraits, pawnSlot.ForcedAdulthood), pawnSlot.ForcedChildhood),
-            BackstorySlot.Adulthood => (selector.PossibleAdulthoods(pawnSlot.RequiredTraits, pawnSlot.ForcedChildhood), pawnSlot.ForcedAdulthood),
+            BackstorySlot.Childhood => (PossibilitySpace.OfChildhoodOptions(pawn, choices), pawn.ForcedChildhood),
+            BackstorySlot.Adulthood => (PossibilitySpace.OfAdulthoodOptions(pawn, choices), pawn.ForcedAdulthood),
             _ => throw new ArgumentOutOfRangeException(nameof(slot))
         };
 
 #if SEARCH_MENU_AVAILABLE
-        Find.WindowStack.Add(new BackstorySearch(pawnSlot, slot, current, options, onSelect));
+        Find.WindowStack.Add(new BackstorySearch(pawn, slot, current, options.ToList(), onSelect));
 #else
-        ShowBackstories(pawnSlot, options, slot, onSelect);
+        ShowBackstories(pawn, options, slot, onSelect);
 #endif
     }
 
@@ -79,11 +76,7 @@ public static class BackstorySelection
 
         foreach (var option in backstories)
         {
-            if (fixedGender != GenderPossibility.Either && option.ForcedGender != GenderPossibility.Either
-                                                        && option.ForcedGender != fixedGender)
-                continue;
-
-            var disabled = option.Def == currentSelection;
+            var disabled = option.Backstory is not null && option.Backstory == currentSelection;
 
             var floatOption = option.CreateFloatOption(pawnSlot, disabled, onSelect);
 

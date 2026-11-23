@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Necrofancy.PrepareProcedurally.Editing;
+﻿using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 using Necrofancy.PrepareProcedurally.Solving.Skills;
-using RimWorld;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 
@@ -15,74 +11,6 @@ namespace Necrofancy.PrepareProcedurally.Solving.StateEdits;
 /// </summary>
 public static class PostPawnGenerationChanges
 {
-    /// <summary>
-    /// Fix up possessions, story, and - for humans only - pawn bodytype to match the relevant backstory
-    /// of the given <see cref="BioPossibility"/>.
-    /// </summary>
-    public static void ApplyBackstoryTo(BioPossibility bio, Pawn pawn)
-    {
-        pawn.story.Childhood = bio.Childhood;
-
-        var possessions = Find.GameInitData.startingPossessions[pawn];
-        RemoveBackstoryPossessions(pawn, possessions);
-        pawn.story.Adulthood = bio.Adulthood;
-        AddBackstoryPossessions(bio, possessions);
-
-        // Respect a Kickstarter NameTriple or just re-generate the name.
-        pawn.Name = bio.Name ?? PawnBioAndNameGenerator.GeneratePawnName(pawn);
-
-        ApplyBodyTypeFromBackstory(bio, pawn);
-
-        pawn.Notify_DisabledWorkTypesChanged();
-    }
-
-    internal static void ApplyBodyTypeFromBackstory(BioPossibility bio, Pawn pawn)
-    {
-        var bodyTypeSetByBiotech = false;
-
-        if (ModsConfig.BiotechActive)
-        {
-            var bodyTypes = pawn.genes.GenesListForReading.Where(g => g.Active && g.def.bodyType != null)
-                .Select(g => g.def.bodyType.Value).Distinct().ToList();
-
-            if (bodyTypes.Any())
-            {
-                pawn.story.bodyType = bodyTypes.RandomElement().ToBodyType(pawn);
-                bodyTypeSetByBiotech = true;
-            }
-        }
-
-        if (!bodyTypeSetByBiotech && bio.Adulthood.BodyTypeFor(pawn.gender) is { } bodyType)
-            pawn.story.bodyType = bodyType;
-    }
-
-    public static void AddBackstoryPossessions(BioPossibility bio, List<ThingDefCount> possessions)
-    {
-        if (Find.Scenario.AllParts.Any(x => x is ScenPart_NoPossessions))
-            return;
-
-        foreach (var item in bio.Adulthood.possessions)
-#if RW1_4
-            possessions.Add(new ThingDefCount(item.key, item.value));
-#else
-            possessions.Add(new ThingDefCount(item.key, item.value.RandomInRange));
-#endif
-    }
-
-    public static void RemoveBackstoryPossessions(Pawn pawn, List<ThingDefCount> possessions)
-    {
-        if (pawn.story.Adulthood != null)
-        {
-            var possessionsToRemove = pawn.story.Adulthood.possessions;
-            foreach (var itemToRemove in possessionsToRemove)
-                for (var i = possessions.Count - 1; i >= 0; i--)
-                {
-                    var item = possessions[i];
-                    if (item.ThingDef == itemToRemove.key) possessions.RemoveAt(i);
-                }
-        }
-    }
-
     /// <summary>
     /// Apply simulated skill ranges to the pawn's given stats.
     /// </summary>

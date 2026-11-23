@@ -68,7 +68,7 @@ public static class AlienProcGen
             categoriesChildhood = [pawnChildhoods], categoriesAdulthood = [pawnAdulthoods]
         };
         var specifier = new SelectBackstorySpecifically(backstoryFilter, GenderRequirements[index], pawn);
-        var bio = specifier.GetBestBio(collector.Weight, TraitRequirements[index]);
+        var bio = specifier.GetGoodBio(collector.Weight, TraitRequirements[index]);
         var traits = bio.Traits;
         AlienSpecificPostPawnGenerationChanges.ApplyBackstoryTo(bio, pawn);
         traits.ApplyRequestedTraitsTo(pawn);

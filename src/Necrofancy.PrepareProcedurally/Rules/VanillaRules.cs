@@ -4,14 +4,9 @@ public class VanillaRules : IRaceRules
 {
     public IEnumerable<PawnKindDef> PawnKindsFor(FactionDef faction) => [faction.basicMemberKind];
 
-    public IReadOnlyList<BackstoryCategoryFilter> GetBackstoryCategoryFilters()
-    {
-        return Faction.OfPlayer.def.backstoryFilters;
-    }
-
     public int GetMinimumAgeForAdulthood(ThingDef _) => 20;
 
-    public int GetMaximumGeneratedTraits(ThingDef _) => 3;
+    public int GetMaximumGeneratedTraits(ThingDef _) => Vanilla.MaxNonSexualityTraits;
 
     public GenderPossibility? GetGenderPossibility(ThingDef _) => GenderPossibility.Either;
 }

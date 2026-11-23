@@ -4,4 +4,4 @@ using Necrofancy.PrepareProcedurally.Solving.Weighting;
 
 namespace Necrofancy.PrepareProcedurally.Solving;
 
-public record PawnCustomize(PawnSlot Slot, CollectSpecificPassions Collector, RuleSet Rules);
+public record PawnCustomize(PawnSlot Slot, CollectSpecificPassions Collector, RuleSet Rules, CandidateSelectionParameters CandidateSelectionParameters);
