@@ -271,7 +271,7 @@ public static partial class ReusingVanillaUi
         pendingBackstorySlot = null;
         pendingBackstory = null;
 
-        if (PrepareMod.Settings.AlienRacesEnabled || SelectedPawn.Pawn is null)
+        if (SelectedPawn.Pawn is null)
             return false;
 
         buttonSelectionForBackstories = boxRect;

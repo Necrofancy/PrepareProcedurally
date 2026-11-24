@@ -54,8 +54,6 @@ public class PrepareModSettings : ModSettings
     public bool autoGenerate = DefaultAutoGenerate;
     public int debounceDelay = DefaultDebounceDelay;
 
-    public bool AlienRacesEnabled => ModsConfig.IsActive("erdelf.humanoidalienraces");
-
     public RuleSet RuleSet { get; set; } = RuleSet.Vanilla;
 
     public override void ExposeData()

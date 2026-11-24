@@ -82,7 +82,7 @@ public class EditSpecificPawn : Window
             ShowRelationships(relationShipsRect);
         }
 
-        if (PrepareMod.Settings.AlienRacesEnabled || ReusingVanillaUi.BackstoryButtonsInCard)
+        if (ReusingVanillaUi.BackstoryButtonsInCard)
         {
             return;
         }
@@ -111,11 +111,6 @@ public class EditSpecificPawn : Window
         var tooltip = "KeepAestheticsTooltip".PpTranslate();
         if (!ModsConfig.IdeologyActive)
         {
-            if (PrepareMod.Settings.AlienRacesEnabled)
-            {
-                return;
-            }
-
             Rect soloRect = new Rect(rect.xMax - aestheticsLength, rect.y, aestheticsLength, Text.LineHeight);
             Widgets.CheckboxLabeled(soloRect, aesthetics, ref keepAesthetics);
             TooltipHandler.TipRegion(soloRect, tooltip);
@@ -129,11 +124,8 @@ public class EditSpecificPawn : Window
 
         var totalWidth = aestheticsLength + headLength + apparelLength + GivenMargin * 3;
         Rect align = new Rect(rect.xMax - totalWidth, rect.y, aestheticsLength, Text.LineHeight);
-        if (!PrepareMod.Settings.AlienRacesEnabled)
-        {
-            Widgets.CheckboxLabeled(align, aesthetics, ref keepAesthetics);
-            TooltipHandler.TipRegion(align, tooltip);
-        }
+        Widgets.CheckboxLabeled(align, aesthetics, ref keepAesthetics);
+        TooltipHandler.TipRegion(align, tooltip);
 
         align.x += aestheticsLength + GivenMargin;
         align.width = headLength;

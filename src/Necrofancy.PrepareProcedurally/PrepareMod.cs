@@ -12,7 +12,7 @@ public class PrepareMod : Mod
         Settings = GetSettings<PrepareModSettings>();
     }
 
-    internal static PrepareModSettings Settings { get; private set; }
+    public static PrepareModSettings Settings { get; private set; }
 
     public override void DoSettingsWindowContents(Rect rect)
     {

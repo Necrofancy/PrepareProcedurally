@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using HarmonyLib;
-using Necrofancy.PrepareProcedurally.HumanoidAlienRaces.Solving;
-using Verse;
+﻿using HarmonyLib;
+using JetBrains.Annotations;
 
 namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces;
 
-[StaticConstructorOnStartup]
+[StaticConstructorOnStartup, UsedImplicitly]
 public class HarmonyPatches
 {
     static HarmonyPatches()
@@ -15,15 +12,15 @@ public class HarmonyPatches
 
         var startingUtility = typeof(StartingPawnUtility);
 
-        const string startingUtilityField = "DefaultStartingPawnRequest";
-        var getter = AccessTools.PropertyGetter(startingUtility, startingUtilityField);
-        var meddleWithOutput = AccessTools.Method(typeof(HarmonyPatches), nameof(EditPawnRequestAfterGeneration));
-        harmony.Patch(getter, postfix: new HarmonyMethod(meddleWithOutput));
+        const string DefaultStartingPawnRequestGetter = "DefaultStartingPawnRequest";
+        var getter = AccessTools.PropertyGetter(startingUtility, DefaultStartingPawnRequestGetter);
+        var intercept = AccessTools.Method(typeof(HarmonyPatches), nameof(EditPawnRequestBeforeGeneration));
+        harmony.Patch(getter, postfix: new HarmonyMethod(intercept));
     }
 
     // ReSharper disable once InconsistentNaming
-    private static void EditPawnRequestAfterGeneration(ref PawnGenerationRequest __result)
+    private static void EditPawnRequestBeforeGeneration(ref PawnGenerationRequest __result)
     {
-        PawnGenerationRequestTransforms.ApplyChangesTo(ref __result);
+        RequestInterceptor.Instance.Intercept(ref __result);
     }
 }
