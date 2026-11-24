@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using VerifyXunit;
-using Verse;
 using Xunit;
 using Xunit.Abstractions;
 

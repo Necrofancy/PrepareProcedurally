@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using Verse;
-using Xunit;
+﻿using Xunit;
 using Xunit.Abstractions;
 
 namespace Necrofancy.PrepareProcedurally.Test

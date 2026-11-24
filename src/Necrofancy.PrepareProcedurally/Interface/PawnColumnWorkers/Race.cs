@@ -1,10 +1,4 @@
-﻿using System;
-using JetBrains.Annotations;
-using RimWorld;
-using UnityEngine;
-using Verse;
-
-namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
+﻿namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
 [UsedImplicitly]
 public class Race : PawnColumnWorker_Text

@@ -1,14 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Necrofancy.PrepareProcedurally.Editing;
-using Necrofancy.PrepareProcedurally.Interface.Dialogs;
-using RimWorld;
-using Verse;
+﻿namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
-// ReSharper disable once UnusedType.Global
-
-namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
-
+[UsedImplicitly]
 public class Adulthood : Backstory
 {
     protected override BackstoryDef StoryFrom(Pawn pawn)

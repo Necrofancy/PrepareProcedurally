@@ -1,5 +1,3 @@
-using Verse;
-
 namespace Necrofancy.PrepareProcedurally;
 
 public static class TranslationExtensions

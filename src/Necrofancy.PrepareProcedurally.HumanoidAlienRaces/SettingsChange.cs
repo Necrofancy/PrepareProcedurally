@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using Necrofancy.PrepareProcedurally.Rules;
 
 namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces;

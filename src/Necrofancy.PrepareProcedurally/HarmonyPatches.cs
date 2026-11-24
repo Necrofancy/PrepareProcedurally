@@ -1,17 +1,8 @@
-using System;
-using System.Linq;
 using System.Reflection;
 using HarmonyLib;
-using JetBrains.Annotations;
-using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Interface;
-using RimWorld;
-using UnityEngine;
-using Verse;
 
-// ReSharper disable UnusedParameter.Local
 // ReSharper disable InconsistentNaming
-
 namespace Necrofancy.PrepareProcedurally;
 
 [StaticConstructorOnStartup, UsedImplicitly]
@@ -56,7 +47,7 @@ public class HarmonyPatches
         harmony.Patch(onWindowUpdating, postfix: addButtonPatch);
     }
 
-    private static void ClearEditorStateOnProceedingFromCreateCharactersDialog(Type startingDialog, Harmony harmony)
+    private static void ClearEditorStateOnProceedingFromCreateCharactersDialog([UsedImplicitly]Type startingDialog, Harmony harmony)
     {
         var close = AccessTools.Method(typeof(Window), nameof(Window.PostClose));
         var clearStateMethod = AccessTools.Method(typeof(HarmonyPatches), nameof(ClearStateAndCloseWindows));
@@ -96,7 +87,7 @@ public class HarmonyPatches
 
     private static void InitializeEditorState() => EditorSession.Begin();
 
-    private static void AddButtonToDialog(Rect rect, Page_ConfigureStartingPawns __instance)
+    private static void AddButtonToDialog(Rect rect, [UsedImplicitly]Page_ConfigureStartingPawns __instance)
     {
         var horizontalPlacement = (rect.x + rect.width) / 2 - 75F;
         var verticalPlacement = 0;

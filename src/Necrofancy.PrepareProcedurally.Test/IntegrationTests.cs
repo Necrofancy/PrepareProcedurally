@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using VerifyTests;
 using VerifyXunit;
-using Xunit;
 
 namespace Necrofancy.PrepareProcedurally.Test;
 
 /// <summary>
 /// Instrument Rimworld.exe to run the plugin that generates `received.txt` files, then run this test as a catch-all
-/// to approve all of those scenarios going on at once. 
+/// to approve all of those scenarios going on at once.
 /// <para/>
 /// This way, there is no need to try "collecting" all the data from Rimworld base-game with respect to
 /// Skills, Traits, Backstories, and Bios. The latter two are not even in XML-definitions, so using an external

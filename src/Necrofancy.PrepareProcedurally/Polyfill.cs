@@ -1,6 +1,4 @@
 #if !WAYLITH
-using JetBrains.Annotations;
-
 // ReSharper disable once CheckNamespace
 
 // "The predefined type 'System.Runtime.CompilerServices.IsExternalInit' must be defined or imported
@@ -10,8 +8,6 @@ using JetBrains.Annotations;
 namespace System.Runtime.CompilerServices
 {
     [UsedImplicitly]
-    internal static class IsExternalInit
-    {
-    }
+    internal static class IsExternalInit;
 }
 #endif

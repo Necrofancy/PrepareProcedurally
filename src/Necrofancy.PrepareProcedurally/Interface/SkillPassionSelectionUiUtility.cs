@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using Necrofancy.PrepareProcedurally.Solving.Weighting;
-using RimWorld;
-using UnityEngine;
-using Verse;
 using Verse.Sound;
 using static Necrofancy.PrepareProcedurally.Interface.UiAdjustmentScope;
 

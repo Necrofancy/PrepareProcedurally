@@ -1,10 +1,4 @@
-﻿using System.Linq;
-using Necrofancy.PrepareProcedurally.Editing;
-using RimWorld;
-using UnityEngine;
-using Verse;
-
-namespace Necrofancy.PrepareProcedurally.Interface.Dialogs;
+﻿namespace Necrofancy.PrepareProcedurally.Interface.Dialogs;
 
 public enum UsabilityRequirement
 {

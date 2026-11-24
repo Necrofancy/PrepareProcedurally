@@ -1,11 +1,4 @@
-﻿using System.Collections.Generic;
-using JetBrains.Annotations;
-using Necrofancy.PrepareProcedurally.Editing;
-using RimWorld;
-using UnityEngine;
-using Verse;
-
-namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
+﻿namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
 [UsedImplicitly]
 public class FavoriteColor : PawnColumnWorker_Icon

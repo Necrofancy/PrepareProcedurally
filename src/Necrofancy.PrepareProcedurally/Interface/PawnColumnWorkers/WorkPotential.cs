@@ -1,11 +1,6 @@
-﻿using RimWorld;
-using UnityEngine;
-using Verse;
+﻿namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
-// ReSharper disable once UnusedType.Global
-
-namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
-
+[UsedImplicitly]
 public class WorkPotential : PawnColumnWorker
 {
     public override void DoCell(Rect rect, Pawn pawn, PawnTable table)

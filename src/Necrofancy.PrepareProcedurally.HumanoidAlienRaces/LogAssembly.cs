@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using JetBrains.Annotations;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.HumanoidAlienRaces;
 

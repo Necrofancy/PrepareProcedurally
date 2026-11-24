@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using Necrofancy.PrepareProcedurally.Editing;
-using RimWorld;
-using UnityEngine;
-using Verse;
 
 namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
+[UsedImplicitly]
 public class Gender : PawnColumnWorker_Icon
 {
     private const string PreferMaleLabel = "Necrofancy.PrepareProcedurally.ProcGenPreferMaleLabel";

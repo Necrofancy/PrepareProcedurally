@@ -1,6 +1,4 @@
-﻿using JetBrains.Annotations;
-
-namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
+﻿namespace Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
 public readonly struct BackstoryPossibility
 {

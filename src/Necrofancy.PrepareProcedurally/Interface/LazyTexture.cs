@@ -1,8 +1,4 @@
-﻿using System;
-using UnityEngine;
-using Verse;
-
-namespace Necrofancy.PrepareProcedurally.Interface;
+﻿namespace Necrofancy.PrepareProcedurally.Interface;
 
 public static class LazyTexture
 {

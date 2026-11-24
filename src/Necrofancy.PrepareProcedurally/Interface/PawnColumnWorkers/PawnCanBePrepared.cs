@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Necrofancy.PrepareProcedurally.Interface.Dialogs;
-using RimWorld;
-using UnityEngine;
-using Verse;
+﻿using Necrofancy.PrepareProcedurally.Interface.Dialogs;
 
 namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
-// ReSharper disable once UnusedType.Global
+[UsedImplicitly]
 public class PawnCanBePrepared : PawnColumnWorker
 {
     private const string CustomizeText = "Necrofancy.PrepareProcedurally.ClickToCustomizePawnTooltip";

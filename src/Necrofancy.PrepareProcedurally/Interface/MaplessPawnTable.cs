@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using RimWorld;
-using UnityEngine;
-using Verse;
-
-// ReSharper disable All
-
-namespace Necrofancy.PrepareProcedurally.Interface;
+﻿namespace Necrofancy.PrepareProcedurally.Interface;
 
 /// <summary>
 /// PawnTable implementation without any Look Targets. Those depend on the map, which will cause the

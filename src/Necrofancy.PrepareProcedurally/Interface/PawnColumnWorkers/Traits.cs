@@ -2,10 +2,9 @@
 using Necrofancy.PrepareProcedurally.Editing;
 using Necrofancy.PrepareProcedurally.Solving.Backgrounds;
 
-// ReSharper disable once UnusedType.Global
-
 namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
+[UsedImplicitly]
 public class Traits : PawnColumnWorker
 {
     private const string TraitLockedByBackstoryDescription = "Necrofancy.PrepareProcedurally.TraitIsBackstoryTooltip";

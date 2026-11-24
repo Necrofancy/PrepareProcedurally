@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Necrofancy.PrepareProcedurally.Test.SkillLockIn;
-using RimWorld;
+﻿using Necrofancy.PrepareProcedurally.Test.SkillLockIn;
 using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;

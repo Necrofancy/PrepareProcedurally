@@ -1,14 +1,12 @@
-﻿using System;
-using Necrofancy.PrepareProcedurally.Editing;
-using RimWorld;
-using UnityEngine;
-using Verse;
-using Verse.Sound;
+﻿
 
+using Verse.Sound;
 // ReSharper disable once UnusedType.Global
+using Necrofancy.PrepareProcedurally.Editing;
 
 namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
+[UsedImplicitly]
 public class LockForSelection : PawnColumnWorker_Icon
 {
     private const string LockedDesc = "Necrofancy.PrepareProcedurally.LockedPawnTooltip";

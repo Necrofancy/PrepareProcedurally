@@ -1,10 +1,6 @@
-﻿using RimWorld;
-using Verse;
+﻿namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
 
-// ReSharper disable once UnusedType.Global
-
-namespace Necrofancy.PrepareProcedurally.Interface.PawnColumnWorkers;
-
+[UsedImplicitly]
 public class XenotypeSelection : PawnColumnWorker_Xenotype
 {
     protected override void ClickedIcon(Pawn pawn)
